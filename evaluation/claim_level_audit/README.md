@@ -1,14 +1,31 @@
-# Claim-level citation audit (author-side)
+# Claim-level citation screening (corrected)
 
-Audits whether cited PubMed abstracts appear to support the attached claim text for archived answers.
+## Correction
+The first public CSV treated **bibliography lines** (e.g. `[6]: PMID … | Vitamin K and vascular calcification`) as claims. **111 such rows** were excluded. Those “supported” labels did **not** validate answer treatment claims.
 
-**Not independent clinician validation.** Method: extract claim units carrying `[PMID:…]`, fetch abstracts via NCBI E-utilities (`curl`), label each claim–PMID pair `supported` / `unsupported` / `unclear` using a conservative lexical-overlap heuristic plus veterinary/species mismatch detection.
+## Method (current)
+1. Split reply **body** from reference list.
+2. Score only **assertions** in the body that cite a resolvable PMID (inline or footnote→PMID map).
+3. Attach orphan `[n]` lines to the preceding sentence.
+4. Label each assertion–PMID pair with a lexical/mismatch heuristic.
 
-## Files
-- `claim_unit_labels.csv` — per claim–PMID
-- `claim_answer_labels.csv` — pooled per answer
-- `claim_audit_summary.json` — counts
-- `abstract_cache.json` — fetched title+abstract text
+## Interpretation
+This is **preliminary automated citation screening**, not validated answer-support evidence. Do not cite withdrawn 14/10/6 counts.
 
-## Headline counts
-See `claim_audit_summary.json`.
+## Counts
+```json
+{
+  "n_answers": 30,
+  "n_assertion_pmid_checks": 132,
+  "n_bibliography_lines_excluded": 124,
+  "unit_label_counts": {
+    "unsupported": 64,
+    "unclear": 54,
+    "supported": 14
+  },
+  "answer_screen_counts": {
+    "has_unsupported_citation": 29,
+    "mixed_or_unclear": 1
+  }
+}
+```

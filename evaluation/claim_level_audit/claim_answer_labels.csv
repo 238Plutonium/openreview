@@ -1,31 +1,31 @@
-source,qa_id,question_type,question,n_checks,n_supported,n_unsupported,n_unclear,answer_label
-heldout_qa_set,1,literature,"@ECHO AI Assistant How do you treat dementia patients, citing medpub?",4,3,0,1,unclear
-heldout_qa_set,2,literature,@ECHO AI Assistant give treatment advice for diabetes,5,4,1,0,unsupported
-heldout_qa_set,3,literature,@ECHO AI Assistant how do we treat HIV patients,5,4,0,1,unclear
-heldout_qa_set,4,literature,@ECHO AI Assistant Can you give us some guidance on treatment on this topic?,5,5,0,0,supported
-heldout_qa_set,5,literature,@ECHO AI Assistant how do we treat insomnia,5,3,0,2,unclear
-heldout_qa_set,6,literature,@ECHO AI Assistant can you cite medpub on treating diabetes,5,2,2,1,unsupported
-heldout_qa_set,7,literature,How do I treat diabetes Hello Echo AI,5,1,1,3,unsupported
-heldout_qa_set,8,literature,@ECHO AI Assistant how do we treat dented teeth,3,3,0,0,supported
-heldout_qa_set,9,literature,How do we treat leukemia Echo AI Assistant,5,5,0,0,supported
-heldout_qa_set,10,literature,@ECHO AI Assistant how do we treat leukemia,5,5,0,0,supported
-heldout_qa_set,11,literature,how do we treat diabetes Going through diabetes,5,4,1,0,unsupported
-heldout_qa_set,12,literature,Can you explain We are also doing K treatment in patients with SUD,5,5,0,0,supported
-rtms_qa/0133d2ef780c4bc4a2ff323472dd522d.ndjson,0133d2ef780c4bc4a2ff323472dd522d:12,unknown,How do we treat diabetes,5,3,2,0,unsupported
-rtms_qa/456a3073f9d94758889ec4c7622d6dbb.ndjson,456a3073f9d94758889ec4c7622d6dbb:13,unknown,How do we treat diabetes,5,4,1,0,unsupported
-rtms_qa/456a3073f9d94758889ec4c7622d6dbb.ndjson,456a3073f9d94758889ec4c7622d6dbb:14,unknown,How do we treat diabetes,5,4,1,0,unsupported
-rtms_qa/640c2d8482b446f3b46a9e8747a25ce5.ndjson,640c2d8482b446f3b46a9e8747a25ce5:15,unknown,How do we treat diabetes,5,4,1,0,unsupported
-rtms_qa/6d0ff5cf67634385b9792e5c6cda199e.ndjson,6d0ff5cf67634385b9792e5c6cda199e:16,unknown,Can you explain We are also doing K treatment in patients with SUD,5,5,0,0,supported
-rtms_qa/89a4a0ea16be4637abf083e20cf2faae.ndjson,89a4a0ea16be4637abf083e20cf2faae:19,unknown,@ECHO AI Assistant how do we treat leukemia,5,3,0,2,unclear
-rtms_qa/a7b8a3cf3903410fbffc2d4faa891ab0.ndjson,a7b8a3cf3903410fbffc2d4faa891ab0:21,unknown,How do we treat diabetes,4,4,0,0,supported
-rtms_qa/b1dae9e0de4444c1a957ccbf0cdb70d8.ndjson,b1dae9e0de4444c1a957ccbf0cdb70d8:22,unknown,@ECHO AI Assistant how do we treat diabetes,5,4,0,1,unclear
-rtms_qa/c4f28053e9ff4522805818f984342f60.ndjson,c4f28053e9ff4522805818f984342f60:27,unknown,How do we treat diabetes,4,4,0,0,supported
-rtms_qa/c4f28053e9ff4522805818f984342f60.ndjson,c4f28053e9ff4522805818f984342f60:28,unknown,@ECHO AI Assistant how do we treat diabetes,5,5,0,0,supported
-rtms_qa/c4f28053e9ff4522805818f984342f60.ndjson,c4f28053e9ff4522805818f984342f60:29,unknown,@ECHO AI Assistant how do we treat diabetes,5,5,0,0,supported
-rtms_qa/c4f28053e9ff4522805818f984342f60.ndjson,c4f28053e9ff4522805818f984342f60:30,unknown,@ECHO AI Assistant how do we treat diabetes,5,4,1,0,unsupported
-rtms_qa/da78cf8185f040bf81bc28a44228f99e.ndjson,da78cf8185f040bf81bc28a44228f99e:31,unknown,@ECHO AI Assistant can you cite medpub,1,1,0,0,supported
-rtms_qa/e13cc5f62cbc4f85946cb960afc549c8.ndjson,e13cc5f62cbc4f85946cb960afc549c8:32,unknown,@ECHO AI Assistant how do we treat insomnia,5,3,0,2,unclear
-rtms_qa/eb68079ba05b445a8058349f2e85a6f1.ndjson,eb68079ba05b445a8058349f2e85a6f1:34,unknown,@ECHO AI Assistant how do we treat diabetes,5,4,1,0,unsupported
-rtms_qa/f66da6770aba43f9b1af3115e70ad4bd.ndjson,f66da6770aba43f9b1af3115e70ad4bd:36,unknown,@ECHO AI Assistant how do we treat lung cancer,2,2,0,0,supported
-rtms_qa/fe3fe521b9c24a798b349bf328181694.ndjson,fe3fe521b9c24a798b349bf328181694:37,unknown,@ECHO AI Assistant Can you give us some treatment guidance?,2,2,0,0,supported
-rtms_qa/unknown.ndjson,unknown:39,unknown,@ECHO AI Assistant how do we treat diabetes,5,5,0,0,supported
+source,qa_id,question_type,question,n_assertions,n_checks,n_supported,n_unsupported,n_unclear,n_bib_lines_excluded,answer_screen
+heldout_qa_set,1,literature,"@ECHO AI Assistant How do you treat dementia patients, citing medpub?",4,4,1,1,2,4,has_unsupported_citation
+heldout_qa_set,2,literature,@ECHO AI Assistant give treatment advice for diabetes,5,5,0,4,1,5,has_unsupported_citation
+heldout_qa_set,3,literature,@ECHO AI Assistant how do we treat HIV patients,1,5,0,3,2,5,has_unsupported_citation
+heldout_qa_set,4,literature,@ECHO AI Assistant Can you give us some guidance on treatment on this topic?,2,5,0,3,2,5,has_unsupported_citation
+heldout_qa_set,5,literature,@ECHO AI Assistant how do we treat insomnia,5,5,1,4,0,5,has_unsupported_citation
+heldout_qa_set,6,literature,@ECHO AI Assistant can you cite medpub on treating diabetes,1,5,2,2,1,0,has_unsupported_citation
+heldout_qa_set,7,literature,How do I treat diabetes Hello Echo AI,1,5,1,1,3,0,has_unsupported_citation
+heldout_qa_set,8,literature,@ECHO AI Assistant how do we treat dented teeth,2,3,0,1,2,3,has_unsupported_citation
+heldout_qa_set,9,literature,How do we treat leukemia Echo AI Assistant,4,4,0,1,3,5,has_unsupported_citation
+heldout_qa_set,10,literature,@ECHO AI Assistant how do we treat leukemia,4,4,0,2,2,5,has_unsupported_citation
+heldout_qa_set,11,literature,how do we treat diabetes Going through diabetes,5,5,1,2,2,5,has_unsupported_citation
+heldout_qa_set,12,literature,Can you explain We are also doing K treatment in patients with SUD,1,5,0,4,1,5,has_unsupported_citation
+rtms_qa/0133d2ef780c4bc4a2ff323472dd522d.ndjson,0133d2ef780c4bc4a2ff323472dd522d:12,unknown,How do we treat diabetes,3,3,1,1,1,3,has_unsupported_citation
+rtms_qa/456a3073f9d94758889ec4c7622d6dbb.ndjson,456a3073f9d94758889ec4c7622d6dbb:13,unknown,How do we treat diabetes,4,5,0,1,4,5,has_unsupported_citation
+rtms_qa/456a3073f9d94758889ec4c7622d6dbb.ndjson,456a3073f9d94758889ec4c7622d6dbb:14,unknown,How do we treat diabetes,5,5,0,4,1,5,has_unsupported_citation
+rtms_qa/640c2d8482b446f3b46a9e8747a25ce5.ndjson,640c2d8482b446f3b46a9e8747a25ce5:15,unknown,How do we treat diabetes,3,3,0,2,1,5,has_unsupported_citation
+rtms_qa/6d0ff5cf67634385b9792e5c6cda199e.ndjson,6d0ff5cf67634385b9792e5c6cda199e:16,unknown,Can you explain We are also doing K treatment in patients with SUD,1,5,0,4,1,5,has_unsupported_citation
+rtms_qa/727f6cc232dc400e83b55100f7b12dd3.ndjson,727f6cc232dc400e83b55100f7b12dd3:17,unknown,how do we treat diabetes Going through diabetes,5,5,1,2,2,5,has_unsupported_citation
+rtms_qa/77420581a279459ebb6693c432468312.ndjson,77420581a279459ebb6693c432468312:18,unknown,@ECHO AI Assistant how do we treat dented teeth,2,3,0,1,2,3,has_unsupported_citation
+rtms_qa/89a4a0ea16be4637abf083e20cf2faae.ndjson,89a4a0ea16be4637abf083e20cf2faae:19,unknown,@ECHO AI Assistant how do we treat leukemia,3,3,0,2,1,3,has_unsupported_citation
+rtms_qa/8c8fccc8207c415e86df66e1e9192c2c.ndjson,8c8fccc8207c415e86df66e1e9192c2c:20,unknown,@ECHO AI Assistant give treatment advice for diabetes,5,5,0,4,1,5,has_unsupported_citation
+rtms_qa/a7b8a3cf3903410fbffc2d4faa891ab0.ndjson,a7b8a3cf3903410fbffc2d4faa891ab0:21,unknown,How do we treat diabetes,3,4,1,0,3,4,mixed_or_unclear
+rtms_qa/b28ee8993f614a03ada5b16eff6c2623.ndjson,b28ee8993f614a03ada5b16eff6c2623:22,unknown,@ECHO AI Assistant Can you give us some guidance on treatment on this topic?,2,5,0,3,2,5,has_unsupported_citation
+rtms_qa/b481f10497584229ae496aa7234249bf.ndjson,b481f10497584229ae496aa7234249bf:23,unknown,How do we treat leukemia Echo AI Assistant,4,4,0,1,3,5,has_unsupported_citation
+rtms_qa/b481f10497584229ae496aa7234249bf.ndjson,b481f10497584229ae496aa7234249bf:24,unknown,@ECHO AI Assistant how do we treat leukemia,4,4,0,2,2,5,has_unsupported_citation
+rtms_qa/c4efc9179bd448d08004edc78469e698.ndjson,c4efc9179bd448d08004edc78469e698:25,unknown,How do I treat diabetes Hello Echo AI,1,5,1,1,3,0,has_unsupported_citation
+rtms_qa/c4f28053e9ff4522805818f984342f60.ndjson,c4f28053e9ff4522805818f984342f60:26,unknown,How do we treat diabetes,4,4,2,1,1,4,has_unsupported_citation
+rtms_qa/c4f28053e9ff4522805818f984342f60.ndjson,c4f28053e9ff4522805818f984342f60:27,unknown,@ECHO AI Assistant how do we treat diabetes,4,4,1,3,0,5,has_unsupported_citation
+rtms_qa/c4f28053e9ff4522805818f984342f60.ndjson,c4f28053e9ff4522805818f984342f60:28,unknown,@ECHO AI Assistant how do we treat diabetes,5,5,0,2,3,5,has_unsupported_citation
+rtms_qa/c4f28053e9ff4522805818f984342f60.ndjson,c4f28053e9ff4522805818f984342f60:29,unknown,@ECHO AI Assistant how do we treat diabetes,4,5,1,2,2,5,has_unsupported_citation

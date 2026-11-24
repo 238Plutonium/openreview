@@ -77,7 +77,7 @@ Paired synthetic speech-vs-slide stress test with recorded outputs:
 
 Lexical probes only (not human attribution). Withheld frames: spoken 90/90, slide-only 0/90; included control: spoken 56/90, slide-only 34/90.
 
-## Claim-level citation audit (author-side)
+## Claim-level citation screening (corrected)
 
 [`evaluation/claim_level_audit/`](evaluation/claim_level_audit/) — 30 archived PMID-bearing answers labeled against PubMed abstracts (heuristic; not clinician validation).
 
