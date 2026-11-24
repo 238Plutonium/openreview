@@ -1,68 +1,92 @@
 {
-  "protocol": "Routing vs competing methods. Focus/retrieval: offline accuracy vs gold labels. Speech/no-frame: archived paired end-to-end ablations on lab bots.",
+  "protocol": "Routing vs competing methods. Paths relative to evaluation/. Gold labels are category-derived (+ synthetic intent probes), not independent annotation. Speech/no-frame E2E from archived paired runs.",
+  "eval_root": "/home/ugrads/qxl5189/ECHO_AI_demo_paper/eval",
+  "vllm_url": "http://127.0.0.1:8001/v1",
+  "gold_label_caveat": "Focus/intent gold comes from existing experiment categories and synthetic probes; not independently annotated by humans for this study.",
   "focus_router_accuracy": {
     "echo_rule_router": {
       "n": 78,
       "accuracy": 0.9358974358974359,
-      "by_gold": {
-        "general": 0.9,
-        "speech": 1.0,
-        "visual": 0.8947368421052632
-      }
+      "latency_mean_s": 2.789828412903425e-05,
+      "latency_median_s": 2.763909287750721e-05,
+      "latency_p95_s": 5.051586776971817e-05
     },
     "always_speech": {
       "n": 78,
       "accuracy": 0.38461538461538464,
-      "by_gold": {
-        "general": 0.0,
-        "speech": 1.0,
-        "visual": 0.0
-      }
+      "latency_mean_s": 4.128027611818069e-07,
+      "latency_median_s": 3.7706922739744186e-07,
+      "latency_p95_s": 5.59026375412941e-07
     },
     "always_visual": {
       "n": 78,
       "accuracy": 0.48717948717948717,
-      "by_gold": {
-        "general": 0.0,
-        "speech": 0.0,
-        "visual": 1.0
-      }
+      "latency_mean_s": 3.958061241950744e-07,
+      "latency_median_s": 3.795139491558075e-07,
+      "latency_p95_s": 4.440080374479294e-07
     },
     "always_general": {
       "n": 78,
       "accuracy": 0.1282051282051282,
-      "by_gold": {
-        "general": 1.0,
-        "speech": 0.0,
-        "visual": 0.0
-      }
+      "latency_mean_s": 3.951076322641128e-07,
+      "latency_median_s": 3.7695281207561493e-07,
+      "latency_p95_s": 4.461035132408142e-07
     },
     "llm_router_qwen3_4b": {
       "n": 78,
       "accuracy": 0.9615384615384616,
-      "by_gold": {
-        "general": 0.9,
-        "speech": 1.0,
-        "visual": 0.9473684210526315
-      }
+      "latency_mean_s": 0.049778932717461616,
+      "latency_median_s": 0.04985521303024143,
+      "latency_p95_s": 0.05118751199916005
     }
   },
   "retrieval_intent_accuracy": {
     "echo_rule_router": {
       "n": 32,
-      "accuracy": 0.6875
+      "accuracy": 0.6875,
+      "latency_mean_s": 0.00022144206013763323,
+      "latency_median_s": 4.841887857764959e-05,
+      "latency_p95_s": 8.040014654397964e-05
     },
     "always_literature": {
       "n": 32,
-      "accuracy": 0.25
+      "accuracy": 0.25,
+      "latency_mean_s": 1.0138173820450902e-06,
+      "latency_median_s": 9.21543687582016e-07,
+      "latency_p95_s": 1.234002411365509e-06
     },
     "always_historical": {
       "n": 32,
-      "accuracy": 0.125
+      "accuracy": 0.125,
+      "latency_mean_s": 9.884461178444326e-07,
+      "latency_median_s": 9.210780262947083e-07,
+      "latency_p95_s": 1.1739321053028107e-06
     },
     "always_none": {
       "n": 32,
-      "accuracy": 0.625
+      "accuracy": 0.625,
+      "latency_mean_s": 9.923751349560916e-07,
+      "latency_median_s": 9.370269253849983e-07,
+      "latency_p95_s": 1.1560041457414627e-06
+    },
+    "llm_intent_qwen3_4b": {
+      "n": 32,
+      "accuracy": 0.46875,
+      "latency_mean_s": 0.06868707860121503,
+      "latency_median_s": 0.06485525297466666,
+      "latency_p95_s": 0.09556134208105505
+    }
+  },
+  "latency": {
+    "focus_rule_vs_llm": {
+      "rule_mean_s": 2.789828412903425e-05,
+      "llm_mean_s": 0.049778932717461616,
+      "speedup_rule_over_llm": 1784.300872671082
+    },
+    "retrieval_rule_vs_llm": {
+      "rule_mean_s": 0.00022144206013763323,
+      "llm_mean_s": 0.06868707860121503,
+      "speedup_rule_over_llm": 310.18081460461417
     }
   },
   "end_to_end_policy": {
@@ -86,7 +110,8 @@
           "n_cases": 30,
           "mean": -0.37777777777777777
         }
-      }
+      },
+      "source_file": "speech_recall_ablation/runs/speech_summary.json"
     },
     "visual_missing_frame_routing": {
       "echo_no_frame_guard_on": {
@@ -96,10 +121,11 @@
       "competitor_guard_off_still_draft": {
         "abstain": 3,
         "n": 35
-      }
+      },
+      "source_file": "paired_zero_frame.csv"
     }
   },
-  "llm_focus_available": true,
+  "llm_baselines_run": true,
   "n_focus_items": 78,
   "n_retrieval_items": 32,
   "gold_focus_counts": {

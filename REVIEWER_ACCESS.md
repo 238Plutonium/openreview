@@ -49,4 +49,7 @@ Live demo and video links are in §1 and App.~B. Offline verify: `python evaluat
 
 ## Routing vs competing methods
 
-See `evaluation/routing_comparison/`. End-to-end: speech withhold vs always-attach-frame; no-frame guard on vs off. Offline: focus/retrieval router accuracy vs always-* and an LLM focus classifier.
+See `evaluation/routing_comparison/` (relative paths; `python3 run_routing_baselines.py` or `--skip-llm`).
+End-to-end: speech withhold vs always-attach-frame; no-frame guard on vs off.
+Offline: focus/retrieval vs always-* **and LLM** classifiers; rule≪LLM latency (~1850× focus, ~310× intent).
+Gold labels are category-derived (see `gold_*.jsonl`), not independent annotation.
