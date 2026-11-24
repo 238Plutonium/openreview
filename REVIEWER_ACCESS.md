@@ -30,4 +30,4 @@ Open `evaluation/recorded_replay/index.html` or run `python evaluation/recorded_
 
 ## Citation faithfulness (automatic)
 
-See `evaluation/citation_faithfulness/` (also under `reviewer_package/`). ALCE/MedCite-style soft P/R ≈0.72/0.73 on archived PubMed answers; not clinician validation.
+See `evaluation/citation_faithfulness/` (also under `reviewer_package/`). ALCE citation precision/recall on archived PubMed answers: **strict 0.19/0.23**, soft 0.72/0.73 (same-family 4B judge; not clinician validation).
