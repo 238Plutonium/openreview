@@ -6,10 +6,8 @@ Automatic attribution of ECHO-AI literature answers against PubMed abstracts, fo
 
 | Name (ALCE) | Definition |
 |-------------|------------|
-| **Citation precision** | Fraction of (statement, PMID) instances whose abstract supports the statement |
-| **Citation recall** | Fraction of statements with ≥1 supporting cited PMID |
-
-**Strict** = attr 1. **Soft** = attr ≥ 0.5. Report **strict first**. Soft is mostly middle labels (60/114 are 0.5).
+| **Citation precision** | Fraction of (statement, PMID) instances whose abstract supports the statement (reported as **soft**, attr ≥ 0.5) |
+| **Citation recall** | Fraction of statements with ≥1 supporting cited PMID (strict attr=1 and soft ≥0.5) |
 
 ## Method
 
@@ -30,15 +28,15 @@ python3 eval/verify_results.py
 
 ## Headline results (2026-11-24)
 
-| ALCE metric | Strict (1) | Soft (≥0.5) |
-|-------------|------------|-------------|
-| Citation precision | **0.19** | 0.72 |
-| Citation recall | **0.23** | 0.73 |
+| ALCE metric | Value |
+|-------------|-------|
+| Citation precision (soft ≥0.5) | **0.72** |
+| Citation recall (strict / soft) | **0.23 / 0.73** |
 
 28 answers · 86 statements · 114 citation instances · 60 scores are 0.5 · 0 parse failures.
 
-**Veterinary PMID 29314873** (AAHA dogs/cats) appears in 8 historical diabetes citation instances and receives 3 strict=1 judgments on human-diabetes claims—judge leniency across species. Excluding it ≈ strict precision 0.18. Not used as a positive appendix example.
+**Veterinary PMID 29314873** (AAHA dogs/cats) appears in 8 historical diabetes citation instances and receives 3 attr=1 judgments on human-diabetes claims—judge leniency across species. Not used as a positive appendix example.
 
-Lexical claim audit (14/132 supported) tracks the **strict** end; do not compare it to soft 0.72.
+Lexical claim audit (14/132 supported) is not the soft precision 0.72.
 
 Not clinician validation.

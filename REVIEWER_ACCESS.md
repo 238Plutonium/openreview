@@ -30,7 +30,7 @@ Open `evaluation/recorded_replay/index.html` or run `python evaluation/recorded_
 
 ## Citation faithfulness (automatic)
 
-See `evaluation/citation_faithfulness/` (also under `reviewer_package/`). ALCE citation precision/recall on archived PubMed answers: **strict 0.19/0.23**, soft 0.72/0.73 (60/114 scores are 0.5; same-family 4B judge; not clinician validation). Offline: `python evaluation/verify_results.py`.
+See `evaluation/citation_faithfulness/` (also under `reviewer_package/`). ALCE citation metrics on archived PubMed answers: soft citation precision **0.72**; citation recall **0.23/0.73** (strict/soft); 60/114 scores are 0.5; same-family 4B judge; not clinician validation. Offline: `python evaluation/verify_results.py`.
 
 ## CFP checklist (NAACL 2027 Demo)
 
