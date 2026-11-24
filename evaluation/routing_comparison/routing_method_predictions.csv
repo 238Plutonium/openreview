@@ -1,0 +1,519 @@
+task,method,id,source,question,gold,pred,correct
+focus,echo_rule_router,SPEECH-01,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-02,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-03,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-04,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-05,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-06,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-07,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-08,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-09,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-10,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-11,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-12,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-13,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-14,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-15,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-16,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-17,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-18,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-19,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-20,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-21,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-22,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-23,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-24,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-25,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-26,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-27,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-28,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-29,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,SPEECH-30,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,echo_rule_router,VIS-ZERO-01,noframe_paired,What is on my screen right now?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-02,noframe_paired,Read the title of the slide currently being shared.,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-03,noframe_paired,"Can you see the slide? If not, say so.",visual,speech,0
+focus,echo_rule_router,VIS-ZERO-04,noframe_paired,Summarize the chart on the current slide.,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-05,noframe_paired,What does the current slide say about diabetes?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-06,noframe_paired,What's on the screen?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-07,noframe_paired,Please read my screen.,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-08,noframe_paired,Describe the shared slide.,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-09,noframe_paired,What is the topic of this slide?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-10,noframe_paired,List the bullet points on the slide.,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-11,noframe_paired,What title appears on my screen?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-12,noframe_paired,Read the heading on the current slide.,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-13,noframe_paired,What figure is shown on the slide?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-14,noframe_paired,Summarize what's on the screen share.,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-15,noframe_paired,What does the slide say about opioid use disorder?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-16,noframe_paired,Tell me the main message of this slide.,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-17,noframe_paired,Is there a table on the current slide? What does it show?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-18,noframe_paired,What are the key takeaways on my slide?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-19,noframe_paired,Read aloud the text on the screen.,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-20,noframe_paired,What logo is visible on the shared slide?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-21,noframe_paired,Does the slide mention buprenorphine? Quote it.,visual,speech,0
+focus,echo_rule_router,VIS-ZERO-22,noframe_paired,What is written at the bottom of the slide?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-23,noframe_paired,Describe any images on the current screen.,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-24,noframe_paired,What learning objectives are on this slide?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-25,noframe_paired,What's the subtitle on my screen?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-26,noframe_paired,Parse the agenda items shown on the slide.,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-27,noframe_paired,What clinical recommendation is on the shared slide?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-28,noframe_paired,How many bullet points are on the screen?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-29,noframe_paired,What does the slide say about pain management?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-30,noframe_paired,Extract the citation listed on the current slide.,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-31,noframe_paired,Is the screen showing a case vignette? Summarize it.,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-32,noframe_paired,What warning or disclaimer text is on the slide?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-33,noframe_paired,Read the presenter name from the title slide on screen.,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-34,noframe_paired,What ICD-related content appears on my screen?,visual,visual,1
+focus,echo_rule_router,VIS-ZERO-35,noframe_paired,Compare the two columns shown on the current slide.,visual,visual,1
+focus,echo_rule_router,packet:3,packet,How do we treat HIV patients?,general,general,1
+focus,echo_rule_router,packet:4,packet,Can you give guidance on treatment for pain in patients with substance use disorders (SUD)?,general,general,1
+focus,echo_rule_router,packet:12,packet,Can you explain ketamine (“K”) treatment in patients with substance use disorders (SUD)?,general,general,1
+focus,echo_rule_router,packet:13,packet,What are opioids?,general,general,1
+focus,echo_rule_router,packet:15,packet,What has been discussed in the disclosures section of this presentation?,general,speech,0
+focus,echo_rule_router,packet:16,packet,I missed the previous meeting — briefly summarize the prior MOUD ECHO session on acute and chronic pain in patients with opioid use disorder (OUD).,general,general,1
+focus,echo_rule_router,packet:17,packet,"We are on the DSM criteria slide for opioid use disorder. From prior ECHO videos/records: for a patient NOT prescribed buprenorphine who is using diverted/illicit Suboxone, can that use support an OUD",visual,speech,0
+focus,echo_rule_router,packet:18,packet,"We are on the stigma slide. From prior ECHO videos/records, what non-stigmatizing language or clinical framing did presenters recommend when discussing OUD, relapse, or MOUD?",visual,speech,0
+focus,echo_rule_router,packet:30,packet,What is on my slide about pain treatment in patients with SUD?,visual,visual,1
+focus,echo_rule_router,packet:33,packet,Summarize this meeting (MOUD ECHO discussion touching uncontrolled pain / the “vicious cycle of uncontrolled pain”).,general,general,1
+focus,echo_rule_router,packet:34,packet,Summarize this whole meeting on managing pain in patients with substance use disorders.,general,general,1
+focus,echo_rule_router,packet:35,packet,"I am late — summarize what has been presented so far on treating SUD with non-judgmental, patient-centered care and pain management.",general,general,1
+focus,echo_rule_router,packet:36,packet,Give a summary of the current meeting.,general,general,1
+focus,always_speech,SPEECH-01,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-02,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-03,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-04,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-05,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-06,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-07,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-08,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-09,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-10,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-11,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-12,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-13,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-14,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-15,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-16,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-17,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-18,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-19,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-20,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-21,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-22,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-23,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-24,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-25,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-26,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-27,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-28,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-29,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,SPEECH-30,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,always_speech,VIS-ZERO-01,noframe_paired,What is on my screen right now?,visual,speech,0
+focus,always_speech,VIS-ZERO-02,noframe_paired,Read the title of the slide currently being shared.,visual,speech,0
+focus,always_speech,VIS-ZERO-03,noframe_paired,"Can you see the slide? If not, say so.",visual,speech,0
+focus,always_speech,VIS-ZERO-04,noframe_paired,Summarize the chart on the current slide.,visual,speech,0
+focus,always_speech,VIS-ZERO-05,noframe_paired,What does the current slide say about diabetes?,visual,speech,0
+focus,always_speech,VIS-ZERO-06,noframe_paired,What's on the screen?,visual,speech,0
+focus,always_speech,VIS-ZERO-07,noframe_paired,Please read my screen.,visual,speech,0
+focus,always_speech,VIS-ZERO-08,noframe_paired,Describe the shared slide.,visual,speech,0
+focus,always_speech,VIS-ZERO-09,noframe_paired,What is the topic of this slide?,visual,speech,0
+focus,always_speech,VIS-ZERO-10,noframe_paired,List the bullet points on the slide.,visual,speech,0
+focus,always_speech,VIS-ZERO-11,noframe_paired,What title appears on my screen?,visual,speech,0
+focus,always_speech,VIS-ZERO-12,noframe_paired,Read the heading on the current slide.,visual,speech,0
+focus,always_speech,VIS-ZERO-13,noframe_paired,What figure is shown on the slide?,visual,speech,0
+focus,always_speech,VIS-ZERO-14,noframe_paired,Summarize what's on the screen share.,visual,speech,0
+focus,always_speech,VIS-ZERO-15,noframe_paired,What does the slide say about opioid use disorder?,visual,speech,0
+focus,always_speech,VIS-ZERO-16,noframe_paired,Tell me the main message of this slide.,visual,speech,0
+focus,always_speech,VIS-ZERO-17,noframe_paired,Is there a table on the current slide? What does it show?,visual,speech,0
+focus,always_speech,VIS-ZERO-18,noframe_paired,What are the key takeaways on my slide?,visual,speech,0
+focus,always_speech,VIS-ZERO-19,noframe_paired,Read aloud the text on the screen.,visual,speech,0
+focus,always_speech,VIS-ZERO-20,noframe_paired,What logo is visible on the shared slide?,visual,speech,0
+focus,always_speech,VIS-ZERO-21,noframe_paired,Does the slide mention buprenorphine? Quote it.,visual,speech,0
+focus,always_speech,VIS-ZERO-22,noframe_paired,What is written at the bottom of the slide?,visual,speech,0
+focus,always_speech,VIS-ZERO-23,noframe_paired,Describe any images on the current screen.,visual,speech,0
+focus,always_speech,VIS-ZERO-24,noframe_paired,What learning objectives are on this slide?,visual,speech,0
+focus,always_speech,VIS-ZERO-25,noframe_paired,What's the subtitle on my screen?,visual,speech,0
+focus,always_speech,VIS-ZERO-26,noframe_paired,Parse the agenda items shown on the slide.,visual,speech,0
+focus,always_speech,VIS-ZERO-27,noframe_paired,What clinical recommendation is on the shared slide?,visual,speech,0
+focus,always_speech,VIS-ZERO-28,noframe_paired,How many bullet points are on the screen?,visual,speech,0
+focus,always_speech,VIS-ZERO-29,noframe_paired,What does the slide say about pain management?,visual,speech,0
+focus,always_speech,VIS-ZERO-30,noframe_paired,Extract the citation listed on the current slide.,visual,speech,0
+focus,always_speech,VIS-ZERO-31,noframe_paired,Is the screen showing a case vignette? Summarize it.,visual,speech,0
+focus,always_speech,VIS-ZERO-32,noframe_paired,What warning or disclaimer text is on the slide?,visual,speech,0
+focus,always_speech,VIS-ZERO-33,noframe_paired,Read the presenter name from the title slide on screen.,visual,speech,0
+focus,always_speech,VIS-ZERO-34,noframe_paired,What ICD-related content appears on my screen?,visual,speech,0
+focus,always_speech,VIS-ZERO-35,noframe_paired,Compare the two columns shown on the current slide.,visual,speech,0
+focus,always_speech,packet:3,packet,How do we treat HIV patients?,general,speech,0
+focus,always_speech,packet:4,packet,Can you give guidance on treatment for pain in patients with substance use disorders (SUD)?,general,speech,0
+focus,always_speech,packet:12,packet,Can you explain ketamine (“K”) treatment in patients with substance use disorders (SUD)?,general,speech,0
+focus,always_speech,packet:13,packet,What are opioids?,general,speech,0
+focus,always_speech,packet:15,packet,What has been discussed in the disclosures section of this presentation?,general,speech,0
+focus,always_speech,packet:16,packet,I missed the previous meeting — briefly summarize the prior MOUD ECHO session on acute and chronic pain in patients with opioid use disorder (OUD).,general,speech,0
+focus,always_speech,packet:17,packet,"We are on the DSM criteria slide for opioid use disorder. From prior ECHO videos/records: for a patient NOT prescribed buprenorphine who is using diverted/illicit Suboxone, can that use support an OUD",visual,speech,0
+focus,always_speech,packet:18,packet,"We are on the stigma slide. From prior ECHO videos/records, what non-stigmatizing language or clinical framing did presenters recommend when discussing OUD, relapse, or MOUD?",visual,speech,0
+focus,always_speech,packet:30,packet,What is on my slide about pain treatment in patients with SUD?,visual,speech,0
+focus,always_speech,packet:33,packet,Summarize this meeting (MOUD ECHO discussion touching uncontrolled pain / the “vicious cycle of uncontrolled pain”).,general,speech,0
+focus,always_speech,packet:34,packet,Summarize this whole meeting on managing pain in patients with substance use disorders.,general,speech,0
+focus,always_speech,packet:35,packet,"I am late — summarize what has been presented so far on treating SUD with non-judgmental, patient-centered care and pain management.",general,speech,0
+focus,always_speech,packet:36,packet,Give a summary of the current meeting.,general,speech,0
+focus,always_visual,SPEECH-01,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-02,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-03,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-04,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-05,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-06,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-07,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-08,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-09,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-10,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-11,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-12,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-13,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-14,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-15,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-16,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-17,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-18,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-19,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-20,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-21,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-22,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-23,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-24,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-25,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-26,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-27,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-28,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-29,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,SPEECH-30,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,visual,0
+focus,always_visual,VIS-ZERO-01,noframe_paired,What is on my screen right now?,visual,visual,1
+focus,always_visual,VIS-ZERO-02,noframe_paired,Read the title of the slide currently being shared.,visual,visual,1
+focus,always_visual,VIS-ZERO-03,noframe_paired,"Can you see the slide? If not, say so.",visual,visual,1
+focus,always_visual,VIS-ZERO-04,noframe_paired,Summarize the chart on the current slide.,visual,visual,1
+focus,always_visual,VIS-ZERO-05,noframe_paired,What does the current slide say about diabetes?,visual,visual,1
+focus,always_visual,VIS-ZERO-06,noframe_paired,What's on the screen?,visual,visual,1
+focus,always_visual,VIS-ZERO-07,noframe_paired,Please read my screen.,visual,visual,1
+focus,always_visual,VIS-ZERO-08,noframe_paired,Describe the shared slide.,visual,visual,1
+focus,always_visual,VIS-ZERO-09,noframe_paired,What is the topic of this slide?,visual,visual,1
+focus,always_visual,VIS-ZERO-10,noframe_paired,List the bullet points on the slide.,visual,visual,1
+focus,always_visual,VIS-ZERO-11,noframe_paired,What title appears on my screen?,visual,visual,1
+focus,always_visual,VIS-ZERO-12,noframe_paired,Read the heading on the current slide.,visual,visual,1
+focus,always_visual,VIS-ZERO-13,noframe_paired,What figure is shown on the slide?,visual,visual,1
+focus,always_visual,VIS-ZERO-14,noframe_paired,Summarize what's on the screen share.,visual,visual,1
+focus,always_visual,VIS-ZERO-15,noframe_paired,What does the slide say about opioid use disorder?,visual,visual,1
+focus,always_visual,VIS-ZERO-16,noframe_paired,Tell me the main message of this slide.,visual,visual,1
+focus,always_visual,VIS-ZERO-17,noframe_paired,Is there a table on the current slide? What does it show?,visual,visual,1
+focus,always_visual,VIS-ZERO-18,noframe_paired,What are the key takeaways on my slide?,visual,visual,1
+focus,always_visual,VIS-ZERO-19,noframe_paired,Read aloud the text on the screen.,visual,visual,1
+focus,always_visual,VIS-ZERO-20,noframe_paired,What logo is visible on the shared slide?,visual,visual,1
+focus,always_visual,VIS-ZERO-21,noframe_paired,Does the slide mention buprenorphine? Quote it.,visual,visual,1
+focus,always_visual,VIS-ZERO-22,noframe_paired,What is written at the bottom of the slide?,visual,visual,1
+focus,always_visual,VIS-ZERO-23,noframe_paired,Describe any images on the current screen.,visual,visual,1
+focus,always_visual,VIS-ZERO-24,noframe_paired,What learning objectives are on this slide?,visual,visual,1
+focus,always_visual,VIS-ZERO-25,noframe_paired,What's the subtitle on my screen?,visual,visual,1
+focus,always_visual,VIS-ZERO-26,noframe_paired,Parse the agenda items shown on the slide.,visual,visual,1
+focus,always_visual,VIS-ZERO-27,noframe_paired,What clinical recommendation is on the shared slide?,visual,visual,1
+focus,always_visual,VIS-ZERO-28,noframe_paired,How many bullet points are on the screen?,visual,visual,1
+focus,always_visual,VIS-ZERO-29,noframe_paired,What does the slide say about pain management?,visual,visual,1
+focus,always_visual,VIS-ZERO-30,noframe_paired,Extract the citation listed on the current slide.,visual,visual,1
+focus,always_visual,VIS-ZERO-31,noframe_paired,Is the screen showing a case vignette? Summarize it.,visual,visual,1
+focus,always_visual,VIS-ZERO-32,noframe_paired,What warning or disclaimer text is on the slide?,visual,visual,1
+focus,always_visual,VIS-ZERO-33,noframe_paired,Read the presenter name from the title slide on screen.,visual,visual,1
+focus,always_visual,VIS-ZERO-34,noframe_paired,What ICD-related content appears on my screen?,visual,visual,1
+focus,always_visual,VIS-ZERO-35,noframe_paired,Compare the two columns shown on the current slide.,visual,visual,1
+focus,always_visual,packet:3,packet,How do we treat HIV patients?,general,visual,0
+focus,always_visual,packet:4,packet,Can you give guidance on treatment for pain in patients with substance use disorders (SUD)?,general,visual,0
+focus,always_visual,packet:12,packet,Can you explain ketamine (“K”) treatment in patients with substance use disorders (SUD)?,general,visual,0
+focus,always_visual,packet:13,packet,What are opioids?,general,visual,0
+focus,always_visual,packet:15,packet,What has been discussed in the disclosures section of this presentation?,general,visual,0
+focus,always_visual,packet:16,packet,I missed the previous meeting — briefly summarize the prior MOUD ECHO session on acute and chronic pain in patients with opioid use disorder (OUD).,general,visual,0
+focus,always_visual,packet:17,packet,"We are on the DSM criteria slide for opioid use disorder. From prior ECHO videos/records: for a patient NOT prescribed buprenorphine who is using diverted/illicit Suboxone, can that use support an OUD",visual,visual,1
+focus,always_visual,packet:18,packet,"We are on the stigma slide. From prior ECHO videos/records, what non-stigmatizing language or clinical framing did presenters recommend when discussing OUD, relapse, or MOUD?",visual,visual,1
+focus,always_visual,packet:30,packet,What is on my slide about pain treatment in patients with SUD?,visual,visual,1
+focus,always_visual,packet:33,packet,Summarize this meeting (MOUD ECHO discussion touching uncontrolled pain / the “vicious cycle of uncontrolled pain”).,general,visual,0
+focus,always_visual,packet:34,packet,Summarize this whole meeting on managing pain in patients with substance use disorders.,general,visual,0
+focus,always_visual,packet:35,packet,"I am late — summarize what has been presented so far on treating SUD with non-judgmental, patient-centered care and pain management.",general,visual,0
+focus,always_visual,packet:36,packet,Give a summary of the current meeting.,general,visual,0
+focus,always_general,SPEECH-01,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-02,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-03,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-04,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-05,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-06,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-07,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-08,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-09,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-10,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-11,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-12,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-13,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-14,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-15,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-16,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-17,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-18,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-19,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-20,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-21,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-22,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-23,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-24,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-25,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-26,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-27,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-28,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-29,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,SPEECH-30,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,general,0
+focus,always_general,VIS-ZERO-01,noframe_paired,What is on my screen right now?,visual,general,0
+focus,always_general,VIS-ZERO-02,noframe_paired,Read the title of the slide currently being shared.,visual,general,0
+focus,always_general,VIS-ZERO-03,noframe_paired,"Can you see the slide? If not, say so.",visual,general,0
+focus,always_general,VIS-ZERO-04,noframe_paired,Summarize the chart on the current slide.,visual,general,0
+focus,always_general,VIS-ZERO-05,noframe_paired,What does the current slide say about diabetes?,visual,general,0
+focus,always_general,VIS-ZERO-06,noframe_paired,What's on the screen?,visual,general,0
+focus,always_general,VIS-ZERO-07,noframe_paired,Please read my screen.,visual,general,0
+focus,always_general,VIS-ZERO-08,noframe_paired,Describe the shared slide.,visual,general,0
+focus,always_general,VIS-ZERO-09,noframe_paired,What is the topic of this slide?,visual,general,0
+focus,always_general,VIS-ZERO-10,noframe_paired,List the bullet points on the slide.,visual,general,0
+focus,always_general,VIS-ZERO-11,noframe_paired,What title appears on my screen?,visual,general,0
+focus,always_general,VIS-ZERO-12,noframe_paired,Read the heading on the current slide.,visual,general,0
+focus,always_general,VIS-ZERO-13,noframe_paired,What figure is shown on the slide?,visual,general,0
+focus,always_general,VIS-ZERO-14,noframe_paired,Summarize what's on the screen share.,visual,general,0
+focus,always_general,VIS-ZERO-15,noframe_paired,What does the slide say about opioid use disorder?,visual,general,0
+focus,always_general,VIS-ZERO-16,noframe_paired,Tell me the main message of this slide.,visual,general,0
+focus,always_general,VIS-ZERO-17,noframe_paired,Is there a table on the current slide? What does it show?,visual,general,0
+focus,always_general,VIS-ZERO-18,noframe_paired,What are the key takeaways on my slide?,visual,general,0
+focus,always_general,VIS-ZERO-19,noframe_paired,Read aloud the text on the screen.,visual,general,0
+focus,always_general,VIS-ZERO-20,noframe_paired,What logo is visible on the shared slide?,visual,general,0
+focus,always_general,VIS-ZERO-21,noframe_paired,Does the slide mention buprenorphine? Quote it.,visual,general,0
+focus,always_general,VIS-ZERO-22,noframe_paired,What is written at the bottom of the slide?,visual,general,0
+focus,always_general,VIS-ZERO-23,noframe_paired,Describe any images on the current screen.,visual,general,0
+focus,always_general,VIS-ZERO-24,noframe_paired,What learning objectives are on this slide?,visual,general,0
+focus,always_general,VIS-ZERO-25,noframe_paired,What's the subtitle on my screen?,visual,general,0
+focus,always_general,VIS-ZERO-26,noframe_paired,Parse the agenda items shown on the slide.,visual,general,0
+focus,always_general,VIS-ZERO-27,noframe_paired,What clinical recommendation is on the shared slide?,visual,general,0
+focus,always_general,VIS-ZERO-28,noframe_paired,How many bullet points are on the screen?,visual,general,0
+focus,always_general,VIS-ZERO-29,noframe_paired,What does the slide say about pain management?,visual,general,0
+focus,always_general,VIS-ZERO-30,noframe_paired,Extract the citation listed on the current slide.,visual,general,0
+focus,always_general,VIS-ZERO-31,noframe_paired,Is the screen showing a case vignette? Summarize it.,visual,general,0
+focus,always_general,VIS-ZERO-32,noframe_paired,What warning or disclaimer text is on the slide?,visual,general,0
+focus,always_general,VIS-ZERO-33,noframe_paired,Read the presenter name from the title slide on screen.,visual,general,0
+focus,always_general,VIS-ZERO-34,noframe_paired,What ICD-related content appears on my screen?,visual,general,0
+focus,always_general,VIS-ZERO-35,noframe_paired,Compare the two columns shown on the current slide.,visual,general,0
+focus,always_general,packet:3,packet,How do we treat HIV patients?,general,general,1
+focus,always_general,packet:4,packet,Can you give guidance on treatment for pain in patients with substance use disorders (SUD)?,general,general,1
+focus,always_general,packet:12,packet,Can you explain ketamine (“K”) treatment in patients with substance use disorders (SUD)?,general,general,1
+focus,always_general,packet:13,packet,What are opioids?,general,general,1
+focus,always_general,packet:15,packet,What has been discussed in the disclosures section of this presentation?,general,general,1
+focus,always_general,packet:16,packet,I missed the previous meeting — briefly summarize the prior MOUD ECHO session on acute and chronic pain in patients with opioid use disorder (OUD).,general,general,1
+focus,always_general,packet:17,packet,"We are on the DSM criteria slide for opioid use disorder. From prior ECHO videos/records: for a patient NOT prescribed buprenorphine who is using diverted/illicit Suboxone, can that use support an OUD",visual,general,0
+focus,always_general,packet:18,packet,"We are on the stigma slide. From prior ECHO videos/records, what non-stigmatizing language or clinical framing did presenters recommend when discussing OUD, relapse, or MOUD?",visual,general,0
+focus,always_general,packet:30,packet,What is on my slide about pain treatment in patients with SUD?,visual,general,0
+focus,always_general,packet:33,packet,Summarize this meeting (MOUD ECHO discussion touching uncontrolled pain / the “vicious cycle of uncontrolled pain”).,general,general,1
+focus,always_general,packet:34,packet,Summarize this whole meeting on managing pain in patients with substance use disorders.,general,general,1
+focus,always_general,packet:35,packet,"I am late — summarize what has been presented so far on treating SUD with non-judgmental, patient-centered care and pain management.",general,general,1
+focus,always_general,packet:36,packet,Give a summary of the current meeting.,general,general,1
+focus,llm_router_qwen3_4b,SPEECH-01,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-02,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-03,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-04,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-05,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-06,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-07,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-08,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-09,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-10,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-11,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-12,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-13,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-14,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-15,speech_ablation,What room did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-16,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-17,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-18,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-19,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-20,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-21,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-22,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-23,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-24,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-25,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-26,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-27,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-28,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-29,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,SPEECH-30,speech_ablation,What start time did the facilitator say to use for the next teaching session?,speech,speech,1
+focus,llm_router_qwen3_4b,VIS-ZERO-01,noframe_paired,What is on my screen right now?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-02,noframe_paired,Read the title of the slide currently being shared.,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-03,noframe_paired,"Can you see the slide? If not, say so.",visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-04,noframe_paired,Summarize the chart on the current slide.,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-05,noframe_paired,What does the current slide say about diabetes?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-06,noframe_paired,What's on the screen?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-07,noframe_paired,Please read my screen.,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-08,noframe_paired,Describe the shared slide.,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-09,noframe_paired,What is the topic of this slide?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-10,noframe_paired,List the bullet points on the slide.,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-11,noframe_paired,What title appears on my screen?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-12,noframe_paired,Read the heading on the current slide.,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-13,noframe_paired,What figure is shown on the slide?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-14,noframe_paired,Summarize what's on the screen share.,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-15,noframe_paired,What does the slide say about opioid use disorder?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-16,noframe_paired,Tell me the main message of this slide.,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-17,noframe_paired,Is there a table on the current slide? What does it show?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-18,noframe_paired,What are the key takeaways on my slide?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-19,noframe_paired,Read aloud the text on the screen.,visual,speech,0
+focus,llm_router_qwen3_4b,VIS-ZERO-20,noframe_paired,What logo is visible on the shared slide?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-21,noframe_paired,Does the slide mention buprenorphine? Quote it.,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-22,noframe_paired,What is written at the bottom of the slide?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-23,noframe_paired,Describe any images on the current screen.,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-24,noframe_paired,What learning objectives are on this slide?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-25,noframe_paired,What's the subtitle on my screen?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-26,noframe_paired,Parse the agenda items shown on the slide.,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-27,noframe_paired,What clinical recommendation is on the shared slide?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-28,noframe_paired,How many bullet points are on the screen?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-29,noframe_paired,What does the slide say about pain management?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-30,noframe_paired,Extract the citation listed on the current slide.,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-31,noframe_paired,Is the screen showing a case vignette? Summarize it.,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-32,noframe_paired,What warning or disclaimer text is on the slide?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-33,noframe_paired,Read the presenter name from the title slide on screen.,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-34,noframe_paired,What ICD-related content appears on my screen?,visual,visual,1
+focus,llm_router_qwen3_4b,VIS-ZERO-35,noframe_paired,Compare the two columns shown on the current slide.,visual,visual,1
+focus,llm_router_qwen3_4b,packet:3,packet,How do we treat HIV patients?,general,general,1
+focus,llm_router_qwen3_4b,packet:4,packet,Can you give guidance on treatment for pain in patients with substance use disorders (SUD)?,general,general,1
+focus,llm_router_qwen3_4b,packet:12,packet,Can you explain ketamine (“K”) treatment in patients with substance use disorders (SUD)?,general,general,1
+focus,llm_router_qwen3_4b,packet:13,packet,What are opioids?,general,general,1
+focus,llm_router_qwen3_4b,packet:15,packet,What has been discussed in the disclosures section of this presentation?,general,visual,0
+focus,llm_router_qwen3_4b,packet:16,packet,I missed the previous meeting — briefly summarize the prior MOUD ECHO session on acute and chronic pain in patients with opioid use disorder (OUD).,general,general,1
+focus,llm_router_qwen3_4b,packet:17,packet,"We are on the DSM criteria slide for opioid use disorder. From prior ECHO videos/records: for a patient NOT prescribed buprenorphine who is using diverted/illicit Suboxone, can that use support an OUD",visual,general,0
+focus,llm_router_qwen3_4b,packet:18,packet,"We are on the stigma slide. From prior ECHO videos/records, what non-stigmatizing language or clinical framing did presenters recommend when discussing OUD, relapse, or MOUD?",visual,visual,1
+focus,llm_router_qwen3_4b,packet:30,packet,What is on my slide about pain treatment in patients with SUD?,visual,visual,1
+focus,llm_router_qwen3_4b,packet:33,packet,Summarize this meeting (MOUD ECHO discussion touching uncontrolled pain / the “vicious cycle of uncontrolled pain”).,general,general,1
+focus,llm_router_qwen3_4b,packet:34,packet,Summarize this whole meeting on managing pain in patients with substance use disorders.,general,general,1
+focus,llm_router_qwen3_4b,packet:35,packet,"I am late — summarize what has been presented so far on treating SUD with non-judgmental, patient-centered care and pain management.",general,general,1
+focus,llm_router_qwen3_4b,packet:36,packet,Give a summary of the current meeting.,general,general,1
+retrieval_intent,echo_rule_router,packet:3,packet,How do we treat HIV patients?,literature,none,0
+retrieval_intent,echo_rule_router,packet:4,packet,Can you give guidance on treatment for pain in patients with substance use disorders (SUD)?,literature,none,0
+retrieval_intent,echo_rule_router,packet:12,packet,Can you explain ketamine (“K”) treatment in patients with substance use disorders (SUD)?,literature,none,0
+retrieval_intent,echo_rule_router,packet:13,packet,What are opioids?,none,none,1
+retrieval_intent,echo_rule_router,packet:15,packet,What has been discussed in the disclosures section of this presentation?,none,none,1
+retrieval_intent,echo_rule_router,packet:16,packet,I missed the previous meeting — briefly summarize the prior MOUD ECHO session on acute and chronic pain in patients with opioid use disorder (OUD).,historical-cases,historical-cases,1
+retrieval_intent,echo_rule_router,packet:17,packet,"We are on the DSM criteria slide for opioid use disorder. From prior ECHO videos/records: for a patient NOT prescribed buprenorphine who is using diverted/illicit Suboxone, can that use support an OUD",none,historical-cases,0
+retrieval_intent,echo_rule_router,packet:18,packet,"We are on the stigma slide. From prior ECHO videos/records, what non-stigmatizing language or clinical framing did presenters recommend when discussing OUD, relapse, or MOUD?",none,both,0
+retrieval_intent,echo_rule_router,packet:30,packet,What is on my slide about pain treatment in patients with SUD?,none,none,1
+retrieval_intent,echo_rule_router,packet:33,packet,Summarize this meeting (MOUD ECHO discussion touching uncontrolled pain / the “vicious cycle of uncontrolled pain”).,none,none,1
+retrieval_intent,echo_rule_router,packet:34,packet,Summarize this whole meeting on managing pain in patients with substance use disorders.,none,none,1
+retrieval_intent,echo_rule_router,packet:35,packet,"I am late — summarize what has been presented so far on treating SUD with non-judgmental, patient-centered care and pain management.",none,none,1
+retrieval_intent,echo_rule_router,packet:36,packet,Give a summary of the current meeting.,none,none,1
+retrieval_intent,echo_rule_router,heldout:3,heldout,@ECHO AI Assistant how do we treat HIV patients,literature,none,0
+retrieval_intent,echo_rule_router,heldout:4,heldout,@ECHO AI Assistant Can you give us some guidance on treatment on this topic?,literature,none,0
+retrieval_intent,echo_rule_router,heldout:12,heldout,Can you explain We are also doing K treatment in patients with SUD,literature,none,0
+retrieval_intent,echo_rule_router,heldout:13,heldout,@ECHO AI Assistant What is Opioids?,none,none,1
+retrieval_intent,echo_rule_router,heldout:15,heldout,@ECHO AI Assistant Thanks! What’s been discussed in disclosures?,none,none,1
+retrieval_intent,echo_rule_router,heldout:16,heldout,"@ECHO AI Assistant I missed the previous meeting content, can you brief summarize them to me?",historical-cases,historical-cases,1
+retrieval_intent,echo_rule_router,heldout:17,heldout,"@ECHO AI Assistant We are currently on the DSM criteria slide for opioid use disorder. From previous videos/records, for a patient who is NOT prescribed buprenorphine but is using diverted or illicit ",none,historical-cases,0
+retrieval_intent,echo_rule_router,heldout:18,heldout,"@ECHO AI Assistant We are currently on the stigma slide. From previous videos/records, what non-stigmatizing language or clinical framing did presenters recommend when discussing OUD, relapse, or MOUD",none,both,0
+retrieval_intent,echo_rule_router,heldout:30,heldout,What's on my slide And what's on my slide,none,none,1
+retrieval_intent,echo_rule_router,heldout:33,heldout,@ECHO AI Assistant Summary of this meeting.,none,none,1
+retrieval_intent,echo_rule_router,heldout:34,heldout,@ECHO AI Assistant Summary of this whole meeting.,none,none,1
+retrieval_intent,echo_rule_router,heldout:35,heldout,@ECHO AI Assistant I am late. can you summarize what’s been presented so far?,none,none,1
+retrieval_intent,echo_rule_router,heldout:36,heldout,@ECHO AI Assistant can you give a summary of the meeting,none,none,1
+retrieval_intent,echo_rule_router,syn:lit1,synthetic,What does PubMed say about buprenorphine induction guidelines?,literature,literature,1
+retrieval_intent,echo_rule_router,syn:lit2,synthetic,Cite medical literature on CBT-I for insomnia,literature,literature,1
+retrieval_intent,echo_rule_router,syn:hist1,synthetic,What did we discuss about this patient in the previous ECHO session?,historical-cases,historical-cases,1
+retrieval_intent,echo_rule_router,syn:hist2,synthetic,Search prior session transcripts for similar MOUD cases,historical-cases,historical-cases,1
+retrieval_intent,echo_rule_router,syn:none1,synthetic,What time does the meeting start?,none,none,1
+retrieval_intent,echo_rule_router,syn:none2,synthetic,Who is presenting next?,none,none,1
+retrieval_intent,always_literature,packet:3,packet,How do we treat HIV patients?,literature,literature,1
+retrieval_intent,always_literature,packet:4,packet,Can you give guidance on treatment for pain in patients with substance use disorders (SUD)?,literature,literature,1
+retrieval_intent,always_literature,packet:12,packet,Can you explain ketamine (“K”) treatment in patients with substance use disorders (SUD)?,literature,literature,1
+retrieval_intent,always_literature,packet:13,packet,What are opioids?,none,literature,0
+retrieval_intent,always_literature,packet:15,packet,What has been discussed in the disclosures section of this presentation?,none,literature,0
+retrieval_intent,always_literature,packet:16,packet,I missed the previous meeting — briefly summarize the prior MOUD ECHO session on acute and chronic pain in patients with opioid use disorder (OUD).,historical-cases,literature,0
+retrieval_intent,always_literature,packet:17,packet,"We are on the DSM criteria slide for opioid use disorder. From prior ECHO videos/records: for a patient NOT prescribed buprenorphine who is using diverted/illicit Suboxone, can that use support an OUD",none,literature,0
+retrieval_intent,always_literature,packet:18,packet,"We are on the stigma slide. From prior ECHO videos/records, what non-stigmatizing language or clinical framing did presenters recommend when discussing OUD, relapse, or MOUD?",none,literature,0
+retrieval_intent,always_literature,packet:30,packet,What is on my slide about pain treatment in patients with SUD?,none,literature,0
+retrieval_intent,always_literature,packet:33,packet,Summarize this meeting (MOUD ECHO discussion touching uncontrolled pain / the “vicious cycle of uncontrolled pain”).,none,literature,0
+retrieval_intent,always_literature,packet:34,packet,Summarize this whole meeting on managing pain in patients with substance use disorders.,none,literature,0
+retrieval_intent,always_literature,packet:35,packet,"I am late — summarize what has been presented so far on treating SUD with non-judgmental, patient-centered care and pain management.",none,literature,0
+retrieval_intent,always_literature,packet:36,packet,Give a summary of the current meeting.,none,literature,0
+retrieval_intent,always_literature,heldout:3,heldout,@ECHO AI Assistant how do we treat HIV patients,literature,literature,1
+retrieval_intent,always_literature,heldout:4,heldout,@ECHO AI Assistant Can you give us some guidance on treatment on this topic?,literature,literature,1
+retrieval_intent,always_literature,heldout:12,heldout,Can you explain We are also doing K treatment in patients with SUD,literature,literature,1
+retrieval_intent,always_literature,heldout:13,heldout,@ECHO AI Assistant What is Opioids?,none,literature,0
+retrieval_intent,always_literature,heldout:15,heldout,@ECHO AI Assistant Thanks! What’s been discussed in disclosures?,none,literature,0
+retrieval_intent,always_literature,heldout:16,heldout,"@ECHO AI Assistant I missed the previous meeting content, can you brief summarize them to me?",historical-cases,literature,0
+retrieval_intent,always_literature,heldout:17,heldout,"@ECHO AI Assistant We are currently on the DSM criteria slide for opioid use disorder. From previous videos/records, for a patient who is NOT prescribed buprenorphine but is using diverted or illicit ",none,literature,0
+retrieval_intent,always_literature,heldout:18,heldout,"@ECHO AI Assistant We are currently on the stigma slide. From previous videos/records, what non-stigmatizing language or clinical framing did presenters recommend when discussing OUD, relapse, or MOUD",none,literature,0
+retrieval_intent,always_literature,heldout:30,heldout,What's on my slide And what's on my slide,none,literature,0
+retrieval_intent,always_literature,heldout:33,heldout,@ECHO AI Assistant Summary of this meeting.,none,literature,0
+retrieval_intent,always_literature,heldout:34,heldout,@ECHO AI Assistant Summary of this whole meeting.,none,literature,0
+retrieval_intent,always_literature,heldout:35,heldout,@ECHO AI Assistant I am late. can you summarize what’s been presented so far?,none,literature,0
+retrieval_intent,always_literature,heldout:36,heldout,@ECHO AI Assistant can you give a summary of the meeting,none,literature,0
+retrieval_intent,always_literature,syn:lit1,synthetic,What does PubMed say about buprenorphine induction guidelines?,literature,literature,1
+retrieval_intent,always_literature,syn:lit2,synthetic,Cite medical literature on CBT-I for insomnia,literature,literature,1
+retrieval_intent,always_literature,syn:hist1,synthetic,What did we discuss about this patient in the previous ECHO session?,historical-cases,literature,0
+retrieval_intent,always_literature,syn:hist2,synthetic,Search prior session transcripts for similar MOUD cases,historical-cases,literature,0
+retrieval_intent,always_literature,syn:none1,synthetic,What time does the meeting start?,none,literature,0
+retrieval_intent,always_literature,syn:none2,synthetic,Who is presenting next?,none,literature,0
+retrieval_intent,always_historical,packet:3,packet,How do we treat HIV patients?,literature,historical-cases,0
+retrieval_intent,always_historical,packet:4,packet,Can you give guidance on treatment for pain in patients with substance use disorders (SUD)?,literature,historical-cases,0
+retrieval_intent,always_historical,packet:12,packet,Can you explain ketamine (“K”) treatment in patients with substance use disorders (SUD)?,literature,historical-cases,0
+retrieval_intent,always_historical,packet:13,packet,What are opioids?,none,historical-cases,0
+retrieval_intent,always_historical,packet:15,packet,What has been discussed in the disclosures section of this presentation?,none,historical-cases,0
+retrieval_intent,always_historical,packet:16,packet,I missed the previous meeting — briefly summarize the prior MOUD ECHO session on acute and chronic pain in patients with opioid use disorder (OUD).,historical-cases,historical-cases,1
+retrieval_intent,always_historical,packet:17,packet,"We are on the DSM criteria slide for opioid use disorder. From prior ECHO videos/records: for a patient NOT prescribed buprenorphine who is using diverted/illicit Suboxone, can that use support an OUD",none,historical-cases,0
+retrieval_intent,always_historical,packet:18,packet,"We are on the stigma slide. From prior ECHO videos/records, what non-stigmatizing language or clinical framing did presenters recommend when discussing OUD, relapse, or MOUD?",none,historical-cases,0
+retrieval_intent,always_historical,packet:30,packet,What is on my slide about pain treatment in patients with SUD?,none,historical-cases,0
+retrieval_intent,always_historical,packet:33,packet,Summarize this meeting (MOUD ECHO discussion touching uncontrolled pain / the “vicious cycle of uncontrolled pain”).,none,historical-cases,0
+retrieval_intent,always_historical,packet:34,packet,Summarize this whole meeting on managing pain in patients with substance use disorders.,none,historical-cases,0
+retrieval_intent,always_historical,packet:35,packet,"I am late — summarize what has been presented so far on treating SUD with non-judgmental, patient-centered care and pain management.",none,historical-cases,0
+retrieval_intent,always_historical,packet:36,packet,Give a summary of the current meeting.,none,historical-cases,0
+retrieval_intent,always_historical,heldout:3,heldout,@ECHO AI Assistant how do we treat HIV patients,literature,historical-cases,0
+retrieval_intent,always_historical,heldout:4,heldout,@ECHO AI Assistant Can you give us some guidance on treatment on this topic?,literature,historical-cases,0
+retrieval_intent,always_historical,heldout:12,heldout,Can you explain We are also doing K treatment in patients with SUD,literature,historical-cases,0
+retrieval_intent,always_historical,heldout:13,heldout,@ECHO AI Assistant What is Opioids?,none,historical-cases,0
+retrieval_intent,always_historical,heldout:15,heldout,@ECHO AI Assistant Thanks! What’s been discussed in disclosures?,none,historical-cases,0
+retrieval_intent,always_historical,heldout:16,heldout,"@ECHO AI Assistant I missed the previous meeting content, can you brief summarize them to me?",historical-cases,historical-cases,1
+retrieval_intent,always_historical,heldout:17,heldout,"@ECHO AI Assistant We are currently on the DSM criteria slide for opioid use disorder. From previous videos/records, for a patient who is NOT prescribed buprenorphine but is using diverted or illicit ",none,historical-cases,0
+retrieval_intent,always_historical,heldout:18,heldout,"@ECHO AI Assistant We are currently on the stigma slide. From previous videos/records, what non-stigmatizing language or clinical framing did presenters recommend when discussing OUD, relapse, or MOUD",none,historical-cases,0
+retrieval_intent,always_historical,heldout:30,heldout,What's on my slide And what's on my slide,none,historical-cases,0
+retrieval_intent,always_historical,heldout:33,heldout,@ECHO AI Assistant Summary of this meeting.,none,historical-cases,0
+retrieval_intent,always_historical,heldout:34,heldout,@ECHO AI Assistant Summary of this whole meeting.,none,historical-cases,0
+retrieval_intent,always_historical,heldout:35,heldout,@ECHO AI Assistant I am late. can you summarize what’s been presented so far?,none,historical-cases,0
+retrieval_intent,always_historical,heldout:36,heldout,@ECHO AI Assistant can you give a summary of the meeting,none,historical-cases,0
+retrieval_intent,always_historical,syn:lit1,synthetic,What does PubMed say about buprenorphine induction guidelines?,literature,historical-cases,0
+retrieval_intent,always_historical,syn:lit2,synthetic,Cite medical literature on CBT-I for insomnia,literature,historical-cases,0
+retrieval_intent,always_historical,syn:hist1,synthetic,What did we discuss about this patient in the previous ECHO session?,historical-cases,historical-cases,1
+retrieval_intent,always_historical,syn:hist2,synthetic,Search prior session transcripts for similar MOUD cases,historical-cases,historical-cases,1
+retrieval_intent,always_historical,syn:none1,synthetic,What time does the meeting start?,none,historical-cases,0
+retrieval_intent,always_historical,syn:none2,synthetic,Who is presenting next?,none,historical-cases,0
+retrieval_intent,always_none,packet:3,packet,How do we treat HIV patients?,literature,none,0
+retrieval_intent,always_none,packet:4,packet,Can you give guidance on treatment for pain in patients with substance use disorders (SUD)?,literature,none,0
+retrieval_intent,always_none,packet:12,packet,Can you explain ketamine (“K”) treatment in patients with substance use disorders (SUD)?,literature,none,0
+retrieval_intent,always_none,packet:13,packet,What are opioids?,none,none,1
+retrieval_intent,always_none,packet:15,packet,What has been discussed in the disclosures section of this presentation?,none,none,1
+retrieval_intent,always_none,packet:16,packet,I missed the previous meeting — briefly summarize the prior MOUD ECHO session on acute and chronic pain in patients with opioid use disorder (OUD).,historical-cases,none,0
+retrieval_intent,always_none,packet:17,packet,"We are on the DSM criteria slide for opioid use disorder. From prior ECHO videos/records: for a patient NOT prescribed buprenorphine who is using diverted/illicit Suboxone, can that use support an OUD",none,none,1
+retrieval_intent,always_none,packet:18,packet,"We are on the stigma slide. From prior ECHO videos/records, what non-stigmatizing language or clinical framing did presenters recommend when discussing OUD, relapse, or MOUD?",none,none,1
+retrieval_intent,always_none,packet:30,packet,What is on my slide about pain treatment in patients with SUD?,none,none,1
+retrieval_intent,always_none,packet:33,packet,Summarize this meeting (MOUD ECHO discussion touching uncontrolled pain / the “vicious cycle of uncontrolled pain”).,none,none,1
+retrieval_intent,always_none,packet:34,packet,Summarize this whole meeting on managing pain in patients with substance use disorders.,none,none,1
+retrieval_intent,always_none,packet:35,packet,"I am late — summarize what has been presented so far on treating SUD with non-judgmental, patient-centered care and pain management.",none,none,1
+retrieval_intent,always_none,packet:36,packet,Give a summary of the current meeting.,none,none,1
+retrieval_intent,always_none,heldout:3,heldout,@ECHO AI Assistant how do we treat HIV patients,literature,none,0
+retrieval_intent,always_none,heldout:4,heldout,@ECHO AI Assistant Can you give us some guidance on treatment on this topic?,literature,none,0
+retrieval_intent,always_none,heldout:12,heldout,Can you explain We are also doing K treatment in patients with SUD,literature,none,0
+retrieval_intent,always_none,heldout:13,heldout,@ECHO AI Assistant What is Opioids?,none,none,1
+retrieval_intent,always_none,heldout:15,heldout,@ECHO AI Assistant Thanks! What’s been discussed in disclosures?,none,none,1
+retrieval_intent,always_none,heldout:16,heldout,"@ECHO AI Assistant I missed the previous meeting content, can you brief summarize them to me?",historical-cases,none,0
+retrieval_intent,always_none,heldout:17,heldout,"@ECHO AI Assistant We are currently on the DSM criteria slide for opioid use disorder. From previous videos/records, for a patient who is NOT prescribed buprenorphine but is using diverted or illicit ",none,none,1
+retrieval_intent,always_none,heldout:18,heldout,"@ECHO AI Assistant We are currently on the stigma slide. From previous videos/records, what non-stigmatizing language or clinical framing did presenters recommend when discussing OUD, relapse, or MOUD",none,none,1
+retrieval_intent,always_none,heldout:30,heldout,What's on my slide And what's on my slide,none,none,1
+retrieval_intent,always_none,heldout:33,heldout,@ECHO AI Assistant Summary of this meeting.,none,none,1
+retrieval_intent,always_none,heldout:34,heldout,@ECHO AI Assistant Summary of this whole meeting.,none,none,1
+retrieval_intent,always_none,heldout:35,heldout,@ECHO AI Assistant I am late. can you summarize what’s been presented so far?,none,none,1
+retrieval_intent,always_none,heldout:36,heldout,@ECHO AI Assistant can you give a summary of the meeting,none,none,1
+retrieval_intent,always_none,syn:lit1,synthetic,What does PubMed say about buprenorphine induction guidelines?,literature,none,0
+retrieval_intent,always_none,syn:lit2,synthetic,Cite medical literature on CBT-I for insomnia,literature,none,0
+retrieval_intent,always_none,syn:hist1,synthetic,What did we discuss about this patient in the previous ECHO session?,historical-cases,none,0
+retrieval_intent,always_none,syn:hist2,synthetic,Search prior session transcripts for similar MOUD cases,historical-cases,none,0
+retrieval_intent,always_none,syn:none1,synthetic,What time does the meeting start?,none,none,1
+retrieval_intent,always_none,syn:none2,synthetic,Who is presenting next?,none,none,1

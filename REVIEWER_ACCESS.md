@@ -46,3 +46,7 @@ See `evaluation/citation_faithfulness/` (also under `reviewer_package/`). ALCE c
 | Evaluation / human studies | §5 four facets; facilitators + packet; App.~A/C examples |
 
 Live demo and video links are in §1 and App.~B. Offline verify: `python evaluation/verify_results.py`.
+
+## Routing vs competing methods
+
+See `evaluation/routing_comparison/`. End-to-end: speech withhold vs always-attach-frame; no-frame guard on vs off. Offline: focus/retrieval router accuracy vs always-* and an LLM focus classifier.

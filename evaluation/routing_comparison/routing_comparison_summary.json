@@ -1,0 +1,115 @@
+{
+  "protocol": "Routing vs competing methods. Focus/retrieval: offline accuracy vs gold labels. Speech/no-frame: archived paired end-to-end ablations on lab bots.",
+  "focus_router_accuracy": {
+    "echo_rule_router": {
+      "n": 78,
+      "accuracy": 0.9358974358974359,
+      "by_gold": {
+        "general": 0.9,
+        "speech": 1.0,
+        "visual": 0.8947368421052632
+      }
+    },
+    "always_speech": {
+      "n": 78,
+      "accuracy": 0.38461538461538464,
+      "by_gold": {
+        "general": 0.0,
+        "speech": 1.0,
+        "visual": 0.0
+      }
+    },
+    "always_visual": {
+      "n": 78,
+      "accuracy": 0.48717948717948717,
+      "by_gold": {
+        "general": 0.0,
+        "speech": 0.0,
+        "visual": 1.0
+      }
+    },
+    "always_general": {
+      "n": 78,
+      "accuracy": 0.1282051282051282,
+      "by_gold": {
+        "general": 1.0,
+        "speech": 0.0,
+        "visual": 0.0
+      }
+    },
+    "llm_router_qwen3_4b": {
+      "n": 78,
+      "accuracy": 0.9615384615384616,
+      "by_gold": {
+        "general": 0.9,
+        "speech": 1.0,
+        "visual": 0.9473684210526315
+      }
+    }
+  },
+  "retrieval_intent_accuracy": {
+    "echo_rule_router": {
+      "n": 32,
+      "accuracy": 0.6875
+    },
+    "always_literature": {
+      "n": 32,
+      "accuracy": 0.25
+    },
+    "always_historical": {
+      "n": 32,
+      "accuracy": 0.125
+    },
+    "always_none": {
+      "n": 32,
+      "accuracy": 0.625
+    }
+  },
+  "end_to_end_policy": {
+    "speech_conflict_routing": {
+      "echo_withhold_frames_on_speech": {
+        "spoken_token_rate": 1,
+        "slide_token_rate": 0,
+        "n_calls": 90
+      },
+      "competitor_always_attach_frame": {
+        "spoken_token_rate": 0.6222222222222222,
+        "slide_token_rate": 0.37777777777777777,
+        "n_calls": 90
+      },
+      "delta_withheld_minus_always_frame": {
+        "spoken_token_present": {
+          "n_cases": 30,
+          "mean": 0.37777777777777777
+        },
+        "slide_token_present": {
+          "n_cases": 30,
+          "mean": -0.37777777777777777
+        }
+      }
+    },
+    "visual_missing_frame_routing": {
+      "echo_no_frame_guard_on": {
+        "abstain": 33,
+        "n": 35
+      },
+      "competitor_guard_off_still_draft": {
+        "abstain": 3,
+        "n": 35
+      }
+    }
+  },
+  "llm_focus_available": true,
+  "n_focus_items": 78,
+  "n_retrieval_items": 32,
+  "gold_focus_counts": {
+    "speech": 30,
+    "visual": 38,
+    "general": 10
+  },
+  "gold_intent_counts": {
+    "literature": 8,
+    "none": 20,
+    "historical-cases": 4
+  }
+}
