@@ -1,0 +1,17 @@
+{
+  "judge_model": "Qwen/Qwen3-4B-Instruct-2507",
+  "n_items": 13,
+  "n_scored": 13,
+  "model_equal_weight_mean_1to5": 4.262,
+  "human_equal_weight_item_mean_1to5": 4.304,
+  "spearman_vs_human_item_means": 0.341,
+  "n_pairs_for_agreement": 13,
+  "dim_means_model": {
+    "factual": 4.154,
+    "grounding": 3.615,
+    "evidence": 3.636,
+    "safety": 5.0,
+    "usability": 4.846
+  },
+  "note": "Model-graded scores are not clinician ratings. Judge is the same Instruct checkpoint family as the reply formatter (Qwen3-4B); treat as an automatic consistency check complementary to human packet grades."
+}

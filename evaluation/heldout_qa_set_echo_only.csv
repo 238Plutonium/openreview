@@ -1,0 +1,85 @@
+qa_id,question_type,asker_role,reply_type,session_id,created_at,n_frames,pmids,question,answer
+3,literature,developer,public-mention,ecfcba4c,2026-08-16T22:37:41.369Z,1,23698562;28832366;35967854;38383266;39381005,@ECHO AI Assistant how do we treat HIV patients,"For HIV patients with chronic pain not linked to worse medication-assisted treatment (MAT) outcomes, consider non-opioid interventions such as physical therapy, cognitive-behavioral therapy, and psychological support. Opioid use should be approached cautiously and closely monitored due to risks of addiction and side effects. Evidence suggests these non-opioid strategies are effective and safe in this population [1], [2], [3]. However, long-term outcomes and optimal dosing remain uncertain, and individual patient factors should guide treatment decisions. [4], [5], [6], [7], [8]
+
+[1]: MOUD Cohort 8 | Session 8_Recording_OUD and HIV Prevention_4.24.24 | 0:03-2:12
+[2]: MOUD Cohort 8 | Session 8_Recording_OUD and HIV Prevention_4.24.24 | 37:51-56:24
+[3]: MOUD Cohort 10 | Session 4_Recording_3.19.25 | 42:11-1:01:24
+[4]: PMID 38383266 | Epidemiology, treatment and prognosis of HIV infection in 2024: A practical review. | 2024-Jun-14 | Journal Article
+[5]: PMID 35967854 | The reservoir of latent HIV. | 2022 | Journal Article
+[6]: PMID 23698562 | The natural history of HIV infection. | 2013-Jul | Journal Article
+[7]: PMID 39381005 | Editorial: Immunological non-responders in HIV infection. | 2024 | Editorial
+[8]: PMID 28832366 | HIV and myocarditis. | 2017-Nov | Journal Article
+
+Educational summary for ECHO discussion; not clinical advice or a medical record."
+4,literature,developer,public-mention,b28ee899,2026-08-19T15:28:22.850Z,1,27974843;32115044;34791564;38340973;41136120,@ECHO AI Assistant Can you give us some guidance on treatment on this topic?,"For managing pain in patients with substance use disorders (SUD), it's essential to address both the physical and psychological components, as pain can worsen emotional distress and contribute to a cycle of worsening pain, reduced mobility, functional decline, and social isolation. Evidence suggests that non-opioid pharmacologic options—such as NSAIDs, anticonvulsants (e.g., gabapentin), antidepressants (e.g., SNRIs), and topical agents—are effective and safer alternatives to opioids [1]. Non-pharmacologic approaches like exercise, manual therapy, acupuncture, orthotics, and TENS are also supported [2]. For refractory cases, interventions such as nerve blocks, steroid injections, trigger point injections, or stimulators may be considered, though their long-term benefits and risks remain uncertain [3]. A comprehensive plan should include pain self-monitoring, cognitive strategies (e.g., distraction, imagery), and engagement with family or support systems to enhance recovery and adherence. However, the optimal combination and duration of these interventions are not fully established, and individual patient factors should guide decisions. [4], [5], [6], [7]
+
+[1]: MOUD Cohort 10 | Session 4_Recording_3.19.25 | 40:33-41:48
+[2]: MOUD Cohort 9 | Session_1_Recording_Intro to MOUD_7.24.24 | 3:53-10:14
+[3]: PMID 32115044 | Pain: Pathways and Physiology. | 2020-Apr | Journal Article
+[4]: PMID 34791564 | Treating Chronic Pain with Buprenorphine-The Practical Guide. | 2021-Nov-18 | Journal Article
+[5]: PMID 41136120 | Overview of Pain Physiology. | 2025-Dec | Journal Article
+[6]: PMID 38340973 | Buprenorphine for Pain: A Narrative Review and Practical Applications. | 2024-May | Journal Article
+[7]: PMID 27974843 | Structural plasticity and reorganisation in chronic pain. | 2016-Dec-15 | Journal Article
+
+Educational summary for ECHO discussion; not clinical advice or a medical record."
+12,literature,developer,voice-public,6d0ff5cf,2026-09-09T15:36:03.394Z,1,32605143;33871429;38493248;3907856;40676813,Can you explain We are also doing K treatment in patients with SUD,"Yes, we are also providing K treatment in patients with substance use disorder (SUD). Evidence suggests that pain management in this population involves addressing both physical and psychological aspects, including explaining the potential for relapse, co-developing a personalized treatment plan with the patient, encouraging engagement with family or support systems, scheduling frequent follow-ups, and utilizing a multidisciplinary approach. [1]
+[2]
+[3]
+
+However, the specific role of K treatment in SUD remains under-investigated, and more research is needed to clarify its efficacy and safety. [4]
+[5]
+[6]
+[7]
+[8]
+
+What is certain is that a comprehensive, patient-centered approach that includes pain management, mental health support, and social resources is associated with better outcomes. Still, the optimal integration of K treatment within SUD care is not fully established.
+
+[1]: MOUD Cohort 6 | MOUD Session 4_3.1.23 | 44:11-57:55
+
+[2]: MOUD Cohort 6 | MOUD Session 4_3.1.23 | 43:43-57:04
+
+[3]: MOUD Cohort 6 | MOUD Session 4_3.1.23 | 14:56-17:23
+
+[4]: PMID 38493248 | Sensing of mitochondrial DNA by ZBP1 promotes RIPK3-mediated necroptosis and ferroptosis in response to diquat poisoning. | 2024-May | Journal Article
+
+[5]: PMID 3907856 | Identification of a specific telomere terminal transferase activity in Tetrahymena extracts. | 1985-Dec | Journal Article
+
+[6]: PMID 33871429 | Vitamin K and vascular calcification. | 2021-Jul-1 | Journal Article
+
+[7]: PMID 32605143 | Vitamin K Nutrition and Bone Health. | 2020-Jun-27 | Journal Article
+
+[8]: PMID 40676813 | Factors Influencing Ortho-K Treatment in Low Myopia and Management Approaches. | 2025-Jul-18 | Journal Article
+
+Educational summary for ECHO discussion; not clinical advice or a medical record."
+13,other,developer,public-mention,43091a33,2026-07-09T04:24:22.586Z,3,,@ECHO AI Assistant What is Opioids?,"Opioids are drugs derived from the opium poppy (like morphine and codeine) or created in a lab (like fentanyl and oxycodone). They relieve pain, suppress coughs, and can cause sedation and respiratory suppression, but also carry a high risk of addiction and overdose."
+15,other,developer,public-mention,88934984,2026-09-09T15:21:16.566Z,0,,@ECHO AI Assistant Thanks! What’s been discussed in disclosures?,DeepinWatt has no financial conflicts of interest to disclose. Kevin has the following disclosures.
+16,prior_session,developer,public-mention,b28ee899,2026-08-19T15:25:16.426Z,1,,"@ECHO AI Assistant I missed the previous meeting content, can you brief summarize them to me?","The previous meeting focused on managing acute and chronic pain in patients with opioid use disorder (OUD). It emphasized understanding the unique pain experiences in opioid-dependent individuals and the importance of building trust and rapport with patients. Key principles include adopting a non-judgmental, patient-centered approach, developing comfort in caring for SUD patients, and using skills like reflective listening and motivational interviewing to support patient engagement. [1], [2], [3]
+
+[1]: MOUD Cohort 4 | zoom_0 | 1:05:47-1:06:36
+[2]: MOUD Cohort 9 | Session_1_Recording_Intro to MOUD_7.24.24 | 2:57-9:55
+[3]: MOUD Cohort 9 | Session_1_Recording_Intro to MOUD_7.24.24 | 3:53-10:14
+
+Educational summary for ECHO discussion; not clinical advice or a medical record."
+17,slide,developer,public-mention,43091a33,2026-07-09T04:26:11.330Z,3,,"@ECHO AI Assistant We are currently on the DSM criteria slide for opioid use disorder. From previous videos/records, for a patient who is NOT prescribed buprenorphine but is using diverted or illicit Suboxone, can that use support an OUD diagnosis? Which DSM criteria did the prior case discussion mention? Please distinguish this from tolerance or withdrawal during prescribed use.","Yes, using diverted or illicit Suboxone can support an OUD diagnosis, as it involves compulsive use and loss of control, meeting DSM-5 criteria such as persistent desire to cut down, unsuccessful efforts to control use, tolerance, craving, and interference with daily activities [1], [2], [3]. This differs from tolerance or withdrawal during prescribed use, which are physiological responses and do not alone meet OUD criteria without evidence of behavioral impairment or loss of control [4], [5], [6].
+
+Source:
+[1]: MOUD Cohort 10 | Session 10_Recording_Perioperative Management of Patients on MOUD_6.11.25 | 11:44-12:50
+[2]: MOUD Cohort 10 | Session 10_Recording_Perioperative Management of Patients on MOUD_6.11.25 | 11:16-12:36
+[3]: MOUD Cohort 10 | Session 7_Recording_OUD in the ED_4.30.25 | 28:15-31:37
+[4]: MOUD Cohort 10 | Session 10_Recording_Perioperative Management of Patients on MOUD_6.11.25 | 31:43-33:59
+[5]: MOUD Cohort 11 | Session 1_Recording_Introduction to MOUD_7.30.25 | 51:27-53:16
+[6]: MOUD Cohort 11 | Session 1_Recording_Introduction to MOUD_7.30.25 | 52:47-54:57"
+18,slide,developer,public-mention,43091a33,2026-07-09T04:27:22.947Z,3,,"@ECHO AI Assistant We are currently on the stigma slide. From previous videos/records, what non-stigmatizing language or clinical framing did presenters recommend when discussing OUD, relapse, or MOUD with patients?","Presenters recommended using ""substance use disorder"" or ""opioid use disorder"" instead of ""addiction,"" referring to individuals as ""people who have"" a disorder rather than ""addicts,"" and framing urine drug screens as ""simple monitoring"" rather than ""clean"" or ""dirty."" Relapse should be described as a ""return to use"" rather than a failure of willpower, and the condition should be framed as a brain disease requiring treatment, not a character flaw. [1], [2], [3], [4], [5], [6]
+
+Source:
+[1]: MOUD Cohort 7 | C7_Recording_Intro_to_OUD_7.12.23 | 52:12-54:44
+[2]: MOUD Cohort 10 | Session 1_Recording_Intro to MOUD_2.5.25 | 33:49-35:09
+[3]: MOUD Cohort 6 | MOUD Session 1_01.18.23 | 28:16-33:07
+[4]: MOUD Cohort 6 | MOUD Session 1_01.18.23 | 28:25-33:08
+[5]: MOUD Cohort 10 | Session 3_Recording_Risk Reduction and Safe Use of Opioids_3.5.25 | 38:37-41:09
+[6]: MOUD Cohort 9 | Session 4_Recording_Co-occurring MH_9.4.24 | 53:04-55:16"
+30,slide,developer,voice-public,6d0ff5cf,2026-09-09T15:46:03.431Z,3,,What's on my slide And what's on my slide,"On your slide, the section ""Pain Treatment in Patients with SUD"" covers: explain potential for relapse, explain the rationale for medication management to the patient, establish a treatment plan with the patient, encourage family和支持 system involvement, frequent follow-ups, and consultations with a multidisciplinary approach."
+33,summary,developer,public-mention,fe3fe521,2026-08-18T23:01:44.437Z,1,,@ECHO AI Assistant Summary of this meeting.,"The Vicious Cycle of Uncontrolled Pain includes avoidance behaviors, decreased mobility, social limitations, diminished self-efficacy, and altered functional status."
+34,summary,developer,public-mention,fe3fe521,2026-08-18T23:02:16.374Z,1,,@ECHO AI Assistant Summary of this whole meeting.,"Summary of this whole meeting: The discussion focuses on managing pain in patients with substance use disorders, addressing drug-seeking behavior, lack of sympathy and fear from patients, and reduced pain tolerance in opioid-dependent individuals. Key strategies include using motivational interviewing, building rapport, and prioritizing non-opioid pain management. Risk factors like emotional trauma, dysfunctional families, and poor coping skills are highlighted, with the goal of improving care comfort and effective pain management."
+35,summary,developer,public-mention,b28ee899,2026-08-19T15:25:02.389Z,1,,@ECHO AI Assistant I am late. can you summarize what’s been presented so far?,"The approach focuses on building comfort in treating substance use disorder with non-judgmental, patient-centered care, reflecting the patient’s perspective to build rapport, using motivational interviewing, and understanding both SUD and pain management."
+36,summary,developer,public-mention,b28ee899,2026-08-19T15:32:49.976Z,1,,@ECHO AI Assistant can you give a summary of the meeting,Opioid Use Disorder complicates acute and chronic pain management. It's best to continue agonist or antagonist OUD medication while treating pain. A multi-disciplinary approach is strongly recommended for these complex cases.

@@ -1,0 +1,5 @@
+feedback_submissions/
+*.pid
+*.log
+__pycache__/
+.DS_Store

@@ -1,0 +1,14 @@
+qa_id,question_type,human_item_mean_1to5,model_item_mean_1to5
+3,literature,4.0,4.0
+4,literature,4.25,5.0
+12,literature,3.6166666666666667,3.6
+13,other,4.888888888888889,5.0
+15,other,4.0,3.6
+16,prior_session,4.5,5.0
+17,slide,4.111111111111111,4.2
+18,slide,4.644444444444444,5.0
+30,slide,4.5,3.5
+33,summary,4.166666666666667,4.2
+34,summary,4.333333333333333,4.6
+35,summary,4.833333333333333,3.2
+36,summary,4.111111111111111,4.5

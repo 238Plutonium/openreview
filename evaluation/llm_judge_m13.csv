@@ -1,0 +1,14 @@
+qa_id,question_type,item_mean,human_item_mean,factual,grounding,evidence,safety,usability,error_tags,brief
+3,literature,4.0,4.0,3,4,3,5,5,unsupported_claim,"Cites non-opioid strategies for HIV pain; links to OUD/HIV sessions and PMIDs, but PMIDs 5,6,7,8 are irrelevant to pain treatment."
+4,literature,5.0,4.25,5,5,5,5,5,ok,"Comprehensive, context-appropriate guidance on pain management in SUD with clear evidence sourcing and practical, non-prescriptive recommendations suitable for live discussion."
+12,literature,3.6,3.6166666666666667,3,4,2,5,4,unsupported_claim;wrong_slide,Answer mentions ketamine treatment broadly but cites irrelevant PMIDs; references to K treatment in SUD lack direct support from cited sources.
+13,other,5.0,4.888888888888889,5,5,5,5,5,ok,"Accurately defines opioids, includes natural and synthetic examples, and notes key effects and risks without overreach."
+15,other,3.6,4.0,3,2,3,5,5,ok,Disclosures mention DeepinWatt and Kevin's conflict; no further details provided.
+16,prior_session,5.0,4.5,5,5,5,5,5,ok,"Summarizes key pain management principles in OUD with clear, relevant references to prior session segments."
+17,slide,4.2,4.111111111111111,4,3,4,5,5,ok,Diverted Suboxone use meets OUD criteria via loss of control; differs from prescribed tolerance/withdrawal. Citations support behavioral vs physiological distinctions.
+18,slide,5.0,4.644444444444444,5,5,5,5,5,ok,"Answer accurately reflects non-stigmatizing language from cited sources, clear and practical for live use."
+30,slide,3.5,4.5,3,2,,5,4,ok,"Slide covers pain treatment in SUD with relapse, medication rationale, treatment plan, family involvement, follow-ups, and multidisciplinary consultations as per content."
+33,summary,4.2,4.166666666666667,5,3,3,5,5,ok,Accurately captures the vicious cycle components without inventing specifics; concise and relevant to uncontrolled pain in MOUD context.
+34,summary,4.6,4.333333333333333,5,4,4,5,5,ok,"Summarizes pain management in substance use disorders with key strategies and risk factors, aligning with meeting topic and clinical context."
+35,summary,3.2,4.833333333333333,3,2,1,5,5,ok,"Summarizes non-judgmental, patient-centered care and pain management using motivational interviewing, aligns with typical SUD care principles."
+36,summary,4.5,4.111111111111111,5,3,,5,5,ok,Summary accurately reflects meeting focus on OUD and pain management with multidisciplinary approach.

@@ -1,0 +1,43 @@
+{
+  "name": "ECHO-AI synthetic media replay",
+  "streamId": "demo-replay-oud",
+  "meetingUuid": "demo-replay",
+  "description": "Recorded deskshare + transcript fixtures for reviewers without Zoom RTMS credentials. Educational OUD content only; no PHI.",
+  "slide": "fixtures/slide.jpg",
+  "frameTimestampOffsetMs": -15000,
+  "transcript": [
+    {
+      "userName": "Facilitator",
+      "text": "Today we are reviewing medication for opioid use disorder, focusing on buprenorphine initiation in primary care."
+    },
+    {
+      "userName": "Facilitator",
+      "text": "Buprenorphine is a partial agonist. Start with a discussion of withdrawal timing and home induction when appropriate."
+    },
+    {
+      "userName": "Clinician",
+      "text": "Can we also cover counseling and follow-up intervals after the first week?"
+    },
+    {
+      "userName": "Facilitator",
+      "text": "Yes. Pair medication with psychosocial support and schedule close follow-up in the first week."
+    }
+  ],
+  "questions": [
+    {
+      "id": "slide",
+      "question": "@ECHO AI Assistant what is on this slide?",
+      "allowPrivateIndex": true
+    },
+    {
+      "id": "speech",
+      "question": "@ECHO AI Assistant what was just said about buprenorphine?",
+      "allowPrivateIndex": true
+    },
+    {
+      "id": "literature",
+      "question": "@ECHO AI Assistant briefly, what does the literature say about buprenorphine for opioid use disorder?",
+      "allowPrivateIndex": true
+    }
+  ]
+}

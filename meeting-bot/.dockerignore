@@ -1,0 +1,15 @@
+.env
+.env.*
+node_modules/
+dist/
+.conda-node/
+.conda-ngrok/
+.conda-ai/
+data/
+playwright-report/
+test-results/
+*.log
+.ngrok-url
+.ngrok.pid
+.asr.pid
+.vllm.pid

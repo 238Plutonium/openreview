@@ -1,0 +1,11 @@
+services:
+  zoom-bot:
+    build: .
+    init: true
+    shm_size: "1gb"
+    env_file:
+      - .env
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    environment:
+      NODE_ENV: production
