@@ -26,4 +26,4 @@ An earlier public CSV counted bibliography entries such as `[6]: PMID … | Vita
 
 ## Scope
 
-This is a lexical assertion–PMID screen. It is not an ALCE soft-support rate and not clinician validation. For automatic attribution with graded support labels, see `evaluation/citation_faithfulness/` (soft citation precision 0.72; citation recall 0.23/0.73 strict/soft).
+This is a lexical assertion–PMID screen. It is not an ALCE attribution rate and not clinician validation. For automatic attribution with graded support labels, see `evaluation/citation_faithfulness/` (citation precision 0.19/0.72; recall 0.23/0.73 at attr=1 / attr≥0.5).

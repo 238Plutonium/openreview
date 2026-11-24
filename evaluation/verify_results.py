@@ -78,7 +78,7 @@ def check_packet_scores() -> None:
 
 
 def check_citation_faithfulness() -> None:
-    """Reproduce ALCE-style strict/soft rates from archived judge CSV (offline)."""
+    """Reproduce ALCE-style attr=1 / attr>=0.5 rates from archived judge CSV (offline)."""
     summary = json.loads(
         (ROOT / "citation_faithfulness" / "citation_attr_summary.json").read_text(
             encoding="utf-8"
@@ -108,10 +108,12 @@ def check_citation_faithfulness() -> None:
     rec_strict = sum(1 for v in by_unit.values() if max(v) == 1.0) / len(by_unit)
     rec_soft = sum(1 for v in by_unit.values() if max(v) >= 0.5) / len(by_unit)
 
+    assert abs(prec_strict - float(per["citation_precision_strict_attr1"])) < 1e-9
     assert abs(prec_soft - float(per["citation_precision_soft_attr_ge_0_5"])) < 1e-9
     assert abs(rec_strict - float(per["statement_recall_any_cite_strict"])) < 1e-9
     assert abs(rec_soft - float(per["statement_recall_any_cite_soft"])) < 1e-9
-    # Manuscript Table 4 (no strict citation precision reported)
+    # Manuscript Table 4: both thresholds for precision and recall
+    assert abs(prec_strict - 0.19) < 0.01, prec_strict
     assert abs(prec_soft - 0.72) < 0.01, prec_soft
     assert abs(rec_strict - 0.23) < 0.01, rec_strict
     assert abs(rec_soft - 0.73) < 0.01, rec_soft
@@ -119,10 +121,9 @@ def check_citation_faithfulness() -> None:
     vet = [r for r in rows if r["pmid"] == "29314873"]
     assert len(vet) == 8, len(vet)
     print(
-        f"citation: P_soft={prec_soft:.2f} "
-        f"R={rec_strict:.2f}/{rec_soft:.2f} (strict/soft); "
-        f"n=114; attr=0.5 count={n_half}; vet_pmid_instances={len(vet)} "
-        f"(P_strict={prec_strict:.2f} computed, not in manuscript)"
+        f"citation: P={prec_strict:.2f}/{prec_soft:.2f} "
+        f"R={rec_strict:.2f}/{rec_soft:.2f} (attr=1 / attr>=0.5); "
+        f"n=114; attr=0.5 count={n_half}; vet_pmid_instances={len(vet)}"
     )
     print("citation: OK")
 

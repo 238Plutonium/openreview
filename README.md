@@ -72,7 +72,7 @@ python3 evaluation/verify_results.py
 | [`evaluation/speech_recall_ablation/`](evaluation/speech_recall_ablation/) | Speech vs conflicting slide (withheld: spoken 90/90; included: spoken 56/90); lexical probes |
 | [`evaluation/routing_comparison/`](evaluation/routing_comparison/) | Rule routers and delivery policies vs always-* / LLM baselines |
 | [`evaluation/claim_level_audit/`](evaluation/claim_level_audit/) | Lexical assertion–PMID screen (14/132 supported; bibliography excluded) |
-| [`evaluation/citation_faithfulness/`](evaluation/citation_faithfulness/) | ALCE-style soft citation precision 0.72; recall 0.23/0.73 (strict/soft) |
+| [`evaluation/citation_faithfulness/`](evaluation/citation_faithfulness/) | ALCE-style citation precision 0.19/0.72; recall 0.23/0.73 (attr=1 / attr≥0.5) |
 
 ## Acknowledgments
 

@@ -6,8 +6,10 @@ Automatic attribution of ECHO-AI literature answers against PubMed abstracts, fo
 
 | Name (ALCE) | Definition |
 |-------------|------------|
-| **Citation precision** | Fraction of (statement, PMID) instances whose abstract supports the statement (reported as **soft**, attr ≥ 0.5) |
-| **Citation recall** | Fraction of statements with ≥1 supporting cited PMID (strict attr=1 and soft ≥0.5) |
+| **Citation precision** | Fraction of (statement, PMID) instances whose abstract supports the statement |
+| **Citation recall** | Fraction of statements with ≥1 supporting cited PMID |
+
+Both metrics are reported at attr=1 and at attr≥0.5 (partial support counts only in the latter).
 
 ## Method
 
@@ -30,13 +32,13 @@ python3 eval/verify_results.py
 
 | ALCE metric | Value |
 |-------------|-------|
-| Citation precision (soft ≥0.5) | **0.72** |
-| Citation recall (strict / soft) | **0.23 / 0.73** |
+| Citation precision (attr=1 / attr≥0.5) | **0.19 / 0.72** |
+| Citation recall (attr=1 / attr≥0.5) | **0.23 / 0.73** |
 
 28 answers · 86 statements · 114 citation instances · 60 scores are 0.5 · 0 parse failures.
 
 **Veterinary PMID 29314873** (AAHA dogs/cats) appears in 8 historical diabetes citation instances and receives 3 attr=1 judgments on human-diabetes claims—judge leniency across species. Not used as a positive appendix example.
 
-Lexical claim audit (14/132 supported) is not the soft precision 0.72.
+Lexical claim audit (14/132 supported) is not the attr≥0.5 precision 0.72.
 
 Not clinician validation.
