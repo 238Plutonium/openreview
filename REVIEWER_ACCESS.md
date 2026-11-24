@@ -1,55 +1,57 @@
-# Reviewer access (≤2 minutes)
+# Reviewer access
 
-## 1. Live literature demo
-Open https://chive-shrouded-gag.ngrok-free.dev/chat.html  
-Ask: *What is buprenorphine used for in opioid use disorder?*  
-Expect PMID footnotes + educational disclaimer when retrieval succeeds.
+Paths through the public release, from live demo to offline packages. Numbers below match the manuscript and `evaluation/verify_results.py`.
 
-Health: https://chive-shrouded-gag.ngrok-free.dev/api/status → `"ready": true`
+## Live literature demo
 
-## 2. Screencast
-https://www.youtube.com/watch?v=WwFCYDoYzm8 (≤2.5 min)
+1. Open https://chive-shrouded-gag.ngrok-free.dev/chat.html
+2. Ask: *What is buprenorphine used for in opioid use disorder?*
+3. Expect PMID footnotes and the educational disclaimer when retrieval succeeds.
 
-## 3. Offline numbers
+Health check: https://chive-shrouded-gag.ngrok-free.dev/api/status should report `"ready": true`.
+
+## Video
+
+- Screencast (2:09): https://www.youtube.com/watch?v=WwFCYDoYzm8
+- Full September 2026 recording: https://psu.mediaspace.kaltura.com/media/t/1_0syzr0gf
+
+## Manuscript and source
+
+| Item | Location |
+| --- | --- |
+| PDF | `ECHO_AI_Demo_Paper_SUBMIT.pdf` |
+| Meeting bot | `meeting-bot/` |
+| PubMed website | `website/` |
+
+## Offline verification
+
 ```bash
 python3 evaluation/verify_results.py
 ```
-Checks the published 33/35 vs 3/35 no-frame contrast and packet pooled mean 4.26.
 
-## 4. Source
-- Website: `website/`
-- Meeting bot: `meeting-bot/`
-- Paper PDF: `ECHO_AI_Demo_Paper_SUBMIT.pdf`
+Confirms the published no-frame contrast (guard on 33/35 abstentions vs guard off 3/35) and the human answer-packet equal-rater mean 4.26/5.
 
-## 5. Speech-recall ablation outputs
-See `evaluation/speech_recall_ablation/README.md` and `runs/speech_summary.json`.
-CPU-readable JSONL; reproducing model calls needs two replay bots (instructions in that README).
+## Evaluation packages
 
-## 6. Offline no-frame recorded replay
-Open `evaluation/recorded_replay/index.html` or run `python evaluation/recorded_replay/verify_paired_replay.py`.
+| Package | Entry point | Headline result |
+| --- | --- | --- |
+| No-frame recorded replay | `evaluation/recorded_replay/index.html` or `python evaluation/recorded_replay/verify_paired_replay.py` | Guard on 33/35 vs off 3/35 |
+| Speech-recall ablation | `evaluation/speech_recall_ablation/README.md`, `runs/speech_summary.json` | Withheld spoken 90/90; included spoken 56/90 (lexical) |
+| Routing comparison | `evaluation/routing_comparison/` (`python3 run_routing_baselines.py` or `--skip-llm`) | Rule ≪ LLM latency; category-derived gold |
+| Citation faithfulness | `evaluation/citation_faithfulness/` | Soft citation precision 0.72; recall 0.23 / 0.73 |
+| Claim-level audit | `evaluation/claim_level_audit/` | 14/132 supported (lexical; bibliography excluded) |
 
-## Citation faithfulness (automatic)
+Speech-recall reproduction of model calls needs two replay bots; the JSONL summary is readable on CPU alone. Routing gold labels are category-derived (`gold_*.jsonl`), not independently annotated.
 
-See `evaluation/citation_faithfulness/` (also under `reviewer_package/`). ALCE citation metrics on archived PubMed answers: soft citation precision **0.72**; citation recall **0.23/0.73** (strict/soft); 60/114 scores are 0.5; same-family 4B judge; not clinician validation. Offline: `python evaluation/verify_results.py`.
+## Where the CFP questions appear in the paper
 
-## CFP checklist (NAACL 2027 Demo)
+| CFP question | Section |
+| --- | --- |
+| Problem and importance | §1 |
+| Novelty and audience | §1 |
+| How it works | §3, Figure 1; Appendix A |
+| Comparison to existing systems | Table 1; §2 |
+| License | §3.4 (MIT code; upstream model licenses) |
+| Evaluation | §5; Appendices A–C |
 
-| Question | Where in the paper |
-|----------|-------------------|
-| Problem | §1 **Problem.** |
-| Importance / impact | §1 **Gap and importance.** |
-| Novelty | §1 **System and novelty.** |
-| Target audience | §1 **Audience.** |
-| How it works | §3 + Fig.1; App.~A routing |
-| Compare to existing | Table 1; §2 distinct sentence |
-| License | §3.4 **License:** MIT (+ model upstream licenses) |
-| Evaluation / human studies | §5 four facets; facilitators + packet; App.~A/C examples |
-
-Live demo and video links are in §1 and App.~B. Offline verify: `python evaluation/verify_results.py`.
-
-## Routing vs competing methods
-
-See `evaluation/routing_comparison/` (relative paths; `python3 run_routing_baselines.py` or `--skip-llm`).
-End-to-end: speech withhold vs always-attach-frame; no-frame guard on vs off.
-Offline: focus/retrieval vs always-* **and LLM** classifiers; rule≪LLM latency (~1850× focus, ~310× intent).
-Gold labels are category-derived (see `gold_*.jsonl`), not independent annotation.
+Demo and video URLs are also listed in §1 and Appendix B.

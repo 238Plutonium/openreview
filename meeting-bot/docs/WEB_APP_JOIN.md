@@ -1,24 +1,26 @@
-# Zoom Web App join (new method)
+# Joining Zoom with the web-app bot
 
-## Old vs new
+ECHO-AI can join meetings through the Zoom web client (`app.zoom.us`) driven by Playwright, as an alternative to the Meeting SDK embedded participant.
 
-| | Old Meeting SDK Embedded | New Zoom Web App + Playwright |
-|---|---|---|
-| Code | `src/bot.ts` + `/bot.html` + `/signature` | `src/zoomWebBot.ts` |
-| Join auth | JWT Meeting SDK signature (often needs same-account / ZAK for PSU) | Guest join via `https://app.zoom.us/wc/join` — **no PSU Zoom account required for the bot** |
-| Visible bot | Embedded SDK participant | Official Zoom web client as `ECHO AI Assistant` |
-| Chat | SDK `sendChat` | DOM chat panel |
-| RTMS / Zoom App | Separate (Gmail app owner) | Unchanged — keep separate from join |
+## Approaches
 
-## Proven setup (handoff test)
+| | Meeting SDK (legacy) | Web App + Playwright (current) |
+| --- | --- | --- |
+| Implementation | `src/bot.ts`, `/bot.html`, `/signature` | `src/zoomWebBot.ts` |
+| Join authentication | JWT Meeting SDK signature (often same-account or ZAK) | Guest join via `https://app.zoom.us/wc/join` |
+| Visible identity | Embedded SDK participant | Zoom web client as `ECHO AI Assistant` |
+| Chat delivery | SDK `sendChat` | DOM chat panel |
+| RTMS / Zoom App | Separate Marketplace app | Unchanged; keep RTMS ownership separate from join |
 
-1. **PSU account** hosts a PSU Zoom meeting  
-2. **Gmail account** (Zoom Marketplace / RTMS app) joins as a normal participant  
-3. **Web App bot** joins through `app.zoom.us` (Playwright) — no PSU host privileges on the bot identity  
+Guest web join does not require the bot identity to hold host-account privileges. The meeting host still admits the bot from the waiting room when waiting-room is enabled.
 
-Host still admits the bot from the waiting room when enabled.
+## Recommended operating pattern
 
-## Config
+1. An institutional account hosts the Zoom meeting.
+2. The RTMS / Marketplace app owner joins as a normal participant when RTMS capture is required.
+3. The web-app bot joins through `app.zoom.us` under `BOT_NAME`.
+
+## Configuration
 
 ```env
 ZOOM_WEB_APP_URL=https://app.zoom.us/wc/join
@@ -28,4 +30,4 @@ ZOOM_MEETING_PASSWORD=
 BOT_NAME=ECHO AI Assistant
 ```
 
-Active deploy directory: `web_bot_deploy/` (same join implementation + AI/voice fixes).
+Copy values from `.env.example` and keep secrets out of version control. The deployable join implementation lives under `web_bot_deploy/` when that directory is present in the release.

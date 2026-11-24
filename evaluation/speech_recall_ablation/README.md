@@ -1,97 +1,57 @@
-# Paired speech-recall routing ablation
+# Speech-recall frame withholding
 
-**Status: executed on lab replay bots (2026-11-24).** Results in
-`runs/speech_run_acceptance.jsonl` and `runs/speech_summary.json` (180/180 ok).
-Lexical probes only---not human attribution. Withheld: spoken 90/90, slide-only
-0/90; included control: spoken 56/90, slide-only 34/90.
+Paired experiment measuring what happens when a speech-recall question receives a conflicting slide image versus when that image is withheld.
 
-## Design
+**Recorded outcome (180/180 calls).** With frames withheld: spoken token 90/90, slide-only token 0/90. With frames included: spoken 56/90, slide-only 34/90. Artifacts: `runs/speech_run_acceptance.jsonl`, `runs/speech_summary.json`. Scoring uses lexical probes only; this package does not include human attribution ratings.
 
-- 30 short synthetic scheduling scenarios: 15 room values and 15 start times.
-- Spoken transcript and displayed slide deliberately disagree on the requested
-  fact. The question explicitly asks what the facilitator **said**.
-- Both arms ingest the same transcript and one slide. Only speech-frame selection
-  changes. All contexts are short enough to avoid the different image/text prompt
-  clipping limits. No patient material or clinical recommendations are included.
-- Three repetitions by default: 180 calls. Execution order is shuffled with seed
-  2026; state resets for every case/arm/repetition.
-- Checkpoint, response formatting, generation settings, frame limit, retrieval
-  settings and hardware must remain fixed. Run both bot variants against the same
-  model services. The backend uses temperature 0.2; no deterministic generation
-  seed is added by this patch. Repetitions remain nested within cases.
+## Experiment design
 
-The retained-frame control still has the speech-only instruction. This isolates
-the additional effect of input withholding rather than comparing against a weaker
-prompt. A null difference is informative and must be reported. This is a narrow,
-template-derived conflict stress test, not evidence of clinical/general routing
-accuracy. Do not tune on these cases and then call them held out.
+Thirty synthetic scheduling scenarios (15 room values, 15 start times) place a spoken fact in the transcript and a different value on the slide. The question asks what the facilitator *said*. Both arms receive the same transcript and the same slide; only frame attachment for speech focus changes. Contexts are short enough that image and text prompt clipping do not differ between arms. No patient material is used.
 
-## Backend switch (isolated experiment deployments only)
+Each case is run three times (180 calls total). Order is shuffled with seed 2026, and state is reset for every case/arm/repetition. Generation settings, frame limit, retrieval configuration, and model endpoints are held fixed. The included-frame arm keeps the speech-only instruction, so the contrast isolates input withholding rather than prompt strength.
 
-The patch targets the source blob IDs in `source_manifest.json`. In a matching
-`meeting-bot` checkout:
+This is a narrow conflict stress test on template questions. It does not measure clinical correctness or general routing accuracy.
+
+## Reproducing the contrast
+
+Apply `speech_frame_policy.patch` to a `meeting-bot` checkout whose source hashes match `source_manifest.json`, then build:
 
 ```sh
-git apply --check /path/to/speech_frame_policy.patch
-git apply /path/to/speech_frame_policy.patch
+git apply --check speech_frame_policy.patch
+git apply speech_frame_policy.patch
 npm run build
 ```
 
-Launch two bot instances with separate ports/data directories but the same model
-services and all other experimental controls:
+Start two replay instances against the same model services:
 
-| Instance | Environment setting | Expected frames used for speech |
+| Arm | Setting | Frames for speech asks |
 | --- | --- | --- |
-| Withheld (normal behavior) | `ECHO_SPEECH_RECALL_WITHHOLD_FRAMES=true` | 0 |
-| Included (ablation control) | `ECHO_SPEECH_RECALL_WITHHOLD_FRAMES=false` | 1 |
+| Withheld (system policy) | `ECHO_SPEECH_RECALL_WITHHOLD_FRAMES=true` | 0 |
+| Included (control) | `ECHO_SPEECH_RECALL_WITHHOLD_FRAMES=false` | 1 |
 
-Both require `DEMO_REPLAY_ENABLED=true`. The new setting defaults to true and is
-exposed by health, so the normal deployed behavior is preserved if omitted. The
-patch only permits speech frames through the existing selection stage; it leaves
-the no-frame guard, speech-focus instruction and post-generation pipeline intact.
-It is delivered as an unapplied patch, not a change to the running service.
-
-## Run on the lab machine
-
-Copy this folder, including `fixtures/`, to the lab. On the same host as both bots:
+Both instances need `DEMO_REPLAY_ENABLED=true`. The withholding flag defaults to true.
 
 ```sh
-python run.py run --withheld-url http://127.0.0.1:3000 --included-url http://127.0.0.1:3001 --bot-root /path/to/patched/meeting-bot --output runs/speech_run.jsonl
+python run.py run \
+  --withheld-url http://127.0.0.1:3000 \
+  --included-url http://127.0.0.1:3001 \
+  --bot-root /path/to/patched/meeting-bot \
+  --output runs/speech_run.jsonl
 python run.py summarize --input runs/speech_run.jsonl --output runs/speech_summary.json
-python review.py --runs runs/speech_run.jsonl --cases cases.jsonl --output runs/blinded_review
 ```
 
-If the runner is remote, use reachable replay URLs and `--server-fixture-dir` for
-the directory containing the same PNGs on the bot server. `--bot-root` records the
-hashes of the actual patched source checkout; it does not read `.env` or credentials.
-Use matching code on both instances and retain the build/commit provenance.
-Running on the lab host is the simplest route. Existing protected remote endpoints
-can use `ECHO_REPLAY_AUTH_TOKEN` for a bearer token; it is not written to the output.
+Remote runners can pass reachable URLs and `--server-fixture-dir` so the bot host sees the same PNGs. Optional bearer auth uses `ECHO_REPLAY_AUTH_TOKEN` (not written to outputs). The runner rejects mismatched health flags and counts returned frames; unreadable images are protocol violations, not valid included-frame answers.
 
-The runner refuses mismatched controls or missing/incorrect health flags. It
-verifies actual returned frame counts, so unreadable images and text-only fallbacks
-are **protocol violations**, not valid included-frame answers. Raw answers, response
-metadata, errors, frame counts and latencies are preserved in every run.
+## Scoring and optional human review
 
-## Scoring
+The summary reports whether each answer contains the spoken value and/or the slide-only value. A negated mention of the slide value is not automatically an error.
 
-The initial summary reports **lexical probes**: presence of the spoken value and
-the slide-only value. A slide-only value mentioned in a negation is not necessarily
-an error; do not relabel this rate as hallucination or source-confusion accuracy.
+`review.py` builds a shuffled, condition-blind rating sheet from transcript and slide. Raters mark correct spoken recall, slide content attributed as speech, and inappropriate refusal. This release contains no completed human ratings; model-generated scores must not be reported as human review.
 
-Use `review.py` to produce a shuffled, condition-label-blinded rating sheet. Give
-reviewers each case's transcript and slide. Independently mark correct spoken
-recall, attribution of slide-only content as speech, and inappropriate refusal.
-Keep the condition key private; adjudicate disagreements. Report all attempts,
-errors, violations and missing labels. Average repetitions/raters within each
-case before paired case-level analysis. These files contain no completed human
-ratings. No synthetic/model-generated rating should be reported as human review.
+## Local software checks
 
-## Local verification
+```sh
+python -m unittest -v test_run.py
+```
 
-`python -m unittest -v test_run.py` tests protocol checks and a local mock API.
-Mock outputs are only software tests; they are never experimental observations.
-`python prepare.py --bot-root /path/to/unpatched/meeting-bot` regenerates fixtures
-and the patch from the exact original source revision (Pillow required for fixture
-rendering). It refuses changed source hashes. Normal experiment execution does
-not need the generator or Pillow; the PNGs and patch are included.
+Mock outputs exercise the protocol only. `prepare.py --bot-root /path/to/unpatched/meeting-bot` regenerates fixtures and the patch from the pinned source revision (Pillow required); normal reproduction uses the included PNGs and patch.
