@@ -31,3 +31,18 @@ Open `evaluation/recorded_replay/index.html` or run `python evaluation/recorded_
 ## Citation faithfulness (automatic)
 
 See `evaluation/citation_faithfulness/` (also under `reviewer_package/`). ALCE citation precision/recall on archived PubMed answers: **strict 0.19/0.23**, soft 0.72/0.73 (60/114 scores are 0.5; same-family 4B judge; not clinician validation). Offline: `python evaluation/verify_results.py`.
+
+## CFP checklist (NAACL 2027 Demo)
+
+| Question | Where in the paper |
+|----------|-------------------|
+| Problem | §1 **Problem.** |
+| Importance / impact | §1 **Gap and importance.** |
+| Novelty | §1 **System and novelty.** |
+| Target audience | §1 **Audience.** |
+| How it works | §3 + Fig.1; App.~A routing |
+| Compare to existing | Table 1; §2 distinct sentence |
+| License | §3.4 **License:** MIT (+ model upstream licenses) |
+| Evaluation / human studies | §5 four facets; facilitators + packet; App.~A/C examples |
+
+Live demo and video links are in §1 and App.~B. Offline verify: `python evaluation/verify_results.py`.
