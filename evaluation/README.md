@@ -27,3 +27,5 @@ python3 evaluation/verify_results.py
 | `verify_results.py` | Stdlib verification |
 
 **Not included:** filled individual rater sheets with personal identifiers, institutional transcript indexes, credentials.
+
+| `recorded_replay/` | GPU-free no-frame paired outputs (`paired_runs_n35.jsonl`, `paired_cases.json`) + HTML verifier |

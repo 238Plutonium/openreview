@@ -67,6 +67,11 @@ python3 evaluation/verify_results.py
 ```
 
 
+
+## Offline no-frame recorded replay
+
+[`evaluation/recorded_replay/`](evaluation/recorded_replay/) — `paired_runs_n35.jsonl`, `paired_cases.json`, HTML viewer, CPU verifier.
+
 ## Speech-recall ablation (new)
 
 Paired synthetic speech-vs-slide stress test with recorded outputs:

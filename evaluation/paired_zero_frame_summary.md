@@ -1,7 +1,7 @@
 # Paired zero-frame replay (n=35)
 
-**Artifact:** `paired_runs_n35.jsonl` · labels `paired_runs_n35_labels.csv`  
-**Cases:** `eval/paired_cases.json` (35 paraphrased zero-frame visual asks; no PHI)  
+**Artifact:** `recorded_replay/paired_runs_n35.jsonl` · labels `recorded_replay/paired_runs_n35_labels.csv`  
+**Cases:** `recorded_replay/paired_cases.json` (35 paraphrased zero-frame visual asks; no PHI)  
 **Arms (same code SHA):**  
 - baseline `ECHO_NO_FRAME_FIXED_REPLY=true` → `:3010`  
 - treatment `ECHO_NO_FRAME_FIXED_REPLY=false` → `:3011`
@@ -17,7 +17,7 @@ Paired pattern: on **16/35** cases, guard ON refused while guard OFF produced in
 
 ## Secondary labels on raw answers
 
-Heuristic classes in `paired_runs_n35_labels.csv`:
+Heuristic classes in `recorded_replay/paired_runs_n35_labels.csv`:
 
 | Condition | refuse | invent | other |
 |---|---:|---:|---:|

@@ -1,0 +1,32 @@
+{
+  "status": "archived_real_outputs_not_new_inference",
+  "origin_repository": "238Plutonium/echo-ai-demo-paper",
+  "origin_commit": "3dff3d1005684dbd51d659d17aade90d0dc1e30a",
+  "origin_directory": "archive/public-submission-2026-11-24/current-files/reviewer_package/eval/",
+  "files": [
+    {
+      "file": "paired_runs_n35.jsonl",
+      "source_git_blob_sha": "5ff3910f8572c4fc7fd3b85b9de833d0f348e4c7",
+      "local_sha256": "aed2c96100b37be889595af0f3313f7dd94287967a18859dfc0b243300da5cb1"
+    },
+    {
+      "file": "paired_runs_n35_labels.csv",
+      "source_git_blob_sha": "c317c784b42ced1c525ee51bac5f53881e7a32e0",
+      "local_sha256": "59c0e7fac8812fd1a85fae5c84a0e738753171a81db89a12c484162ec7c84556"
+    },
+    {
+      "file": "paired_cases.json",
+      "source_git_blob_sha": "5f22bb07777af09467746aedb57fa0c24bdefcd1",
+      "local_sha256": "fe409f63747496d1568470adf8a934113d4e8c5139a6be20fb8bf048672652f5"
+    },
+    {
+      "file": "verify_paired_replay.py",
+      "source_git_blob_sha": "a03381f606908407a410347d9cd3a6416fe1961f",
+      "local_sha256": "fcff2f43064c95a7ab28570bfac0975e934578c44e17b08c22a898c6f472cf0e"
+    }
+  ],
+  "transfer_note": "Text line endings normalized to LF; run content and archived labels unchanged",
+  "n_pairs": 35,
+  "n_responses": 70,
+  "scope": "No-frame visual safeguard; with-frame multimodal replay outputs have not been captured in this bundle."
+}

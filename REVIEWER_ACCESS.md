@@ -24,3 +24,6 @@ Checks the published 33/35 vs 3/35 no-frame contrast and packet pooled mean 4.26
 ## 5. Speech-recall ablation outputs
 See `evaluation/speech_recall_ablation/README.md` and `runs/speech_summary.json`.
 CPU-readable JSONL; reproducing model calls needs two replay bots (instructions in that README).
+
+## 6. Offline no-frame recorded replay
+Open `evaluation/recorded_replay/index.html` or run `python evaluation/recorded_replay/verify_paired_replay.py`.
