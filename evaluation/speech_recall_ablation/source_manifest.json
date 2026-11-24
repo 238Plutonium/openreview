@@ -1,0 +1,18 @@
+{
+  "status": "prepared_not_executed",
+  "source_repository": "238Plutonium/echo-ai-naacl-submission",
+  "original_blobs": {
+    "src/meetingAi.ts": "01ea6be9103c97cd16115adea244fce55747be55",
+    "src/server.ts": "5c4943c2372dac6718235c56b805d5c93539899a"
+  },
+  "original_sha256": {
+    "src/meetingAi.ts": "f627a2224a4264b39fcb0a83e331c1d4269f3caaf8b15dae66c34adfa6b8b337",
+    "src/server.ts": "658e897eecf9089642881b928d0a66b225aded9cf8a8057f53b04bb02c813754"
+  },
+  "patched_sha256": {
+    "src/meetingAi.ts": "bf8be012568844ff1954cf55457254e07bb568117f119198cc648d356af2ab18",
+    "src/server.ts": "fca4aee1dba210230b12c702cb40dd1320151b9520fa78c15ecc66d58553badd"
+  },
+  "cases": 30,
+  "generation": "Deterministic neutral room/time conflicts; not clinical material"
+}

@@ -1,0 +1,39 @@
+{
+  "status": "model_token_probes_not_human_attribution",
+  "input_sha256": "b993620fc2b24f0a6cb662d385a9de94593e0d226b5ee88f20e20b54d40d80cc",
+  "arms": {
+    "withheld": {
+      "attempted": 90,
+      "successful": 90,
+      "errors": 0,
+      "protocol_violations": 0,
+      "n_successful_cases": 30,
+      "case_mean_token_rates": {
+        "spoken_token_present": 1,
+        "slide_token_present": 0
+      }
+    },
+    "included": {
+      "attempted": 90,
+      "successful": 90,
+      "errors": 0,
+      "protocol_violations": 0,
+      "n_successful_cases": 30,
+      "case_mean_token_rates": {
+        "spoken_token_present": 0.6222222222222222,
+        "slide_token_present": 0.37777777777777777
+      }
+    }
+  },
+  "paired_withheld_minus_included": {
+    "spoken_token_present": {
+      "n_cases": 30,
+      "mean": 0.37777777777777777
+    },
+    "slide_token_present": {
+      "n_cases": 30,
+      "mean": -0.37777777777777777
+    }
+  },
+  "interpretation": "Token mentions are lexical probes, not correctness: a slide-only term can appear in a negation. Review paired outputs independently. Failed/mismatched arms remain counted."
+}

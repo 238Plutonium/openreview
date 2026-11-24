@@ -545,7 +545,7 @@ function loadConfig(): Config {
       answerLlmMaxChars: parsePositiveInteger(
         "ANSWER_LLM_MAX_CHARS",
         process.env.ANSWER_LLM_MAX_CHARS ?? process.env.AI_ANSWER_MAX_CHARS,
-        450,
+        parseBoolean(process.env.ECHO_QUIET_REPLIES, false) ? 280 : 450,
       ),
       ragAnswerLlmMaxTokens: parsePositiveInteger(
         "AI_RAG_ANSWER_MAX_TOKENS",
@@ -567,7 +567,9 @@ function loadConfig(): Config {
         process.env.AI_LITERATURE_ANSWER_MAX_CHARS,
         900,
       ),
-      answerStyle: parseAnswerStyle(process.env.ANSWER_STYLE),
+      answerStyle: parseBoolean(process.env.ECHO_QUIET_REPLIES, false)
+        ? "concise"
+        : parseAnswerStyle(process.env.ANSWER_STYLE),
       answerLlmEnableThinking: parseBoolean(
         process.env.ANSWER_LLM_ENABLE_THINKING,
         false,
@@ -578,6 +580,15 @@ function loadConfig(): Config {
         process.env.ECHO_NO_FRAME_FIXED_REPLY,
         true,
       ),
+      speechRecallWithholdFrames: parseBoolean(
+        process.env.ECHO_SPEECH_RECALL_WITHHOLD_FRAMES,
+        true,
+      ),
+      facilitatorOnly: parseBoolean(process.env.ECHO_FACILITATOR_ONLY, false),
+      allowedAskers: (process.env.ECHO_ALLOWED_ASKERS ?? "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
       screenShareMaxImages: parseNonNegativeInteger(
         "AI_SCREEN_SHARE_MAX_IMAGES",
         process.env.AI_SCREEN_SHARE_MAX_IMAGES,

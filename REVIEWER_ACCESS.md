@@ -20,3 +20,7 @@ Checks the published 33/35 vs 3/35 no-frame contrast and packet pooled mean 4.26
 - Website: `website/`
 - Meeting bot: `meeting-bot/`
 - Paper PDF: `ECHO_AI_Demo_Paper_SUBMIT.pdf`
+
+## 5. Speech-recall ablation outputs
+See `evaluation/speech_recall_ablation/README.md` and `runs/speech_summary.json`.
+CPU-readable JSONL; reproducing model calls needs two replay bots (instructions in that README).

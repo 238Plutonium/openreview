@@ -47,6 +47,12 @@ export type MeetingAiConfig = {
   screenShareMaxImageBytes: number;
   /** When true (default), visual asks with zero frames return a fixed unavailable reply and skip the drafting MLLM. */
   noFrameFixedReply: boolean;
+  /** Experiment-only switch; omitted/true preserves normal speech-frame withholding. */
+  speechRecallWithholdFrames?: boolean;
+  /** When true, only allowlisted askers (or host names) get answers; others get a short deferral. */
+  facilitatorOnly?: boolean;
+  /** Comma-separated display-name allowlist used when facilitatorOnly is true. */
+  allowedAskers?: string[];
   fullContextMaxChars: number;
   recentContextMaxChars: number;
   relevantContextMaxChars: number;
@@ -501,8 +507,12 @@ function clipTail(value: string, maxChars: number): string {
   return value.slice(value.length - maxChars);
 }
 
-function shouldWithholdScreenShare(question: string, focus: QuestionFocus): boolean {
-  return focus === "speech" || looksLikeSelfIdentityQuestion(question);
+function shouldWithholdScreenShare(
+  question: string,
+  focus: QuestionFocus,
+  withholdSpeechFrames = true,
+): boolean {
+  return (withholdSpeechFrames && focus === "speech") || looksLikeSelfIdentityQuestion(question);
 }
 
 export function stripPowerpointPageLabel(answer: string): string {
@@ -1096,6 +1106,7 @@ export class MeetingAiManager {
       screenShareMemoryLimit: this.config.screenShareMemoryLimit,
       screenShareMaxImageBytes: this.config.screenShareMaxImageBytes,
       noFrameFixedReply: this.config.noFrameFixedReply,
+      speechRecallWithholdFrames: this.config.speechRecallWithholdFrames !== false,
       latestStreamId: this.latestStreamId,
       voiceInvocation: this.voiceInvocation.health(),
       asrBuffers: Array.from(this.asrBuffers.values()).map((buffer) => ({
@@ -1489,6 +1500,36 @@ export class MeetingAiManager {
         retrievalRecord: null,
       };
     }
+    if (this.config.facilitatorOnly) {
+      const allow = (this.config.allowedAskers ?? [])
+        .map((s) => s.trim().toLowerCase())
+        .filter(Boolean);
+      const asker = (question.senderName ?? "").trim().toLowerCase();
+      const ok =
+        allow.length === 0
+          ? false
+          : allow.some((name) => asker === name || asker.includes(name));
+      if (!ok) {
+        const answer =
+          "Please ask the session facilitator to invoke ECHO-AI (host/allowlist mode is on).";
+        this.emit("qa-facilitator-only-deferred", {
+          streamId,
+          senderName: question.senderName,
+          question: question.question,
+        });
+        return {
+          answer,
+          vlmRawAnswer: answer,
+          finalAnswer: answer,
+          vlmModel: this.config.vlmModel,
+          answerModel: "facilitator-only-gate",
+          streamId,
+          context: "",
+          screenShareFramesUsed: [],
+          retrievalRecord: null,
+        };
+      }
+    }
     const context = this.buildContext(
       streamId,
       question.question,
@@ -1500,6 +1541,7 @@ export class MeetingAiManager {
     const candidateScreenShareFrames = shouldWithholdScreenShare(
       question.question,
       focus,
+      this.config.speechRecallWithholdFrames !== false,
     )
       ? []
       : availableScreenShareFrames;

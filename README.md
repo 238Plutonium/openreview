@@ -43,7 +43,6 @@ Requires a running meeting-bot with AI services for `/api/ask`.
 cd meeting-bot
 cp .env.example .env   # fill Zoom/GPU endpoints; never commit .env
 npm install
-npm run build
 # start Whisper / VLM / answer LLM per scripts/start-*.sh
 npm start
 ```
@@ -66,6 +65,21 @@ See `meeting-bot/demo_replay/README.md`.
 ```bash
 python3 evaluation/verify_results.py
 ```
+
+
+## Speech-recall ablation (new)
+
+Paired synthetic speech-vs-slide stress test with recorded outputs:
+
+- Package: [`evaluation/speech_recall_ablation/`](evaluation/speech_recall_ablation/)
+- Results: `evaluation/speech_recall_ablation/runs/speech_run_acceptance.jsonl` (180/180)
+- Summary: `evaluation/speech_recall_ablation/runs/speech_summary.json`
+
+Lexical probes only (not human attribution). Withheld frames: spoken 90/90, slide-only 0/90; included control: spoken 56/90, slide-only 34/90.
+
+## Claim-level citation audit (author-side)
+
+[`evaluation/claim_level_audit/`](evaluation/claim_level_audit/) — 30 archived PMID-bearing answers labeled against PubMed abstracts (heuristic; not clinician validation).
 
 ## Acknowledgments
 

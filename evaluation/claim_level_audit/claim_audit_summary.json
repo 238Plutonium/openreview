@@ -1,0 +1,348 @@
+{
+  "protocol": "Author-side claim-vs-abstract audit (NCBI abstracts). Lexical-overlap heuristic + veterinary mismatch. Not clinician validation.",
+  "n_answers": 30,
+  "n_pmid_unit_checks": 135,
+  "n_abstracts_fetched": 46,
+  "answer_label_counts": {
+    "unclear": 6,
+    "unsupported": 10,
+    "supported": 14
+  },
+  "unit_label_counts": {
+    "supported": 110,
+    "unclear": 13,
+    "unsupported": 12
+  },
+  "answers": [
+    {
+      "source": "heldout_qa_set",
+      "qa_id": "1",
+      "question_type": "literature",
+      "question": "@ECHO AI Assistant How do you treat dementia patients, citing medpub?",
+      "n_checks": 4,
+      "n_supported": 3,
+      "n_unsupported": 0,
+      "n_unclear": 1,
+      "answer_label": "unclear"
+    },
+    {
+      "source": "heldout_qa_set",
+      "qa_id": "2",
+      "question_type": "literature",
+      "question": "@ECHO AI Assistant give treatment advice for diabetes",
+      "n_checks": 5,
+      "n_supported": 4,
+      "n_unsupported": 1,
+      "n_unclear": 0,
+      "answer_label": "unsupported"
+    },
+    {
+      "source": "heldout_qa_set",
+      "qa_id": "3",
+      "question_type": "literature",
+      "question": "@ECHO AI Assistant how do we treat HIV patients",
+      "n_checks": 5,
+      "n_supported": 4,
+      "n_unsupported": 0,
+      "n_unclear": 1,
+      "answer_label": "unclear"
+    },
+    {
+      "source": "heldout_qa_set",
+      "qa_id": "4",
+      "question_type": "literature",
+      "question": "@ECHO AI Assistant Can you give us some guidance on treatment on this topic?",
+      "n_checks": 5,
+      "n_supported": 5,
+      "n_unsupported": 0,
+      "n_unclear": 0,
+      "answer_label": "supported"
+    },
+    {
+      "source": "heldout_qa_set",
+      "qa_id": "5",
+      "question_type": "literature",
+      "question": "@ECHO AI Assistant how do we treat insomnia",
+      "n_checks": 5,
+      "n_supported": 3,
+      "n_unsupported": 0,
+      "n_unclear": 2,
+      "answer_label": "unclear"
+    },
+    {
+      "source": "heldout_qa_set",
+      "qa_id": "6",
+      "question_type": "literature",
+      "question": "@ECHO AI Assistant can you cite medpub on treating diabetes",
+      "n_checks": 5,
+      "n_supported": 2,
+      "n_unsupported": 2,
+      "n_unclear": 1,
+      "answer_label": "unsupported"
+    },
+    {
+      "source": "heldout_qa_set",
+      "qa_id": "7",
+      "question_type": "literature",
+      "question": "How do I treat diabetes Hello Echo AI",
+      "n_checks": 5,
+      "n_supported": 1,
+      "n_unsupported": 1,
+      "n_unclear": 3,
+      "answer_label": "unsupported"
+    },
+    {
+      "source": "heldout_qa_set",
+      "qa_id": "8",
+      "question_type": "literature",
+      "question": "@ECHO AI Assistant how do we treat dented teeth",
+      "n_checks": 3,
+      "n_supported": 3,
+      "n_unsupported": 0,
+      "n_unclear": 0,
+      "answer_label": "supported"
+    },
+    {
+      "source": "heldout_qa_set",
+      "qa_id": "9",
+      "question_type": "literature",
+      "question": "How do we treat leukemia Echo AI Assistant",
+      "n_checks": 5,
+      "n_supported": 5,
+      "n_unsupported": 0,
+      "n_unclear": 0,
+      "answer_label": "supported"
+    },
+    {
+      "source": "heldout_qa_set",
+      "qa_id": "10",
+      "question_type": "literature",
+      "question": "@ECHO AI Assistant how do we treat leukemia",
+      "n_checks": 5,
+      "n_supported": 5,
+      "n_unsupported": 0,
+      "n_unclear": 0,
+      "answer_label": "supported"
+    },
+    {
+      "source": "heldout_qa_set",
+      "qa_id": "11",
+      "question_type": "literature",
+      "question": "how do we treat diabetes Going through diabetes",
+      "n_checks": 5,
+      "n_supported": 4,
+      "n_unsupported": 1,
+      "n_unclear": 0,
+      "answer_label": "unsupported"
+    },
+    {
+      "source": "heldout_qa_set",
+      "qa_id": "12",
+      "question_type": "literature",
+      "question": "Can you explain We are also doing K treatment in patients with SUD",
+      "n_checks": 5,
+      "n_supported": 5,
+      "n_unsupported": 0,
+      "n_unclear": 0,
+      "answer_label": "supported"
+    },
+    {
+      "source": "rtms_qa/0133d2ef780c4bc4a2ff323472dd522d.ndjson",
+      "qa_id": "0133d2ef780c4bc4a2ff323472dd522d:12",
+      "question_type": "unknown",
+      "question": "How do we treat diabetes",
+      "n_checks": 5,
+      "n_supported": 3,
+      "n_unsupported": 2,
+      "n_unclear": 0,
+      "answer_label": "unsupported"
+    },
+    {
+      "source": "rtms_qa/456a3073f9d94758889ec4c7622d6dbb.ndjson",
+      "qa_id": "456a3073f9d94758889ec4c7622d6dbb:13",
+      "question_type": "unknown",
+      "question": "How do we treat diabetes",
+      "n_checks": 5,
+      "n_supported": 4,
+      "n_unsupported": 1,
+      "n_unclear": 0,
+      "answer_label": "unsupported"
+    },
+    {
+      "source": "rtms_qa/456a3073f9d94758889ec4c7622d6dbb.ndjson",
+      "qa_id": "456a3073f9d94758889ec4c7622d6dbb:14",
+      "question_type": "unknown",
+      "question": "How do we treat diabetes",
+      "n_checks": 5,
+      "n_supported": 4,
+      "n_unsupported": 1,
+      "n_unclear": 0,
+      "answer_label": "unsupported"
+    },
+    {
+      "source": "rtms_qa/640c2d8482b446f3b46a9e8747a25ce5.ndjson",
+      "qa_id": "640c2d8482b446f3b46a9e8747a25ce5:15",
+      "question_type": "unknown",
+      "question": "How do we treat diabetes",
+      "n_checks": 5,
+      "n_supported": 4,
+      "n_unsupported": 1,
+      "n_unclear": 0,
+      "answer_label": "unsupported"
+    },
+    {
+      "source": "rtms_qa/6d0ff5cf67634385b9792e5c6cda199e.ndjson",
+      "qa_id": "6d0ff5cf67634385b9792e5c6cda199e:16",
+      "question_type": "unknown",
+      "question": "Can you explain We are also doing K treatment in patients with SUD",
+      "n_checks": 5,
+      "n_supported": 5,
+      "n_unsupported": 0,
+      "n_unclear": 0,
+      "answer_label": "supported"
+    },
+    {
+      "source": "rtms_qa/89a4a0ea16be4637abf083e20cf2faae.ndjson",
+      "qa_id": "89a4a0ea16be4637abf083e20cf2faae:19",
+      "question_type": "unknown",
+      "question": "@ECHO AI Assistant how do we treat leukemia",
+      "n_checks": 5,
+      "n_supported": 3,
+      "n_unsupported": 0,
+      "n_unclear": 2,
+      "answer_label": "unclear"
+    },
+    {
+      "source": "rtms_qa/a7b8a3cf3903410fbffc2d4faa891ab0.ndjson",
+      "qa_id": "a7b8a3cf3903410fbffc2d4faa891ab0:21",
+      "question_type": "unknown",
+      "question": "How do we treat diabetes",
+      "n_checks": 4,
+      "n_supported": 4,
+      "n_unsupported": 0,
+      "n_unclear": 0,
+      "answer_label": "supported"
+    },
+    {
+      "source": "rtms_qa/b1dae9e0de4444c1a957ccbf0cdb70d8.ndjson",
+      "qa_id": "b1dae9e0de4444c1a957ccbf0cdb70d8:22",
+      "question_type": "unknown",
+      "question": "@ECHO AI Assistant how do we treat diabetes",
+      "n_checks": 5,
+      "n_supported": 4,
+      "n_unsupported": 0,
+      "n_unclear": 1,
+      "answer_label": "unclear"
+    },
+    {
+      "source": "rtms_qa/c4f28053e9ff4522805818f984342f60.ndjson",
+      "qa_id": "c4f28053e9ff4522805818f984342f60:27",
+      "question_type": "unknown",
+      "question": "How do we treat diabetes",
+      "n_checks": 4,
+      "n_supported": 4,
+      "n_unsupported": 0,
+      "n_unclear": 0,
+      "answer_label": "supported"
+    },
+    {
+      "source": "rtms_qa/c4f28053e9ff4522805818f984342f60.ndjson",
+      "qa_id": "c4f28053e9ff4522805818f984342f60:28",
+      "question_type": "unknown",
+      "question": "@ECHO AI Assistant how do we treat diabetes",
+      "n_checks": 5,
+      "n_supported": 5,
+      "n_unsupported": 0,
+      "n_unclear": 0,
+      "answer_label": "supported"
+    },
+    {
+      "source": "rtms_qa/c4f28053e9ff4522805818f984342f60.ndjson",
+      "qa_id": "c4f28053e9ff4522805818f984342f60:29",
+      "question_type": "unknown",
+      "question": "@ECHO AI Assistant how do we treat diabetes",
+      "n_checks": 5,
+      "n_supported": 5,
+      "n_unsupported": 0,
+      "n_unclear": 0,
+      "answer_label": "supported"
+    },
+    {
+      "source": "rtms_qa/c4f28053e9ff4522805818f984342f60.ndjson",
+      "qa_id": "c4f28053e9ff4522805818f984342f60:30",
+      "question_type": "unknown",
+      "question": "@ECHO AI Assistant how do we treat diabetes",
+      "n_checks": 5,
+      "n_supported": 4,
+      "n_unsupported": 1,
+      "n_unclear": 0,
+      "answer_label": "unsupported"
+    },
+    {
+      "source": "rtms_qa/da78cf8185f040bf81bc28a44228f99e.ndjson",
+      "qa_id": "da78cf8185f040bf81bc28a44228f99e:31",
+      "question_type": "unknown",
+      "question": "@ECHO AI Assistant can you cite medpub",
+      "n_checks": 1,
+      "n_supported": 1,
+      "n_unsupported": 0,
+      "n_unclear": 0,
+      "answer_label": "supported"
+    },
+    {
+      "source": "rtms_qa/e13cc5f62cbc4f85946cb960afc549c8.ndjson",
+      "qa_id": "e13cc5f62cbc4f85946cb960afc549c8:32",
+      "question_type": "unknown",
+      "question": "@ECHO AI Assistant how do we treat insomnia",
+      "n_checks": 5,
+      "n_supported": 3,
+      "n_unsupported": 0,
+      "n_unclear": 2,
+      "answer_label": "unclear"
+    },
+    {
+      "source": "rtms_qa/eb68079ba05b445a8058349f2e85a6f1.ndjson",
+      "qa_id": "eb68079ba05b445a8058349f2e85a6f1:34",
+      "question_type": "unknown",
+      "question": "@ECHO AI Assistant how do we treat diabetes",
+      "n_checks": 5,
+      "n_supported": 4,
+      "n_unsupported": 1,
+      "n_unclear": 0,
+      "answer_label": "unsupported"
+    },
+    {
+      "source": "rtms_qa/f66da6770aba43f9b1af3115e70ad4bd.ndjson",
+      "qa_id": "f66da6770aba43f9b1af3115e70ad4bd:36",
+      "question_type": "unknown",
+      "question": "@ECHO AI Assistant how do we treat lung cancer",
+      "n_checks": 2,
+      "n_supported": 2,
+      "n_unsupported": 0,
+      "n_unclear": 0,
+      "answer_label": "supported"
+    },
+    {
+      "source": "rtms_qa/fe3fe521b9c24a798b349bf328181694.ndjson",
+      "qa_id": "fe3fe521b9c24a798b349bf328181694:37",
+      "question_type": "unknown",
+      "question": "@ECHO AI Assistant Can you give us some treatment guidance?",
+      "n_checks": 2,
+      "n_supported": 2,
+      "n_unsupported": 0,
+      "n_unclear": 0,
+      "answer_label": "supported"
+    },
+    {
+      "source": "rtms_qa/unknown.ndjson",
+      "qa_id": "unknown:39",
+      "question_type": "unknown",
+      "question": "@ECHO AI Assistant how do we treat diabetes",
+      "n_checks": 5,
+      "n_supported": 5,
+      "n_unsupported": 0,
+      "n_unclear": 0,
+      "answer_label": "supported"
+    }
+  ]
+}

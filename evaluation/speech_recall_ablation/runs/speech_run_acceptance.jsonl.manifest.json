@@ -1,0 +1,33 @@
+{
+  "status": "real_model_run",
+  "started_at_unix": 1795550084.00596,
+  "cases_sha256": "e323b238dc321020bd68ddb2ae5e2a86bec44bbeca008181b06f2ada4dcfc7a2",
+  "source_sha256": {
+    "src/meetingAi.ts": "bf8be012568844ff1954cf55457254e07bb568117f119198cc648d356af2ab18",
+    "src/server.ts": "fca4aee1dba210230b12c702cb40dd1320151b9520fa78c15ecc66d58553badd"
+  },
+  "controls": {
+    "vlmModel": "Qwen/Qwen2.5-VL-3B-Instruct",
+    "vlmMaxTokens": 512,
+    "ragVlmMaxTokens": 768,
+    "answerLlmEnabled": true,
+    "answerLlmModel": "Qwen/Qwen3-4B-Instruct-2507",
+    "answerLlmMaxTokens": 120,
+    "answerLlmMaxChars": 450,
+    "ragAnswerLlmMaxTokens": 160,
+    "ragAnswerLlmMaxChars": 600,
+    "literatureAnswerMaxTokens": 220,
+    "literatureAnswerMaxChars": 900,
+    "answerStyle": "concise",
+    "contextMode": "full-with-summary-fallback",
+    "screenShareEnabled": true,
+    "screenShareMaxImages": 3,
+    "screenShareMemoryLimit": 200,
+    "screenShareMaxImageBytes": 2500000,
+    "noFrameFixedReply": true
+  },
+  "seed": 2026,
+  "repeats": 3,
+  "policy": "Frame attachment differs; the speech-only instruction is retained in both arms.",
+  "scoring": "Automatic token-presence probes only; use blinded human labels for source attribution."
+}

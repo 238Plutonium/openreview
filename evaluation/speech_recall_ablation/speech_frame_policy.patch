@@ -1,0 +1,55 @@
+--- a/src/meetingAi.ts
++++ b/src/meetingAi.ts
+@@ -47,6 +47,8 @@
+   screenShareMaxImageBytes: number;
+   /** When true (default), visual asks with zero frames return a fixed unavailable reply and skip the drafting MLLM. */
+   noFrameFixedReply: boolean;
++  /** Experiment-only switch; omitted/true preserves normal speech-frame withholding. */
++  speechRecallWithholdFrames?: boolean;
+   fullContextMaxChars: number;
+   recentContextMaxChars: number;
+   relevantContextMaxChars: number;
+@@ -501,8 +503,12 @@
+   return value.slice(value.length - maxChars);
+ }
+ 
+-function shouldWithholdScreenShare(question: string, focus: QuestionFocus): boolean {
+-  return focus === "speech" || looksLikeSelfIdentityQuestion(question);
++function shouldWithholdScreenShare(
++  question: string,
++  focus: QuestionFocus,
++  withholdSpeechFrames = true,
++): boolean {
++  return (withholdSpeechFrames && focus === "speech") || looksLikeSelfIdentityQuestion(question);
+ }
+ 
+ export function stripPowerpointPageLabel(answer: string): string {
+@@ -1096,6 +1102,7 @@
+       screenShareMemoryLimit: this.config.screenShareMemoryLimit,
+       screenShareMaxImageBytes: this.config.screenShareMaxImageBytes,
+       noFrameFixedReply: this.config.noFrameFixedReply,
++      speechRecallWithholdFrames: this.config.speechRecallWithholdFrames !== false,
+       latestStreamId: this.latestStreamId,
+       voiceInvocation: this.voiceInvocation.health(),
+       asrBuffers: Array.from(this.asrBuffers.values()).map((buffer) => ({
+@@ -1500,6 +1507,7 @@
+     const candidateScreenShareFrames = shouldWithholdScreenShare(
+       question.question,
+       focus,
++      this.config.speechRecallWithholdFrames !== false,
+     )
+       ? []
+       : availableScreenShareFrames;
+--- a/src/server.ts
++++ b/src/server.ts
+@@ -576,6 +576,10 @@
+       screenShareEnabled: parseBoolean(process.env.AI_SCREEN_SHARE_ENABLED, true),
+       noFrameFixedReply: parseBoolean(
+         process.env.ECHO_NO_FRAME_FIXED_REPLY,
++        true,
++      ),
++      speechRecallWithholdFrames: parseBoolean(
++        process.env.ECHO_SPEECH_RECALL_WITHHOLD_FRAMES,
+         true,
+       ),
+       screenShareMaxImages: parseNonNegativeInteger(
