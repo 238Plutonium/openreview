@@ -79,7 +79,8 @@ Lexical probes only (not human attribution). Withheld frames: spoken 90/90, slid
 
 ## Claim-level citation screening (corrected)
 
-[`evaluation/claim_level_audit/`](evaluation/claim_level_audit/) — 30 archived PMID-bearing answers labeled against PubMed abstracts (heuristic; not clinician validation).
+[`evaluation/claim_level_audit/`](evaluation/claim_level_audit/) — **bibliography rows excluded**. The earlier 14/10/6 tallies scored reference-list lines as claims and are **withdrawn**. Current files are preliminary automated assertion screening only, not validated answer-support counts.
+
 
 ## Acknowledgments
 
