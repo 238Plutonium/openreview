@@ -77,9 +77,62 @@ def check_packet_scores() -> None:
     print("packet: OK")
 
 
+def check_citation_faithfulness() -> None:
+    """Reproduce ALCE-style strict/soft rates from archived judge CSV (offline)."""
+    summary = json.loads(
+        (ROOT / "citation_faithfulness" / "citation_attr_summary.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    per = summary["per_citation"]
+    rows = list(
+        csv.DictReader(
+            (ROOT / "citation_faithfulness" / "citation_attr_per_pmid.csv").open(
+                encoding="utf-8"
+            )
+        )
+    )
+    assert len(rows) == 114, len(rows)
+    scores = [float(r["attr_score"]) for r in rows if r.get("attr_score") not in (None, "")]
+    assert len(scores) == 114, len(scores)
+    n_half = sum(1 for s in scores if s == 0.5)
+    prec_strict = sum(1 for s in scores if s == 1.0) / len(scores)
+    prec_soft = sum(1 for s in scores if s >= 0.5) / len(scores)
+    from collections import defaultdict
+
+    by_unit: dict[tuple, list[float]] = defaultdict(list)
+    for r in rows:
+        if r.get("attr_score") in (None, ""):
+            continue
+        by_unit[(r["qa_id"], r["unit_id"])].append(float(r["attr_score"]))
+    rec_strict = sum(1 for v in by_unit.values() if max(v) == 1.0) / len(by_unit)
+    rec_soft = sum(1 for v in by_unit.values() if max(v) >= 0.5) / len(by_unit)
+
+    assert abs(prec_strict - float(per["citation_precision_strict_attr1"])) < 1e-9
+    assert abs(prec_soft - float(per["citation_precision_soft_attr_ge_0_5"])) < 1e-9
+    assert abs(rec_strict - float(per["statement_recall_any_cite_strict"])) < 1e-9
+    assert abs(rec_soft - float(per["statement_recall_any_cite_soft"])) < 1e-9
+    # Manuscript Table 6 (rounded)
+    assert abs(prec_strict - 0.19) < 0.01, prec_strict
+    assert abs(rec_strict - 0.23) < 0.01, rec_strict
+    assert abs(prec_soft - 0.72) < 0.01, prec_soft
+    assert abs(rec_soft - 0.73) < 0.01, rec_soft
+    assert n_half == 60, n_half
+    # Veterinary PMID still in historical answers; not required for rates to match.
+    vet = [r for r in rows if r["pmid"] == "29314873"]
+    assert len(vet) == 8, len(vet)
+    print(
+        f"citation: P={prec_strict:.2f}/{prec_soft:.2f} "
+        f"R={rec_strict:.2f}/{rec_soft:.2f} (strict/soft); "
+        f"n=114; attr=0.5 count={n_half}; vet_pmid_instances={len(vet)}"
+    )
+    print("citation: OK")
+
+
 def main() -> None:
     check_noframe()
     check_packet_scores()
+    check_citation_faithfulness()
     print("all checks passed")
 
 

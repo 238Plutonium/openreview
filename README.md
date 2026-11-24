@@ -84,7 +84,7 @@ Lexical probes only (not human attribution). Withheld frames: spoken 90/90, slid
 
 ## Claim-level citation screening (corrected)
 
-[`evaluation/claim_level_audit/`](evaluation/claim_level_audit/) — **bibliography rows excluded**. The earlier 14/10/6 tallies scored reference-list lines as claims and are **withdrawn**. Current files are preliminary automated assertion screening only, not validated answer-support counts.
+[`evaluation/claim_level_audit/`](evaluation/claim_level_audit/) — **bibliography rows excluded**. The earlier 14/10/6 tallies scored reference-list lines as claims and are **withdrawn**. Current files are a lexical assertion--PMID screen (bibliography excluded), closest in spirit to strict ALCE support---not a soft support rate and not clinician validation. See also `evaluation/citation_faithfulness/` for ALCE-style precision/recall (strict 0.19/0.23; soft 0.72/0.73).
 
 
 ## Acknowledgments

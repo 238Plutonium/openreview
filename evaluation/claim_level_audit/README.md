@@ -10,7 +10,7 @@ The first public CSV treated **bibliography lines** (e.g. `[6]: PMID … | Vitam
 4. Label each assertion–PMID pair with a lexical/mismatch heuristic.
 
 ## Interpretation
-This is **preliminary automated citation screening**, not validated answer-support evidence. Do not cite withdrawn 14/10/6 counts.
+This is **lexical assertion--PMID screen (not ALCE soft rates; not clinician validation)**, not validated answer-support evidence. Do not cite withdrawn 14/10/6 counts.
 
 ## Counts
 ```json
