@@ -76,7 +76,7 @@ python3 evaluation/verify_results.py
 
 ## Acknowledgments
 
-Cursor was used to proofread selected portions of the source code.
+Cursor was used to assist with source-code proofreading and manuscript editing.
 
 ## License
 

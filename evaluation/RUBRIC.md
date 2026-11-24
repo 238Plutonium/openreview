@@ -33,4 +33,4 @@ Treat as a **regression signal**, not clinician validation (manuscript Spearman 
 Filled individual sheets stay private. This public package ships the rubric, archived Q&A, anonymized pooled summary, and offline `verify_results.py` only.
 
 ## AI-tool disclosure (matches the manuscript Acknowledgments)
-Cursor was used to proofread selected portions of the source code.
+Cursor was used to assist with source-code proofreading and manuscript editing.
