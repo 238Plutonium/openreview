@@ -27,3 +27,7 @@ CPU-readable JSONL; reproducing model calls needs two replay bots (instructions 
 
 ## 6. Offline no-frame recorded replay
 Open `evaluation/recorded_replay/index.html` or run `python evaluation/recorded_replay/verify_paired_replay.py`.
+
+## Citation faithfulness (automatic)
+
+See `evaluation/citation_faithfulness/` (also under `reviewer_package/`). ALCE/MedCite-style soft P/R ≈0.72/0.73 on archived PubMed answers; not clinician validation.

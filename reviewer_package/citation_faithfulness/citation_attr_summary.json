@@ -1,0 +1,37 @@
+{
+  "protocol": "ALCE/MedCite-style statement-level attribution against PubMed abstracts. Local judge: Qwen3-4B-Instruct-2507 (temp 0). Bibliography lines excluded. Not clinician validation.",
+  "judge_model": "Qwen/Qwen3-4B-Instruct-2507",
+  "n_answers": 28,
+  "n_answers_with_assertions": 28,
+  "n_assertion_units": 86,
+  "n_scored": 86,
+  "n_parse_fail": 0,
+  "citation_recall_strict_attr1": 0.18604651162790697,
+  "citation_recall_soft_attr_ge_0_5": 0.7906976744186046,
+  "mean_attr_score": 0.4883720930232558,
+  "attr_histogram": {
+    "0.0": 18,
+    "1.0": 16,
+    "0.5": 52
+  },
+  "benchmarks_referenced": {
+    "ALCE": "https://github.com/princeton-nlp/ALCE",
+    "MedCite": "https://aclanthology.org/2025.findings-acl.967/"
+  },
+  "per_citation": {
+    "protocol": "ALCE-style per-citation attribution; precision over citation instances; recall = statements with \u22651 supporting cite",
+    "judge_model": "Qwen/Qwen3-4B-Instruct-2507",
+    "n_citation_instances": 114,
+    "n_scored": 114,
+    "citation_precision_strict_attr1": 0.19298245614035087,
+    "citation_precision_soft_attr_ge_0_5": 0.7192982456140351,
+    "statement_recall_any_cite_strict": 0.23255813953488372,
+    "statement_recall_any_cite_soft": 0.7325581395348837,
+    "mean_attr_score": 0.45614035087719296,
+    "attr_histogram": {
+      "0.0": 32,
+      "1.0": 22,
+      "0.5": 60
+    }
+  }
+}
