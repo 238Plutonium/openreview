@@ -1,0 +1,361 @@
+\documentclass[11pt]{article}
+\pdfmapfile{=ps2pk35.map}
+\pdfmapfile{+cm.map}
+\pdfmapfile{+latxfont.map}
+\usepackage[preprint]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{xurl}
+\usepackage{balance}
+\urlstyle{same}
+\title{ECHO-AI: An RTMS-Powered Multimodal In-Meeting Assistant with RAG and Vision--Language Grounding for Clinical Tele-Education}
+\author{Qianyi Li \quad Binglin Zhou \\ The Pennsylvania State University \\ \texttt{qxl5189@psu.edu}}
+\begin{document}
+\lefthyphenmin=2
+\righthyphenmin=3
+\maketitle
+
+\begin{abstract}
+
+During Project ECHO (Extension for Community Healthcare Outcomes) case-based tele-education sessions on opioid use disorder (OUD) and medications for opioid use disorder (MOUD), looking up a slide, a remark, or a paper can interrupt the discussion. We present ECHO-AI, a Zoom Real-Time Media Streams (RTMS) assistant that joins the meeting and, with host approval, answers by public mention, private chat, or voice without uploading meeting materials, together with a PubMed-only web chat for use outside meetings. ECHO-AI grounds vision--language model (VLM)-drafted and LLM-formatted replies in routed evidence: slides, speech, and retrieval-augmented generation (RAG) over PubMed and prior sessions. Delivery controls withhold slides for speech recall, abstain when visual evidence is missing, and restrict cited PMIDs to the retrieval record. We report evaluation metrics for response latency, evidence routing, facilitator usability, and citation support. Mean end-to-end latency was acceptable. Paired tests showed higher abstention without frames and better spoken-token recovery when conflicting slides were withheld. Facilitators gave positive usability feedback. The automated citation audit found partial or full support for most claim--citation pairs. MIT-licensed code, replay artifacts, and a screencast support inspection.
+
+\end{abstract}
+
+\section{Introduction}
+
+Unequal access to specialist expertise remains a barrier for underserved communities. Project ECHO connects hub specialists and frontline clinicians at spoke sites in recurring, case-based videoconferences (Arora et al., 2010, 2011a). In its hepatitis~C program, sustained virologic response rates were comparable across primary-care and specialty sites (Arora et al., 2011b). The September Penn State Project ECHO demonstration used a simulated OUD case discussion involving medications for opioid use disorder (MOUD). During a teaching session, participants may need to clarify a slide, recall a remark, consult an earlier session, or find biomedical literature before the discussion moves on.
+
+ECHO-AI supports Project ECHO facilitators and spoke clinicians inside the live Zoom call. With host approval, the assistant receives shared-screen frames and audio through Zoom Real-Time Media Streams (RTMS). Participants can ask questions by public mention, private chat, or voice without uploading meeting materials. The system routes questions to timestamped slides, speech, PubMed, or prior ECHO sessions. It withholds slides for speech recall, returns a fixed reply when a visual question lacks a usable frame, and restricts cited PubMed identifiers (PMIDs) to the retrieval record. A minutes module preserves the discussion and Q\&A for later review. See Figure~\ref{fig:architecture}A.
+
+We contribute (i)~an MIT-licensed meeting assistant powered by a VLM-LLM pipeline with these evidence and delivery controls; (ii)~an evaluation that uses project-team logs to characterize deployment, paired comparisons to test specific safeguards, and human ratings and citation audits to assess outputs and usability; and (iii)~public code and replay artifacts,\footnote{\url{https://github.com/238Plutonium/echo-ai-naacl-submission}} a PubMed-only live demo (Figure~\ref{fig:architecture}B),\footnote{\url{https://chive-shrouded-gag.ngrok-free.dev/chat.html}} and a narrated screencast.\footnote{\url{https://www.youtube.com/watch?v=WwFCYDoYzm8}}
+
+\section{Related Work}
+
+\textbf{Medical retrieval and education.} Retrieval-augmented generation (RAG) supplies source passages to a generator (Lewis et al., 2020; Karpukhin et al., 2020). Almanac grounds clinical answers in retrieved sources, while MedRAG and PubMedQA benchmark medical retrieval and question answering (Zakka et al., 2024; Xiong et al., 2024; Jin et al., 2019). AMIE studies conversational diagnosis (Tu et al., 2025). MedTutor builds a learning module from a clinical report using textbooks and research articles. It evaluates outputs with radiologists and model-based judges (Jang et al., 2025). ECHO-AI addresses questions asked mid-discussion, where the system must identify which evidence the participant means and whether it is available.
+
+\textbf{Meeting understanding.} AMI captures synchronized audio and visual meeting context. QMSum and MeetingBank support analysis of recorded meetings, and MeetBench-XL evaluates real-time meeting agents (Carletta et al., 2006; Zhong et al., 2021; Hu et al., 2023, 2026). Zoom AI Companion can use transcript and optional screen text, while Otter AI Chat and Fireflies AskFred support transcript Q\&A (Zoom Video Communications, 2025a,b; Otter.ai, 2025; Fireflies.ai, 2025). Table~1 shows how ECHO-AI adds biomedical and prior-session retrieval to live screen and speech context.
+
+\textbf{Grounding and reliability.} Prior work on hallucination and citation faithfulness motivates abstention and source checks (Ji et al., 2023; Manakul et al., 2023; Gao et al., 2023). ECHO-AI applies these checks when replying in the meeting. Its controlled comparisons isolate evidence selection and reply policies within a shared answer-generation stack (Table~3).
+
+\section{System Architecture}
+
+ECHO-AI combines live multimodal capture, evidence routing, and constrained generation. RTMS supplies timestamped screen and speech context; question focus and retrieval intent determine which sources are used; vision--language drafting and citation filtering produce the meeting reply. Visual availability is checked before drafting. The public web interface exposes the literature path with institutional retrieval disabled.
+
+\begin{figure*}[t]\centering
+\includegraphics[width=\textwidth]{architecture_refined.pdf}
+
+\caption{ECHO-AI architecture. RTMS = Real-Time Media Streams; VL = vision--language; ASR = automatic speech recognition; RAG = retrieval-augmented generation. The public web interface has no access to live meeting media or prior-session indexes. Visual questions without frames bypass generation and return a fixed reply.}\label{fig:architecture}\end{figure*}
+
+\subsection{Live Meeting Context}
+
+With host approval, ECHO-AI joins a Zoom meeting and receives shared-screen images and audio via RTMS. Participants interact through public mentions, private chat, or voice. Faster-whisper large-v3 (Radford et al., 2022) transcribes speech, and frame deduplication retains distinct visual context. Frames are selected at or before the question timestamp, preserving the temporal relationship between a question and the displayed material.
+
+\subsection{Evidence Routing and Response Generation}
+
+A rule-based question-focus stage distinguishes visual, speech, and general requests. It recognizes slide-reading constructions such as ``what does my slide say?'' as visual, while speech-recall requests withhold screen images so that printed text is not substituted for spoken content. Retrieval separately selects biomedical literature, prior-session knowledge, or both. This separation makes the choice of evidence explicit before model generation.
+
+For a visual request with no usable frames, an availability gate returns a fixed unavailable-screen response and bypasses drafting. With frames present, a slide-specific retry addresses drafts that repeat page labels instead of slide content. Qwen2.5-VL (Bai et al., 2025) drafts from the selected context, and Qwen3 (Yang et al., 2025) formats the answer. A post-generation check retains citation identifiers that appear in the retrieval record before source references are rendered. Clinical responses carry an educational-use disclaimer. These controls operate around the component models and directly govern what reaches the meeting.
+
+Voice interaction uses wake-phrase filtering and cooldowns. At session end, a minutes module preserves transcripts, sampled slides, question--answer pairs, and summaries. Appendix~B lists hardware and replay commands.
+
+\subsection{Biomedical Literature and Institutional Knowledge}
+
+The literature path retrieves PubMed articles (Sayers et al., 2022), filters for human studies, and reranks abstracts. The prior-session path combines lexical search and semantic embeddings (Robertson and Zaragoza, 2009; Chen et al., 2024) over \textbf{3,310 transcript chunks} built from \textbf{98 prior ECHO session recordings} (video$\rightarrow$ASR$\rightarrow$overlapping chunks). The indexed transcripts are de-identified. Query expansion addresses ambiguous medical abbreviations. The human-study filter was introduced in response to a historical veterinary retrieval error (Section 5).
+
+\subsection{Example of Evidence Selection}
+
+A synthetic replay illustrates why the distinction between topic and evidence source matters. The slide shows a start time of \texttt{13:30}, while the facilitator says \texttt{08:30}. A question about the start time the facilitator \emph{said} is classified as speech recall. The router withholds the picture and passes the transcript context to the answer pipeline. A question about the time shown on the slide can instead use the timestamped image. If that question arrives before the stream has a usable frame, the availability gate sends the fixed screen-unavailable reply before model generation. The paired experiments in Section~5 vary these controls individually to test responses to contradictory or unavailable evidence under known input conditions.
+
+\subsection{Implementation, Licensing, and Public Access}
+
+Node.js orchestrates the bot; Python/vLLM hosts models on local GPUs. \textbf{License:} sanitized meeting-bot and website source are \textbf{MIT}; model weights keep upstream licenses (Qwen2.5-VL-3B-Instruct is non-commercial research; Qwen3-4B-Instruct-2507 is Apache-2.0; BGE-M3 is MIT). The release excludes credentials, private media, and institutional transcript indexes. Full RTMS needs institutional Zoom infrastructure; the public demo is PubMed-only and GPU-dependent.
+
+\textbf{Reviewer codebase.} The linked repository includes the Node meeting bot, the Python web service, synthetic replay fixtures, and scripts and saved outputs for the evaluations. The \href{https://github.com/238Plutonium/echo-ai-naacl-submission/tree/fef2ac3d2a907faeeb7c71ac52b4e60260be3060}{reviewed source snapshot} provides three entry points: \nolinkurl{meeting-bot/} for the RTMS application, \nolinkurl{website/} for the public interface, and \nolinkurl{evaluation/} for the data and validation scripts. The recorded replay can be inspected on a CPU. Running new model answers requires the configured model services. Appendix~B lists the commands and identifies the checks requiring institutional access.
+
+\begin{figure*}[t]\centering
+\includegraphics[width=.485\textwidth]{image5.jpeg}\hfill\includegraphics[width=.485\textwidth]{image6.jpeg}
+
+\caption{(a) ECHO-AI answering a slide question within Zoom (left); (b) the public literature interface displaying responses with PubMed identifiers (right).}\end{figure*}
+
+\begin{table*}[t]\centering\small\setlength{\tabcolsep}{3pt}
+
+\begin{tabularx}{\textwidth}{@{}p{.18\textwidth}p{.12\textwidth}p{.20\textwidth}p{.20\textwidth}X@{}}\toprule
+
+\textbf{System} & \textbf{Live meeting} & \textbf{Screen and ASR} & \textbf{Medical RAG} & \textbf{Q\&A interface}\\\midrule
+
+MedTutor & --- & --- & Textbooks + PubMed and Semantic Scholar & Web UI\\
+
+Zoom AI Companion & Yes & ASR; optional screen OCR & --- & Transcript chat\\
+
+Otter AI Chat & Yes & ASR & --- & Transcript chat\\
+
+Fireflies AskFred & Yes & ASR & --- & Transcript chat\\
+
+ECHO-AI & Zoom bot & Deskshare + ASR & PubMed + prior ECHO & Chat + voice\\
+
+\bottomrule\end{tabularx}
+
+\caption{Feature comparison based on public product pages (November 2026). Controlled baselines are reported in Table~3.}\end{table*}
+
+\section{System Demonstration}
+
+\textbf{Start here.} Reviewers can (1) ask a question in the public PubMed chat, (2) watch the screencast, or (3) open \nolinkurl{evaluation/recorded_replay/index.html} and select VIS-ZERO-01 to compare guard-on and guard-off replies without model services. The demo follows an ECHO session (Figure~2). A facilitator shares a slide and asks the bot about it. A spoken follow-up queries the transcript. A literature question then requests a PubMed-backed answer, and a prior-session question invokes the institutional index. At the end of the call, the minutes module writes a transcript, sampled slides, Q\&A pairs, and a summary. The screencast shows the meeting workflow and the public web chat. Appendix~A gives worked examples for interpreting these interactions.
+
+Reviewers can ask their own literature question through the public website. The repository provides a separate fixture-based Zoom replay with synthetic screen and transcript evidence, plus saved outputs from the paired experiments. The saved outputs can be opened without models. The installable replay can issue new questions with model services and needs no Zoom credentials. The public website has access only to the literature path. The institutional prior-session index remains internal.
+
+\section{Evaluation}
+
+We assess archived deployment behavior, compare routers and delivery policies with competing alternatives (Table~3), report facilitator and packet ratings in a MedTutor-style human vs.\ LLM-as-a-judge view (Table~5; Jang et al., 2025), and relate automatic attribution scores to PMID provenance. Table~1 situates features only. Frontier generator rows and learner pre/post scores are instrumented in the release but not yet filled.
+
+\subsection{Deployment Behavior}
+
+The archived log contains 419 answers to project-team-authored development questions across 55 streams (Table~2). Slide questions contain ``slide'' or ``screen''. Frames attach to 86/122 slide asks (70.5\%); fingerprinting yields unique-frame ratio 0.015 (290 kept / 19{,}078 near-duplicates dropped). Full-pipeline latency mean 6.0\,s (median 4.1\,s; $n{=}213$); wake-to-submit mean 7.8\,s ($n{=}58$). Of answers with a retrieval record ($n{=}52$), routing is literature 33 / both 14 / prior-session 5. Frame counts 0/1/2/3: 227/129/20/43. The public literature UI is excluded from this log; when GPUs are down, screencast and recorded packages remain offline.
+
+\begin{table}[t]\centering\small\setlength{\tabcolsep}{3pt}
+
+\begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}p{.37\columnwidth}>{\raggedright\arraybackslash}X@{}}\toprule
+
+\textbf{Metric} & \textbf{Measured value}\\\midrule
+
+Answers (distinct) & 419 (289); project-team query log\\
+
+Frame attachment & 86/122 slide questions (70.5\%)\\
+
+PMID provenance & 27/27 PMID-bearing answers used IDs in retrieved evidence\\
+
+Full-pipeline latency & Mean 6.0 s; median 4.1 s (n = 213)\\
+
+Facilitator usability & Mean 4.13/5; 15 items, 4 raters\\
+
+Human answer packet & 4.26/5 equal-rater mean (3 raters, 13 items)\\
+
+\bottomrule\end{tabularx}
+
+\caption{Deployment log and human ratings. PMID provenance means that an identifier appears in the retrieval record.}\end{table}
+
+\textbf{Citation provenance.} Twenty-seven answers cite 44 distinct PMIDs; every ID appears in the retrieval record. Eight historical diabetes answers cite veterinary PMID 29314873---motivation for the Humans[Mesh] filter on new retrieval. Twenty-five of 27 include an educational non-advice sentence.
+
+\subsection{Routing versus Competing Methods}
+
+Context routing chooses \emph{which} evidence reaches the generator. We compare ECHO's rule router and delivery policies to competing policies on the same cases (package \nolinkurl{evaluation/routing_comparison/}; relative paths; optional vLLM). Focus and intent labels are \emph{category-derived} from existing experiment sets and synthetic probes.
+
+\begin{table}[t]\centering\small\setlength{\tabcolsep}{2pt}
+
+\begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}p{.26\columnwidth}>{\raggedright\arraybackslash}p{.32\columnwidth}X@{}}\toprule
+
+\textbf{Task} & \textbf{ECHO routing} & \textbf{Competing method}\\\midrule
+
+Speech/slide conflict (30$\times$3) & Withhold frame: spoken 1.00, slide-only 0.00 & Always attach slide: spoken 0.62, slide-only 0.38\\
+
+Zero-frame visual (n=35) & Guard on: abstain 33/35 & Guard off (still draft): 3/35\\
+
+Focus labels (n=78) & Rule acc.\ 0.94; mean 0.028\,ms & Always-visual 0.49; LLM 0.96 / 49.8\,ms (${\sim}$1780$\times$ slower)\\
+
+Retrieval intent (n=32) & Rule acc.\ 0.69; mean 0.221\,ms & Always-none 0.63; LLM intent 0.47 / 68.7\,ms (${\sim}$310$\times$ slower)\\
+
+\bottomrule\end{tabularx}
+
+\caption{Routing vs competing methods. Speech/no-frame: paired end-to-end runs. Focus/retrieval: category-derived reference labels. Section~5.2 reports results for all retrieval-intent prompts and for the subset that requires retrieval.}\end{table}
+The focus set contains 30 speech, 38 visual, and 10 general examples. The retrieval-intent set contains eight literature, four prior-session, and 20 no-retrieval examples. On the focus set, the rule router assigned 73/78 labels correctly and the Qwen3-4B router assigned 75/78 correctly. On retrieval intent, the rule router assigned 22/32 correctly, compared with 20/32 for always-none and 15/32 for Qwen3-4B. On the 12 prompts that require retrieval, exact-label accuracy was 6/12 for the rule router, 12/12 for Qwen3-4B, 8/12 for always-literature, and 0/12 for always-none. The rule router averaged under 1\,ms for each routing task (Table~3). Table~2 reports end-to-end response latency.
+
+Accuracy is the fraction of prompts whose predicted label matches the reference, computed separately per task. The always-visual and always-none baselines show the accuracy of predicting the most frequent category; the two tasks have different label distributions, so differences are interpreted within each task.
+
+\subsection{Safeguard Checks and Archived Answers}
+
+The paired probes below quantify two delivery controls---visual abstention and speech-frame withholding---alongside a retrieval filter check and archived-answer ratings. Table~3 summarizes the same contrasts against competing policies.
+
+\textbf{Paired no-frame ablation.} The experimental control is the guard-disabled pipeline on the same 35 synthetic visual questions without frames. Enabling the guard raised abstention from 3/35 to 33/35: 31 guarded-only refusals, one unguarded-only refusal, two refusals in both conditions, and one in neither. The paired change was 85.7 percentage points, with 31 of the 32 discordant cases favoring the guard (two-sided exact McNemar $p=1.54\times10^{-8}$). Mean latency was 374\,ms with the guard and 1{,}524\,ms without it; the corresponding medians were 3.2 and 865.3\,ms. The guard bypasses answer generation. The guard-enabled arm generated replies on two zero-frame prompts. In VIS-ZERO-03, the reply stated that the slide was visible. In VIS-ZERO-21, the reply stated that the slide did not mention buprenorphine. Taken together, the abstention and latency results show that the guard provides a faster fallback on zero-frame prompts.
+
+The change in abstention rate is $(b-c)/N=(31-1)/35\approx0.857$, where $b$ and $c$ count prompts abstaining only with and only without the guard; the two prompts abstaining under both settings cancel. The exact McNemar test uses the 32 discordant prompts.
+
+\textbf{Speech-recall frame withholding.} On 30 synthetic scheduling asks where transcript and slide disagree (3 reps; 180 calls), withholding the conflicting frame yields spoken-token 90/90 and slide-only 0/90; with the frame included, spoken falls to 62.2\% and slide-only rises to 37.8\% (case-mean $\Delta{+}0.38$/$-0.38$). In these scenarios, withholding conflicting slides helped the assistant preserve spoken values in its replies.
+
+The speech-recall test scores the value in the reply against two cues from the same scenario, one spoken and one shown on screen. For example, Appendix~A traces a case with a spoken time of 08:30 and a displayed time of 13:30. The spoken-token rate records whether the reply contains the spoken value, while the slide-only rate records whether it contains the displayed value alone. Three runs for each scenario capture variation in the generated reply. The 90 replies per arm therefore represent 30 distinct question scenarios.
+
+\textbf{Retrieval check.} A Humans[Mesh] filter excludes veterinary PMID 29314873 in a title-query check for that single guideline. Historical diabetes answers in the archived log still cite that PMID; the filter is for new retrieval.
+
+\textbf{Archived-answer quality.} Three raters scored a fixed 13-question MOUD/OUD packet (distinct from facilitator usability). After mapping one 1--3 sheet to 1--5, the equal-weight mean is \textbf{4.26/5} (per-rater 5.00, 4.87, 2.92). Evidence usefulness is lowest (3.78); $\geq$1 rater flagged 9/13 answers. Table~5 follows MedTutor's human vs.\ LLM-as-a-judge layout (Jang et al., 2025); item-level Spearman $\rho{\approx}0.34$. Raters are packet graders, not a finished MOUD specialist panel (\nolinkurl{evaluation/RUBRIC.md}).
+
+\begin{table}[t]\centering\small\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrr@{}}\toprule
+\textbf{Dimension (1--5)} & \textbf{Human} & \textbf{LLM}\\\midrule
+Factual / grounding / evidence & 4.19 / 5.00 / 3.78 & 4.15 / 3.62 / 3.64 \\
+Safety / usability / overall & 4.51 / 4.12 / 4.26 & 5.00 / 4.85 / 4.26 \\
+\bottomrule\end{tabular}
+\caption{MedTutor-style $M{=}13$ packet means. Human: three-rater equal weight. LLM: Qwen3-4B judge (same family as formatter).}\label{tab:medtutor}
+\end{table}
+
+\textbf{Claim support.} An ALCE-style audit (Gao et al., 2023; \nolinkurl{evaluation/citation_faithfulness/}) uses a same-family Qwen3-4B judge to score 114 claim--citation pairs from 86 statements in 28 answers against PubMed abstracts. Scores are 0 (unsupported), 0.5 (partial), or 1 (full support). At threshold $\tau$, let $C_\tau$ count pairs scoring at least $\tau$ and $S_\tau$ count statements with at least one such citation.
+\[
+\mathrm{Precision}(\tau)=\frac{C_\tau}{114},\qquad
+\mathrm{Recall}(\tau)=\frac{S_\tau}{86}.
+\]
+Full support covers 22 pairs and 20 statements. Counting 60 partial scores, the automated judge found support for most claim--citation pairs (82/114) and at least one supporting citation for 63/86 statements (Table~4). PMID provenance measures retrieval membership. The automated attribution audit estimates claim support against abstracts. Section~5.4 reports two public web probes. A separate lexical screen finds support for 14/132 pairs (\nolinkurl{evaluation/claim_level_audit/}).
+
+\begin{table}[t]\centering\small\setlength{\tabcolsep}{3pt}
+
+\begin{tabularx}{\columnwidth}{@{}Xr@{}}\toprule
+
+\textbf{ALCE-style metric} & \textbf{Value}\\\midrule
+
+Citation precision (attr$\geq$0.5) & 0.72\\
+
+Citation recall (attr$\geq$0.5) & 0.73\\
+
+\bottomrule\end{tabularx}
+
+\caption{Automatic citation attribution vs.\ PubMed abstracts (Qwen3-4B judge; same family as the formatter).}\end{table}
+
+\subsection{Public Literature Probes}
+
+Two exploratory probes examined retrieval relevance and alignment with study outcomes in the public chat. A question about rural Project ECHO tele-mentoring returned PMIDs 11131773 and 37467205. The papers address rural physician education and physician assistant training, respectively. A second question supplied PMID 21631316. The reply attributed better clinical outcomes and fewer readmissions to the study. The study evaluated sustained virologic response and reported comparable rates across sites (Arora et al., 2011b). These probes are separate from the archived attribution set.
+
+\subsection{Facilitator Usability}
+
+Four Project ECHO facilitators completed the anonymous usability survey after the September 10, 2026 simulated case discussion. The pooled mean was 4.13/5 across 15 items (Table~2). Appeal, ease, and question clarity each received 4.50/5. Non-disruption received 3.25/5, and voice-wake received 3.33/5 ($n{=}3$). Comments requested quieter replies and facilitator-only invocation. The release exposes \texttt{ECHO\_FACILITATOR\_ONLY}, \texttt{ECHO\_ALLOWED\_ASKERS}, and \texttt{ECHO\_QUIET\_REPLIES}.
+
+\subsection{Frontier Generators and Education Outcomes}
+
+Table~5 is the measured generator (Qwen2.5-VL-3B + Qwen3-4B). The release freezes the same packet for GPT/Claude/Gemini/Gemma rows (\nolinkurl{evaluation/frontier\_baselines/}; CSV currently ECHO-AI only---no invented scores). Table~3's Qwen3 router comparison is routing, not generator quality. For education outcomes, a MOUD pre/post instrument is in \nolinkurl{evaluation/education\_outcomes/} (knowledge, confidence, usefulness/non-disruption); the pilot file is header-only until a consented session runs.
+
+\section{Conclusion}
+
+ECHO-AI brings multimodal meeting context and biomedical retrieval into Project ECHO MOUD tele-education. Routing to speech, slides, PubMed, or prior sessions---and abstaining or withholding frames when evidence is missing or mismatched---keeps lookups inside the call. Deployment logs, paired safeguard comparisons, facilitator ratings, and a MedTutor-style human/LLM packet table support the demo; frontier generator rows and learner pre/post scores remain to be filled from the released instruments.
+
+\clearpage
+\section*{Limitations}
+
+Logs are project-team-authored; facilitator usability is $n{=}4$ after one September~10 simulated session; the $M{=}13$ packet uses three graders, not a finished MOUD specialist panel. Speech-recall probes are synthetic; the citation audit and Table~5 LLM judge share the formatter's Qwen3 family. Frame coverage is availability, not visual correctness. Frontier generator and learner pre/post scores are instrumented but unfilled. The public site is PubMed-only and GPU-dependent.
+
+\section*{Ethics Statement}
+
+ECHO-AI is an educational aid for MOUD and related Project ECHO tele-mentoring. It is not intended to diagnose, prescribe, or create medical records. The system appends the following disclaimer to clinical questions or questions with retrieval records: ``Educational summary for ECHO discussion; not clinical advice or a medical record.'' The host controls admission. PubMed queries use sanitized medical concepts and do not forward raw meeting audio or slide images. Meeting audio and institutional indexes remain subject to the project's institutional retention rules; the public interface queries PubMed only.
+
+\textbf{Patient privacy.} Live ECHO sessions may discuss de-identified clinical cases. Prior-session chunks undergo an automatic redaction pass before indexing; automatic redaction is not a manual privacy certification. Index access is limited to the institutional Zoom path.
+
+\textbf{IRB / oversight.} No patients were enrolled for research, and no identifiable patient data appear in the paper. Facilitator feedback and the September 2026 MediaSpace recording derive from a scheduled demonstration with volunteer Project ECHO facilitators and participants from Penn State's Institute for Computational and Data Sciences (ICDS). Formal IRB determination language for broader research use of session media is being confirmed with the Project ECHO program office (contact: Laura Felix); this paper reports a system demonstration with voluntary educational feedback. Patient case text is excluded.
+
+
+\section*{Acknowledgments}
+
+We thank Rui Zhang for feedback on the manuscript. We thank Laura Felix for guidance on ECHO program practice and privacy/IRB wording. We also thank Jennifer Kraschnewski, Ashmita Grewal, Jessica Beiler, Ellie Hogentogler, Caitlin Kline, Melissa Huffman, Sesi Whaley, and Guido Cervone for joining the demonstration and returning the form. Cursor was used to proofread source code.
+
+\clearpage
+\begin{thebibliography}{31}
+
+\bibitem[Arora et al.(2010)]{ref2}Sanjeev Arora, Summers Kalishman, Karla Thornton, Denise Dion, Glen Murata, Paulina Deming, Brooke Parish, John Brown, Miriam Komaromy, Kathleen Colleran, Arthur Bankhurst, Joanna Katzman, Michelle Harkins, Luis Curet, Ellen Cosgrove, and Wesley Pak. 2010. Expanding access to hepatitis C virus treatment---extension for community healthcare outcomes (ECHO) project: Disruptive innovation in specialty care. Hepatology, 52(3):1124--1133.
+
+\bibitem[Arora et al.(2011a)]{ref3}Sanjeev Arora, Summers Kalishman, Denise Dion, Dara Som, Karla Thornton, Arthur Bankhurst, Jeanne Boyle, Michelle Harkins, Keith Moseley, Glen Murata, Miriam Komaromy, Joanna Katzman, Kathleen Colleran, Paulina Deming, and Sean Yutzy. 2011a. Partnering urban academic medical centers and rural primary care clinicians to provide complex chronic disease care. Health Affairs, 30(6):1176--1184.
+
+\bibitem[Arora et al.(2011b)]{ref4}Sanjeev Arora, Karla Thornton, Glen Murata, Paulina Deming, Summers Kalishman, Denise Dion, Brooke Parish, Thomas Burke, Wesley Pak, Jeffrey Dunkelberg, Martin Kistin, John Brown, Steven Jenkusky, Miriam Komaromy, and Clifford Qualls. 2011b. Outcomes of treatment for hepatitis C virus infection by primary care providers. New England Journal of Medicine, 364(23):2199--2207.
+
+\bibitem[Bai et al.(2025)]{ref5}Shuai Bai, Keqin Chen, Xuejing Liu, Jialin Wang, Wenbin Ge, Sibo Song, Kai Dang, Peng Wang, Shijie Wang, Jun Tang, Humen Zhong, Yuanzhi Zhu, Mingkun Yang, Zhaohai Li, Jianqiang Wan, et al. 2025. Qwen2.5-VL technical report. arXiv preprint arXiv:2502.13923.
+
+\bibitem[Carletta et al.(2006)]{ref6}Jean Carletta, Simone Ashby, Sebastien Bourban, Mike Flynn, Mael Guillemot, Thomas Hain, Jaroslav Kadlec, Vasilis Karaiskos, Wessel Kraaij, Melissa Kronenthal, Guillaume Lathoud, Mike Lincoln, Agnes Lisowska, Iain McCowan, Wilfried Post, Dennis Reidsma, and Pierre Wellner. 2006. The AMI meeting corpus: A pre-announcement. In Machine Learning for Multimodal Interaction (MLMI), Lecture Notes in Computer Science, pages 28--39.
+
+\bibitem[Chen et al.(2024)]{ref7}Jianlv Chen, Shitao Xiao, Peitian Zhang, Kun Luo, Defu Lian, and Zheng Liu. 2024. BGE M3-embedding: Multi-lingual, multi-functionality, multi-granularity text embeddings through self-knowledge distillation. arXiv preprint arXiv:2402.03216.
+
+\bibitem[Fireflies.ai(2025)]{ref8}Fireflies.ai. 2025. Fireflies.ai AI notetaker. \url{https://fireflies.ai/}. Product page; accessed 21 Nov 2026.
+
+\bibitem[Gao et al.(2023)]{ref9}Tianyu Gao, Howard Yen, Jiatong Yu, and Danqi Chen. 2023. Enabling large language models to generate text with citations. In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing, pages 6465-- 6488, Singapore. Association for Computational Linguistics.
+
+\bibitem[Hu et al.(2023)]{ref10}Yebowen Hu, Timothy Ganter, Hanieh Deilamsalehy, Franck Dernoncourt, Hassan Foroosh, and Fei Liu. 2023. MeetingBank: A benchmark dataset for meeting summarization. In Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages 16409--16423, Toronto, Canada. Association for Computational Linguistics.
+
+\bibitem[Hu et al.(2026)]{ref11}Yuelin Hu, Jun Xu, Bingcong Lu, Zhengxue Cheng, Hongwei Hu, Ronghua Wu, and Li Song. 2026. MeetBench-XL: Calibrated multi-dimensional evaluation and learned dual-policy agents for real-time meetings. arXiv preprint arXiv:2602.03285.
+
+\bibitem[Jang et al.(2025)]{ref12}Dongsuk Jang, Ziyao Shangguan, Kyle Tegtmeyer, Anurag Gupta, Jan T. Czerminski, Sophie Chheang, and Arman Cohan. 2025. MedTutor: A retrieval-augmented LLM system for case-based medical education. In Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing: System Demonstrations, pages 319--353, Suzhou, China. Association for Computational Linguistics.
+
+\bibitem[Ji et al.(2023)]{ref13}Ziwei Ji, Nayeon Lee, Rita Frieske, Tiezheng Yu, Dan Su, Yan Xu, Etsuko Ishii, Ye Jin Bang, Andrea Madotto, and Pascale Fung. 2023. Survey of hallucination in natural language generation. ACM Computing Surveys, 55(12):1--38.
+
+\bibitem[Jin et al.(2019)]{ref14}Qiao Jin, Bhuwan Dhingra, Zhengping Liu, William Cohen, and Xinghua Lu. 2019. PubMedQA: A dataset for biomedical research question answering. In Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP), pages 2567--2577, Hong Kong, China. Association for Computational Linguistics.
+
+\bibitem[Karpukhin et al.(2020)]{ref15}Vladimir Karpukhin, Barlas Oguz, Sewon Min, Patrick Lewis, Ledell Wu, Sergey Edunov, Danqi Chen, and Wen-tau Yih. 2020. Dense passage retrieval for open-domain question answering. In Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP), pages 6769--6781, Online. Association for Computational Linguistics.
+
+\bibitem[Lewis et al.(2020)]{ref16}Patrick Lewis, Ethan Perez, Aleksandra Piktus, Fabio Petroni, Vladimir Karpukhin, Naman Goyal, Heinrich Küttler, Mike Lewis, Wen-tau Yih, Tim Rocktäschel, Sebastian Riedel, and Douwe Kiela. 2020. Retrieval-augmented generation for knowledge-intensive NLP tasks. In Advances in Neural Information Processing Systems, volume 33, pages 9459--9474.
+
+\bibitem[Manakul et al.(2023)]{ref17}Potsawee Manakul, Adian Liusie, and Mark Gales. 2023. SelfCheckGPT: Zero-resource black-box hallucination detection for generative large language models. In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing, pages 9004--9017, Singapore. Association for Computational Linguistics.
+
+\bibitem[Otter.ai(2025)]{ref19}Otter.ai. 2025. Otter.ai AI meeting assistant. \url{https://otter.ai/}. Product page; accessed 21 Nov 2026.
+
+\bibitem[Yang et al.(2025)]{ref20}An Yang et al. 2025. Qwen3 technical report. arXiv preprint arXiv:2505.09388.
+
+\bibitem[Radford et al.(2022)]{ref21}Alec Radford, Jong Wook Kim, Tao Xu, Greg Brockman, Christine McLeavey, and Ilya Sutskever. 2022. Robust speech recognition via large-scale weak supervision. arXiv preprint arXiv:2212.04356.
+
+\bibitem[Robertson and Zaragoza(2009)]{ref22}Stephen Robertson and Hugo Zaragoza. 2009. The probabilistic relevance framework: BM25 and beyond. Foundations and Trends in Information Retrieval, 3:333--389.
+
+\bibitem[Sayers et al.(2022)]{ref23}Eric W. Sayers, Evan E. Bolton, J. Rodney Brister, Kathi Canese, Jessica Chan, Donald C. Comeau, Ryan Connor, Kathryn Funk, et al. 2022. Database resources of the national center for biotechnology information. Nucleic Acids Research, 50(D1):D20--D26.
+
+\bibitem[Tu et al.(2025)]{ref26}Tao Tu, Mike Schaekermann, Anil Palepu, Khaled Saab, Jan Freyberg, Ryutaro Tanno, Amy Wang, Brenna Li, Mohamed Amin, Yong Cheng, Elahe Vedadi, Nenad Tomasev, Shekoofeh Azizi, Karan Singhal, et al. 2025. Towards conversational diagnostic artificial intelligence. Nature, 642(8067):442--450.
+
+\bibitem[Xiong et al.(2024)]{ref27}Guangzhi Xiong, Qiao Jin, Zhiyong Lu, and Aidong Zhang. 2024. Benchmarking retrieval-augmented generation for medicine. In Findings of the Association for Computational Linguistics: ACL 2024, pages 6233--6251, Bangkok, Thailand. Association for Computational Linguistics.
+
+\bibitem[Zakka et al.(2024)]{ref28}Cyril Zakka, Rohan Shad, Akash Chaurasia, Alex R. Dalal, Jennifer L. Kim, Michael Moor, Robyn Fong, Curran Phillips, Kevin Alexander, Euan Ashley, Jack Boyd, Kathleen Boyd, Karen Hirsch, Curtis Langlotz, Rita Lee, et al. 2024. Almanac---retrieval-augmented language models for clinical medicine. NEJM AI, 1(2).
+
+\bibitem[Zhong et al.(2021)]{ref29}Ming Zhong, Da Yin, Tao Yu, Ahmad Zaidi, Mutethia Mutuma, Rahul Jha, Ahmed Hassan Awadallah, Asli Celikyilmaz, Yang Liu, Xipeng Qiu, and Dragomir Radev. 2021. QMSum: A new benchmark for query-based multi-domain meeting summarization. In Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, pages 5905--5921, Online. Association for Computational Linguistics.
+
+\bibitem[Zoom Video Communications(2025a)]{ref30}Zoom Video Communications. 2025a. Real-time media streams (RTMS) developer documentation. \url{https://developers.zoom.us/docs/rtms/}. Product documentation page dated 2025; accessed 21 Nov 2026.
+
+\bibitem[Zoom Video Communications(2025b)]{ref31}Zoom Video Communications. 2025b. Zoom AI Companion. \url{https://www.zoom.com/en/ai-assistant/}. Product page; accessed 21 Nov 2026.
+
+\end{thebibliography}
+
+\clearpage
+
+\appendix
+
+\balance
+
+\section{Worked Examples and Routing}
+
+\textbf{Literature ask (archived held-out).}
+\begin{quote}\small
+\emph{Q:} How do you treat dementia patients, citing medpub?\\
+\emph{A (body, truncated):} Treatment of dementia involves both pharmacological and non-pharmacological strategies. For Alzheimer's disease, cholinesterase inhibitors like donepezil, galantamine, and rivastigmine are commonly used and may help slow cognitive decline [1]. \ldots Cognitive stimulation therapy (CST) has been associated with improved cognitive function and quality of life in individuals with mild to moderate dementia [3]. \ldots Educational summary for ECHO discussion; not clinical advice or a medical record.\\
+\emph{Bibliography (pattern):} \texttt{[1]: PMID 38636561 | \ldots} \quad \texttt{[3]: PMID 30336989 | \ldots}
+\end{quote}
+Footnotes resolve only if the PMID appears in the retrieval record (provenance whitelist). The audit assigned scores of 1 to [3] and 0 to [1] using their PubMed abstracts (Appendix~C).
+
+\textbf{Speech vs.\ slide conflict (SPEECH-18).} The transcript says \texttt{08:30}, and the slide shows \texttt{13:30}. The replay question asks for the start time the facilitator said to use. With the frame withheld, the transcript time appears in all three replies. With the frame included, all three replies give the slide time and attribute it to the facilitator. This example can be located by case ID in the released speech-recall JSONL alongside its frame count, arm, and repetition number.
+
+\textbf{Zero-frame contrast (VIS-ZERO-01).} The question asks what is on screen right now. The run records no attached frames in either condition. The guard-on answer says no screen-share image is arriving and asks the participant to check screen sharing. With the guard disabled, the answer describes an application workspace despite the missing frame. Both output records and their labels are available in the public replay viewer.
+
+\textbf{Focus rules (sketch).} Slide/``on screen'' $\rightarrow$ attach up to 3 timestamped frames. ``What did \ldots say'' / speech recall $\rightarrow$ withhold frames. Treatment/PubMed/guideline lexemes $\rightarrow$ literature RAG (Humans[Mesh], abstract rerank, top 5). ``Last session''/prior ECHO $\rightarrow$ BM25+embedding over de-identified chunks. Availability gate runs before VL draft.
+
+\textbf{Baselines (Table~3).} Full prediction tables and category-derived gold files are in \nolinkurl{evaluation/routing_comparison/} (\texttt{python3 run\_routing\_baselines.py}; \texttt{-{}-skip-llm} for CPU-only).
+
+\section{Open-Source Release, Demo Access, and Reproducibility}
+
+\textbf{Release (MIT code).} Repository: \url{https://github.com/238Plutonium/echo-ai-naacl-submission}. Contains sanitized \texttt{meeting-bot/}, PubMed website, \texttt{demo\_replay/} fixtures, \texttt{evaluation/} (recorded no-frame walkthrough, speech-recall ablation, citation faithfulness, claim audit, rubrics), and \texttt{python evaluation/verify\_results.py} offline checks. Excludes Zoom credentials and institutional prior-session indexes.
+
+\textbf{Live demo / video.} PubMed chat: \url{https://chive-shrouded-gag.ngrok-free.dev/chat.html}. Screencast (2:09): \url{https://www.youtube.com/watch?v=WwFCYDoYzm8}. Full Sept.\ 2026 recording: \url{https://psu.mediaspace.kaltura.com/media/t/1_0syzr0gf}.
+
+\textbf{Hardware.} Local GPUs: Whisper large-v3, BGE-M3, Qwen2.5-VL-3B-Instruct, Qwen3-4B-Instruct-2507. Node.js 22+ bot; HTTPS tunnel for RTMS. Key settings: uniqueness cutoff 0.012; \texttt{PRIVATE\_RAG\_BM25\_K=100}, \texttt{PRIVATE\_RAG\_EMBEDDING\_K=3}; up to five reranked PubMed abstracts; up to three frames at/before ask time.
+
+\textbf{Replay without Zoom.} From the repository root, run \nolinkurl{python3 evaluation/verify_results.py} to check published counts. For new answers, follow \nolinkurl{meeting-bot/quick_start.md}, set \texttt{DEMO\_REPLAY\_ENABLED=true} in the bot, and run \texttt{npm run demo:replay} from \texttt{meeting-bot/}. The driver resets a synthetic stream, injects a fixture image and transcript turns, then submits the question to the ask pipeline. The recorded viewer in \nolinkurl{evaluation/recorded_replay/} works without model services.
+
+\textbf{Human packet rubric (1--5).} Factual appropriateness; contextual grounding; evidence usefulness; safety/hedging; usability. Facilitator form: 15 usability items (appeal, ease, non-disruption, voice-wake, \ldots). Sheets and \nolinkurl{evaluation/RUBRIC.md} are in the release; filled individual facilitator sheets stay private. MedTutor-style aggregates: \nolinkurl{evaluation/frontier\_baselines/}. Education-outcome instrument: \nolinkurl{evaluation/education\_outcomes/}.
+
+\newpage\textbf{Inspecting individual cases.} Open \nolinkurl{evaluation/recorded_replay/index.html} for the paired zero-frame outputs and labels. The two runs share the case ID and question and differ in the guard setting. The underlying JSONL records output text, attached-frame count, and latency. For speech conflicts, inspect the included and withheld arms in \nolinkurl{evaluation/speech_recall_ablation/}; group the three repetitions by case before comparing token-mention rates. Replaying the inputs and verifying the archived outputs are separate checks: the former executes current models, while the latter checks the artifact underlying Table~3.
+
+\section{Citation Attribution Protocol and Examples}
+
+\textbf{Protocol.} Discard bibliography lines \texttt{[n]: PMID \ldots}; judge each body assertion--PMID pair against the abstract with attr $\in\{0,0.5,1\}$. Precision averages over pairs; recall is statements with $\geq$1 supporting cite. Rates are reported at attr$\geq$0.5. Judge: Qwen3-4B-Instruct-2507 (temp~0; same family as formatter). Package: \nolinkurl{evaluation/citation_faithfulness/}.
+
+\textbf{Strict$=$1.} ``CST has been associated with improved cognitive function \ldots'' $\rightarrow$ \mbox{PMID 30336989}.
+
+\textbf{Score 0.} Cholinesterase-inhibitor claim $\rightarrow$ PMID 38636561.
+
+\textbf{Partial$=$0.5.} Sleep-hygiene claim $\rightarrow$ PMID 33683929 (human insomnia review). 60/114 instances are 0.5, which widens the attr$\geq$0.5 vs.\ attr$=$1 gap in Table~4.
+
+\textbf{Veterinary PMID 29314873.} Historical diabetes answers cite an AAHA dogs/cats guideline. The automatic judge gave this veterinary source full credit (attr$=$1) for three claims about humans. Excluding the PMID barely changes Table~4 rates.
+
+\textbf{Lexical screen.} The separate lexical audit (\nolinkurl{evaluation/claim_level_audit/}) finds 14/132 supported pairs and aligns more closely with the attr$=$1 rates than with attr$\geq$0.5 precision 0.72.
+
+\end{document}

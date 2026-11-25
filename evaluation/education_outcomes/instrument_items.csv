@@ -1,0 +1,8 @@
+item_id,phase,prompt,response_type
+K1,knowledge,Which medications are commonly discussed as MOUD options in primary care ECHO teaching?,open
+K2,knowledge,Name one non-stigmatizing language practice recommended when discussing OUD or relapse.,open
+K3,knowledge,Give one reason diverted buprenorphine/Suboxone use can still relate to OUD diagnostic criteria.,open
+C1,confidence,I can answer a spoke clinician question about pain management in patients with OUD during an ECHO session.,likert_1_5
+C2,confidence,I can locate literature or prior-session teaching points without interrupting the hub specialist.,likert_1_5
+U1,post_only,ECHO-AI answers were useful for learning in this session.,likert_1_5
+U2,post_only,ECHO-AI did not disrupt the case discussion.,likert_1_5
