@@ -1,6 +1,8 @@
 # Generator baselines
 
-## Primary (paper Table 4)
+**Criterion: answer quality, not latency.** Scores use factual / grounding / evidence / safety / usability (1–5). Any `latency_s` fields in JSONL are operational logs only.
+
+## Primary (paper MedTutor-style table)
 - Human 3-rater means and paper Qwen3-4B judge on archived ECHO-AI answers (`medtutor_style_human_llm_judge.json`).
 
 ## Open CPU bake-off (completed)
