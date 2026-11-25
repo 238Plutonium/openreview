@@ -223,7 +223,9 @@ Four Project ECHO facilitators completed the anonymous usability survey after th
 
 \subsection{Frontier Generators and Education Outcomes}
 
-Table~5 is the measured generator (Qwen2.5-VL-3B + Qwen3-4B). The release freezes the same packet for GPT/Claude/Gemini/Gemma rows (\nolinkurl{evaluation/frontier\_baselines/}; CSV currently ECHO-AI only---no invented scores). Table~3's Qwen3 router comparison is routing, not generator quality. For education outcomes, a MOUD pre/post instrument is in \nolinkurl{evaluation/education\_outcomes/} (knowledge, confidence, usefulness/non-disruption); the pilot file is header-only until a consented session runs.
+Table~5 is the primary generator evaluation (deployed Qwen2.5-VL-3B + Qwen3-4B; human and paper Qwen3-4B judge). On the same $M{=}13$ questions we also ran a text-only open-model bake-off judged by a local Qwen2.5-1.5B model (\nolinkurl{evaluation/frontier\_baselines/}): archived ECHO-AI 3.49, Qwen2.5-1.5B 3.82, SmolLM2-1.7B 4.12 (overall means; $n{=}13$). That local judge is not the Table~5 judge, and these small open models are not GPT/Claude/Gemini; Gemma remains gated without a Hugging Face token. API bake-off rows stay empty until credentials are available. Table~3's Qwen3 comparison is routing, not generator quality.
+
+For education-related outcomes, facilitators rated educational usefulness at 4.00/5 ($n{=}4$) on the September~10 form (\nolinkurl{evaluation/education\_outcomes/facilitator\_survey\_likert\_summary.csv}). A fuller pre/post knowledge instrument is released but not yet run on a consented cohort.
 
 \section{Conclusion}
 
@@ -232,7 +234,7 @@ ECHO-AI brings multimodal meeting context and biomedical retrieval into Project 
 \clearpage
 \section*{Limitations}
 
-Logs are project-team-authored; facilitator usability is $n{=}4$ after one September~10 simulated session; the $M{=}13$ packet uses three graders, not a finished MOUD specialist panel. Speech-recall probes are synthetic; the citation audit and Table~5 LLM judge share the formatter's Qwen3 family. Frame coverage is availability, not visual correctness. Frontier generator and learner pre/post scores are instrumented but unfilled. The public site is PubMed-only and GPU-dependent.
+Logs are project-team-authored; facilitator usability is $n{=}4$ after one September~10 simulated session; the $M{=}13$ packet uses three graders, not a finished MOUD specialist panel. Speech-recall probes are synthetic; the citation audit and Table~5 LLM judge share the formatter's Qwen3 family. Frame coverage is availability, not visual correctness. The open-model bake-off uses a smaller local judge than Table~5; GPT/Claude/Gemini and gated Gemma are not yet scored. Learner pre/post knowledge gains are unmeasured (only post-session educational usefulness is available). The public site is PubMed-only and GPU-dependent.
 
 \section*{Ethics Statement}
 

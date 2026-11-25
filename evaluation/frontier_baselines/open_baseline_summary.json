@@ -1,0 +1,40 @@
+{
+  "summary": [
+    {
+      "generator": "ECHO-AI_archived",
+      "n": 13,
+      "factual": 3.31,
+      "grounding": 3.38,
+      "evidence": 3.08,
+      "safety": 3.85,
+      "usability": 3.85,
+      "overall": 3.49,
+      "judge": "Qwen/Qwen2.5-1.5B-Instruct"
+    },
+    {
+      "generator": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
+      "n": 13,
+      "factual": 4.08,
+      "grounding": 4.08,
+      "evidence": 4.0,
+      "safety": 4.23,
+      "usability": 4.23,
+      "overall": 4.12,
+      "judge": "Qwen/Qwen2.5-1.5B-Instruct"
+    },
+    {
+      "generator": "Qwen/Qwen2.5-1.5B-Instruct",
+      "n": 13,
+      "factual": 3.62,
+      "grounding": 3.69,
+      "evidence": 3.62,
+      "safety": 4.08,
+      "usability": 4.08,
+      "overall": 3.82,
+      "judge": "Qwen/Qwen2.5-1.5B-Instruct"
+    }
+  ],
+  "n_generations": 39,
+  "n_judgments_with_scores": 39,
+  "note": "Open CPU baselines on M=13. GPT/Claude/Gemini need API secrets; Gemma needs HF_TOKEN. Local judge Qwen2.5-1.5B-Instruct (distinct from paper Qwen3-4B judge). Three ECHO-AI judgments had evidence=0 clamped to 1."
+}

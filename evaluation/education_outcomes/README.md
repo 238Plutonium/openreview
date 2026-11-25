@@ -1,15 +1,12 @@
-# Education-outcome pilot instrument
+# Education-outcome measures
 
-Minimal pre/post instrument for a MOUD ECHO session with ECHO-AI available.
+## Measured now (facilitator survey)
+From the September 10, 2026 simulated MOUD demo usability form (`facilitator_survey_likert_summary.csv`):
+- **edu_usefulness** = **4.00/5** (n=4, SD=0.82)
+- Related: non_disruption 3.25; factual_accuracy 4.33 (n=3)
 
-## Design
-- **Pre:** K1–K3 (short knowledge) + C1–C2 (confidence 1–5)
-- **During:** optional log of bot asks by type (slide/speech/literature/prior)
-- **Post:** repeat K1–K3 + C1–C2, plus U1–U2 (usefulness / non-disruption)
+This is a post-session perceived educational usefulness item, **not** a pre/post knowledge gain study.
 
-## Reporting rules
-Report mean±SD pre/post and paired deltas. Do **not** claim clinical patient outcomes.
-Fill `pilot_results.csv` only with real consented responses.
-
-## Status
-Instrument ready; pilot not yet run (`pilot_results.csv` header only).
+## Pilot instrument (ready; not yet run)
+`instrument_items.csv`: K1–K3 knowledge, C1–C2 confidence, U1–U2 usefulness/non-disruption.
+`pilot_results.csv` remains header-only until a consented session is collected.

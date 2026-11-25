@@ -1,0 +1,16 @@
+item,n,unable,mean,sd
+appealing,4,0,4.5,0.58
+echo_zoom_match,4,0,3.75,0.96
+easy_to_use,4,0,4.5,0.58
+ask_clarity,4,0,4.5,0.58
+speed,4,0,4.25,0.5
+answer_relevance,4,0,4.0,0.0
+meeting_consistency,4,0,4.25,0.5
+factual_accuracy,3,1,4.33,0.58
+citation_clarity,1,3,5.0,0.0
+non_disruption,4,0,3.25,1.5
+edu_usefulness,4,0,4.0,0.82
+chat_submit_ease,3,1,4.67,0.58
+response_placement,4,0,4.5,0.58
+voice_wake,3,1,3.33,0.58
+asr_accuracy,3,1,3.67,0.58
