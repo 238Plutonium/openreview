@@ -112,7 +112,7 @@ Reviewers can ask their own literature question through the public website. The 
 
 \section{Evaluation}
 
-We assess archived deployment behavior, compare routers and delivery policies with competing alternatives (Table~3), report facilitator and packet ratings in a MedTutor-style human vs.\ LLM-as-a-judge view (Table~5; Jang et al., 2025), and relate automatic attribution scores to PMID provenance. Table~1 situates features only. Frontier generator rows and learner pre/post scores are instrumented in the release but not yet filled.
+We assess archived deployment behavior, compare routers and delivery policies with competing alternatives (Table~3), report facilitator and packet ratings in a MedTutor-style human vs.\ LLM-as-a-judge view (Table~\ref{tab:medtutor}; Jang et al., 2025), and relate automatic attribution scores to PMID provenance (Table~\ref{tab:cite}). Table~1 situates features only. Gemini is scored in the open bake-off; GPT, Claude, and learner pre/post scores are not yet filled.
 
 \subsection{Deployment Behavior}
 
@@ -132,7 +132,7 @@ PMID provenance & 27/27 PMID-bearing answers used IDs in retrieved evidence\\
 
 Full-pipeline latency & Mean 6.0 s; median 4.1 s (n = 213)\\
 
-Facilitator usability & Mean 4.13/5; 15 items, 4 raters\\
+Facilitator usability & 4.13/5; 15 items (53 scored, 7 unable)\\
 
 Human answer packet & 4.26/5 equal-rater mean (3 raters, 13 items)\\
 
@@ -181,7 +181,7 @@ The speech-recall test scores the value in the reply against two cues from the s
 
 \textbf{Retrieval check.} A Humans[Mesh] filter excludes veterinary PMID 29314873 in a title-query check for that single guideline. Historical diabetes answers in the archived log still cite that PMID; the filter is for new retrieval.
 
-\textbf{Archived-answer quality.} Three raters scored a fixed 13-question MOUD/OUD packet (distinct from facilitator usability). After mapping one 1--3 sheet to 1--5, the equal-weight mean is \textbf{4.26/5} (per-rater 5.00, 4.87, 2.92). Evidence usefulness is lowest (3.78); $\geq$1 rater flagged 9/13 answers. Table~5 follows MedTutor's human vs.\ LLM-as-a-judge layout (Jang et al., 2025); item-level Spearman $\rho{\approx}0.34$. Raters are packet graders, not a finished MOUD specialist panel (\nolinkurl{evaluation/RUBRIC.md}).
+\textbf{Archived-answer quality.} Three raters scored a fixed 13-question MOUD/OUD packet (distinct from facilitator usability). After mapping one 1--3 sheet to 1--5, the equal-weight mean is \textbf{4.26/5} (per-rater 5.00, 4.87, 2.92). Evidence usefulness is lowest (3.78); $\geq$1 rater flagged 9/13 answers. Table~\ref{tab:medtutor} follows MedTutor's human vs.\ LLM-as-a-judge layout (Jang et al., 2025); item-level Spearman $\rho{\approx}0.34$. Raters are packet graders, not a finished MOUD specialist panel (\nolinkurl{evaluation/RUBRIC.md}).
 
 \begin{table}[t]\centering\small\setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lrr@{}}\toprule
@@ -197,7 +197,7 @@ Safety / usability / overall & 4.51 / 4.12 / 4.26 & 5.00 / 4.85 / 4.26 \\
 \mathrm{Precision}(\tau)=\frac{C_\tau}{114},\qquad
 \mathrm{Recall}(\tau)=\frac{S_\tau}{86}.
 \]
-Full support covers 22 pairs and 20 statements. Counting 60 partial scores, the automated judge found support for most claim--citation pairs (82/114) and at least one supporting citation for 63/86 statements (Table~4). PMID provenance measures retrieval membership. The automated attribution audit estimates claim support against abstracts. Section~5.4 reports two public web probes. A separate lexical screen finds support for 14/132 pairs (\nolinkurl{evaluation/claim_level_audit/}).
+Full support covers 22 pairs and 20 statements. Counting 60 partial scores, the automated judge found support for most claim--citation pairs (82/114) and at least one supporting citation for 63/86 statements (Table~\ref{tab:cite}). PMID provenance measures retrieval membership. The automated attribution audit estimates claim support against abstracts. Section~5.4 reports two public web probes. A separate lexical screen finds support for 14/132 pairs (\nolinkurl{evaluation/claim_level_audit/}).
 
 \begin{table}[t]\centering\small\setlength{\tabcolsep}{3pt}
 
@@ -211,7 +211,7 @@ Citation recall (attr$\geq$0.5) & 0.73\\
 
 \bottomrule\end{tabularx}
 
-\caption{Automatic citation attribution vs.\ PubMed abstracts (Qwen3-4B judge; same family as the formatter).}\end{table}
+\caption{Automatic citation attribution vs.\ PubMed abstracts (Qwen3-4B judge; same family as the formatter).}\label{tab:cite}\end{table}
 
 \subsection{Public Literature Probes}
 
@@ -219,22 +219,22 @@ Two exploratory probes examined retrieval relevance and alignment with study out
 
 \subsection{Facilitator Usability}
 
-Four Project ECHO facilitators completed the anonymous usability survey after the September 10, 2026 simulated case discussion. The pooled mean was 4.13/5 across 15 items (Table~2). Appeal, ease, and question clarity each received 4.50/5. Non-disruption received 3.25/5, and voice-wake received 3.33/5 ($n{=}3$). Comments requested quieter replies and facilitator-only invocation. The release exposes \texttt{ECHO\_FACILITATOR\_ONLY}, \texttt{ECHO\_ALLOWED\_ASKERS}, and \texttt{ECHO\_QUIET\_REPLIES}.
+Four Project ECHO staff, not independent clinicians, completed the September 10, 2026 form after one simulated session; three watched and one submitted chat questions. The 4.13/5 mean uses 15 general items only (53 scored cells, 7 unable-to-judge; Table~2). Highest were appeal, ease, and ask clarity (4.50). Lowest were non-disruption (3.25; two Disagree) and voice-wake (3.33; $n{=}3$). Citation clarity is $n{=}1$. Concept explanation was unable-to-judge for all four raters and is excluded from the mean. Comments requested quieter replies and facilitator-only invocation. The release exposes \texttt{ECHO\_FACILITATOR\_ONLY}, \texttt{ECHO\_ALLOWED\_ASKERS}, and \texttt{ECHO\_QUIET\_REPLIES}.
 
 \subsection{Frontier Generators and Education Outcomes}
 
-Table~5 is the primary generator evaluation (deployed Qwen2.5-VL-3B + Qwen3-4B; human and paper Qwen3-4B judge). On the same $M{=}13$ questions we also ran a text-only bake-off judged by a local Qwen2.5-1.5B model (\nolinkurl{evaluation/frontier\_baselines/}): archived ECHO-AI 3.49, Qwen2.5-1.5B 3.82, SmolLM2-1.7B 4.12, Gemma-2-2B-IT (Q4 GGUF) 3.72, and Gemini-3.1-Flash-Lite 4.86 (overall means; $n{=}13$). That local judge is not the Table~5 judge. Official gated Gemma weights were skipped; the GGUF checkpoint did not need a Hugging Face token. OpenAI and Anthropic keys were present, but both APIs rejected the calls for insufficient credit, so GPT and Claude are not scored. Table~3's Qwen3 comparison is routing, not generator quality.
+Table~\ref{tab:medtutor} is the primary packet comparison (deployed Qwen2.5-VL-3B + Qwen3-4B; human raters and the paper's Qwen3-4B judge). On the same $M{=}13$ questions a text-only bake-off used a smaller local Qwen2.5-1.5B judge (\nolinkurl{evaluation/frontier\_baselines/}): archived ECHO-AI 3.49, Qwen2.5-1.5B 3.82, SmolLM2-1.7B 4.12, Gemma-2-2B-IT (Q4 GGUF) 3.72, and Gemini-3.1-Flash-Lite 4.86 ($n{=}13$). Twelve of those thirteen Gemini items scored 5/5, so 4.86 is not on the Table~\ref{tab:medtutor} scale. GPT and Claude were not scored: both APIs rejected the calls for insufficient credit. Table~3's Qwen3 comparison is routing, not generator quality.
 
 For education-related outcomes, facilitators rated educational usefulness at 4.00/5 ($n{=}4$) on the September~10 form (\nolinkurl{evaluation/education\_outcomes/facilitator\_survey\_likert\_summary.csv}). A fuller pre/post knowledge instrument is released but not yet run on a consented cohort.
 
 \section{Conclusion}
 
-ECHO-AI keeps slide, speech, PubMed, and prior-session lookup inside Project ECHO MOUD calls, and withholds or abstains when evidence is missing. Deployment logs, paired safeguards, facilitator ratings, and the MedTutor-style packet support the demo. Gemini-3.1-Flash-Lite scores 4.86 under the local open-bake-off judge; GPT, Claude, and learner pre/post scores remain unfilled.
+ECHO-AI keeps slide, speech, PubMed, and prior-session lookup inside Project ECHO MOUD calls, and withholds or abstains when evidence is missing. Deployment logs, paired safeguards, facilitator ratings, and the MedTutor-style packet support the demo.
 
 \clearpage
 \section*{Limitations}
 
-Logs are project-team-authored; facilitator usability is $n{=}4$ after one September~10 simulated session; the $M{=}13$ packet uses three graders, not a finished MOUD specialist panel. Speech-recall probes are synthetic; the citation audit and Table~5 LLM judge share the formatter's Qwen3 family. Frame coverage is availability, not visual correctness. The open-model bake-off and the Gemini row use a smaller local judge than Table~5. GPT and Claude were not scored because those APIs rejected the calls for insufficient credit. Gated Gemma weights were not used. Learner pre/post knowledge gains are unmeasured (only post-session educational usefulness is available). The public site is PubMed-only and GPU-dependent.
+Logs are project-team-authored; facilitator usability is $n{=}4$ after one September~10 simulated session; the $M{=}13$ packet uses three graders, not a finished MOUD specialist panel. Speech-recall probes are synthetic; the citation audit (Table~\ref{tab:cite}) and the packet LLM judge (Table~\ref{tab:medtutor}) share the formatter's Qwen3 family. Frame coverage is availability, not visual correctness. The open-model bake-off and the Gemini row use a smaller local judge than Table~\ref{tab:medtutor}. GPT and Claude were not scored because those APIs rejected the calls for insufficient credit. Gated Gemma weights were not used. Learner pre/post knowledge gains are unmeasured (only post-session educational usefulness is available). The public site is PubMed-only and GPU-dependent.
 
 \section*{Ethics Statement}
 
@@ -354,9 +354,9 @@ Footnotes resolve only if the PMID appears in the retrieval record (provenance w
 
 \textbf{Score 0.} Cholinesterase-inhibitor claim $\rightarrow$ PMID 38636561.
 
-\textbf{Partial$=$0.5.} Sleep-hygiene claim $\rightarrow$ PMID 33683929 (human insomnia review). 60/114 instances are 0.5, which widens the attr$\geq$0.5 vs.\ attr$=$1 gap in Table~4.
+\textbf{Partial$=$0.5.} Sleep-hygiene claim $\rightarrow$ PMID 33683929 (human insomnia review). 60/114 instances are 0.5, which widens the attr$\geq$0.5 vs.\ attr$=$1 gap in Table~\ref{tab:cite}.
 
-\textbf{Veterinary PMID 29314873.} Historical diabetes answers cite an AAHA dogs/cats guideline. The automatic judge gave this veterinary source full credit (attr$=$1) for three claims about humans. Excluding the PMID barely changes Table~4 rates.
+\textbf{Veterinary PMID 29314873.} Historical diabetes answers cite an AAHA dogs/cats guideline. The automatic judge gave this veterinary source full credit (attr$=$1) for three claims about humans. Excluding the PMID barely changes Table~\ref{tab:cite} rates.
 
 \textbf{Lexical screen.} The separate lexical audit (\nolinkurl{evaluation/claim_level_audit/}) finds 14/132 supported pairs and aligns more closely with the attr$=$1 rates than with attr$\geq$0.5 precision 0.72.
 
