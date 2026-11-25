@@ -1,6 +1,6 @@
 # Generator baselines
 
-## Primary (paper Table 5)
+## Primary (paper Table 4)
 - Human 3-rater means and paper Qwen3-4B judge on archived ECHO-AI answers (`medtutor_style_human_llm_judge.json`).
 
 ## Open CPU bake-off (completed)
@@ -24,7 +24,7 @@ Artifacts: `open_model_generations.jsonl`, `open_model_judgments.jsonl`, `open_b
 | GPT | — | 0 | key present; API returned insufficient quota |
 | Claude | — | 0 | key present; API returned insufficient credit |
 
-Artifacts: `api_model_generations.jsonl`, `api_model_judgments.jsonl`. The Gemini default is `gemini-3.1-flash-lite` because `gemini-2.0-flash` and `gemini-2.5-flash` are closed to this key and `gemini-3.8-flash` returned repeated 503s. This judge is the open-bake-off judge, not the paper's Qwen3-4B Table 5 judge. HF gated official Gemma weights still need `HF_TOKEN` (the GGUF path already covers Gemma without it).
+Artifacts: `api_model_generations.jsonl`, `api_model_judgments.jsonl`. The Gemini default is `gemini-3.1-flash-lite` because `gemini-2.0-flash` and `gemini-2.5-flash` are closed to this key and `gemini-3.8-flash` returned repeated 503s. This judge is the open-bake-off judge, not the paper's Qwen3-4B Table 4 judge. HF gated official Gemma weights still need `HF_TOKEN` (the GGUF path already covers Gemma without it).
 
 ## MOUD specialist panel (awaiting humans)
 Template: `specialist_panel_scores.csv`. Rubric: `../RUBRIC.md`. Packet: `../packet_qa.csv`.

@@ -51,7 +51,7 @@ Speech-recall reproduction of model calls needs two replay bots; the JSONL summa
 | Novelty and audience | §1 |
 | How it works | §3, Figure 1; Appendix A |
 | Comparison to existing systems | Table 1; §2 |
-| License | §3.4 (MIT code; upstream model licenses) |
+| License | §3.5 (MIT code; upstream model licenses) |
 | Evaluation | §5; Appendices A–C |
 
 Demo and video URLs are also listed in §1 and Appendix B.

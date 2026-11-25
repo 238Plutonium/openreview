@@ -24,13 +24,13 @@
 
 \begin{abstract}
 
-During Project ECHO (Extension for Community Healthcare Outcomes) case-based tele-education sessions on opioid use disorder (OUD) and medications for opioid use disorder (MOUD), looking up a slide, a remark, or a paper can interrupt the discussion. We present ECHO-AI, a Zoom Real-Time Media Streams (RTMS) assistant that joins the meeting and, with host approval, answers by public mention, private chat, or voice without uploading meeting materials, together with a PubMed-only web chat for use outside meetings. ECHO-AI grounds vision--language model (VLM)-drafted and LLM-formatted replies in routed evidence: slides, speech, and retrieval-augmented generation (RAG) over PubMed and prior sessions. Delivery controls withhold slides for speech recall, abstain when visual evidence is missing, and restrict cited PMIDs to the retrieval record. We report evaluation metrics for response latency, evidence routing, facilitator usability, and citation support. Mean end-to-end latency was acceptable. Paired tests showed higher abstention without frames and better spoken-token recovery when conflicting slides were withheld. Facilitators gave positive usability feedback. The automated citation audit found partial or full support for most claim--citation pairs. MIT-licensed code, replay artifacts, and a screencast support inspection.
+During Project ECHO (Extension for Community Healthcare Outcomes) case-based tele-education, looking up a slide, a remark, or a paper can interrupt the discussion. We present ECHO-AI, a Zoom Real-Time Media Streams (RTMS) assistant that joins the meeting and, with host approval, answers by public mention, private chat, or voice without uploading meeting materials, together with a PubMed-only web chat for use outside meetings. ECHO-AI grounds vision--language model (VLM)-drafted and LLM-formatted replies in routed evidence: slides, speech, and retrieval-augmented generation (RAG) over PubMed and prior sessions. Delivery controls withhold slides for speech recall, abstain when visual evidence is missing, and restrict cited PMIDs to the retrieval record. On 35 synthetic prompts without frames, the screen guard increased abstentions from 3 to 33. Withholding conflicting slides raised spoken-token recovery from 56/90 to 90/90 on synthetic replay. Four Project ECHO staff rated usability 4.13/5 after a demonstration that included a question about medications for opioid use disorder (MOUD). MIT-licensed code, replay artifacts, and a screencast support inspection.
 
 \end{abstract}
 
 \section{Introduction}
 
-Unequal access to specialist expertise remains a barrier for underserved communities. Project ECHO connects hub specialists and frontline clinicians at spoke sites in recurring, case-based videoconferences (Arora et al., 2010, 2011a). In its hepatitis~C program, sustained virologic response rates were comparable across primary-care and specialty sites (Arora et al., 2011b). The September Penn State Project ECHO demonstration used a simulated OUD case discussion involving medications for opioid use disorder (MOUD). During a teaching session, participants may need to clarify a slide, recall a remark, consult an earlier session, or find biomedical literature before the discussion moves on.
+Unequal access to specialist expertise remains a barrier for underserved communities. Project ECHO connects hub specialists and frontline clinicians at spoke sites in recurring, case-based videoconferences (Arora et al., 2010, 2011a). In its hepatitis~C program, sustained virologic response rates were comparable across primary-care and specialty sites (Arora et al., 2011b). In September 2026, Penn State Project ECHO staff recreated a case presentation and discussion to show how facilitators could use ECHO-AI during a teaching session. One question asked about medications for opioid use disorder (MOUD). During a teaching session, participants may need to clarify a slide, recall a remark, consult an earlier session, or find biomedical literature before the discussion moves on.
 
 ECHO-AI supports Project ECHO facilitators and spoke clinicians inside the live Zoom call. With host approval, the assistant receives shared-screen frames and audio through Zoom Real-Time Media Streams (RTMS). Participants can ask questions by public mention, private chat, or voice without uploading meeting materials. The system routes questions to timestamped slides, speech, PubMed, or prior ECHO sessions. It withholds slides for speech recall, returns a fixed reply when a visual question lacks a usable frame, and restricts cited PubMed identifiers (PMIDs) to the retrieval record. A minutes module preserves the discussion and Q\&A for later review. See Figure~\ref{fig:architecture}A.
 
@@ -112,7 +112,7 @@ Reviewers can ask their own literature question through the public website. The 
 
 \section{Evaluation}
 
-We assess archived deployment behavior, compare routers and delivery policies with competing alternatives (Table~3), report facilitator and packet ratings in a MedTutor-style human vs.\ LLM-as-a-judge view (Table~\ref{tab:medtutor}; Jang et al., 2025), and relate automatic attribution scores to PMID provenance (Table~\ref{tab:cite}). Table~1 situates features only. Gemini is scored in the open bake-off; GPT, Claude, and learner pre/post scores are not yet filled.
+We assess archived deployment behavior, compare routers and delivery policies with competing alternatives (Table~3), report facilitator and packet ratings in a MedTutor-style human vs.\ LLM-as-a-judge view (Table~\ref{tab:medtutor}; Jang et al., 2025), and relate automatic attribution scores to PMID provenance (Table~\ref{tab:cite}).
 
 \subsection{Deployment Behavior}
 
@@ -181,13 +181,13 @@ The speech-recall test scores the value in the reply against two cues from the s
 
 \textbf{Retrieval check.} A Humans[Mesh] filter excludes veterinary PMID 29314873 in a title-query check for that single guideline. Historical diabetes answers in the archived log still cite that PMID; the filter is for new retrieval.
 
-\textbf{Archived-answer quality.} Three raters scored a fixed 13-question MOUD/OUD packet (distinct from facilitator usability). After mapping one 1--3 sheet to 1--5, the equal-weight mean is \textbf{4.26/5} (per-rater 5.00, 4.87, 2.92). Evidence usefulness is lowest (3.78); $\geq$1 rater flagged 9/13 answers. Table~\ref{tab:medtutor} follows MedTutor's human vs.\ LLM-as-a-judge layout (Jang et al., 2025); item-level Spearman $\rho{\approx}0.34$. Raters are packet graders, not a finished MOUD specialist panel (\nolinkurl{evaluation/RUBRIC.md}).
+\textbf{Archived-answer quality.} Three raters scored a fixed 13-question packet covering opioid use disorder (OUD), MOUD, and related topics (distinct from facilitator usability). After mapping one 1--3 sheet to 1--5, the equal-weight mean is \textbf{4.26/5} (per-rater 5.00, 4.87, 2.92). Evidence usefulness is lowest (3.78); $\geq$1 rater flagged 9/13 answers. Table~\ref{tab:medtutor} follows MedTutor's human vs.\ LLM-as-a-judge layout (Jang et al., 2025); item-level Spearman $\rho{\approx}0.34$. The three packet graders provide preliminary human ratings (\nolinkurl{evaluation/RUBRIC.md}).
 
-\begin{table}[t]\centering\small\setlength{\tabcolsep}{4pt}
+\begin{table}[t]\centering\small\setlength{\tabcolsep}{2pt}
 \begin{tabular}{@{}lrr@{}}\toprule
-\textbf{Dimension (1--5)} & \textbf{Human} & \textbf{LLM}\\\midrule
-Factual / grounding / evidence & 4.19 / 5.00 / 3.78 & 4.15 / 3.62 / 3.64 \\
-Safety / usability / overall & 4.51 / 4.12 / 4.26 & 5.00 / 4.85 / 4.26 \\
+\textbf{Rating (1--5)} & \textbf{Human} & \textbf{LLM}\\\midrule
+Fact / grounding / evidence & 4.19/5.00/3.78 & 4.15/3.62/3.64 \\
+Safety / usability / mean & 4.51/4.12/4.26 & 5.00/4.85/4.26 \\
 \bottomrule\end{tabular}
 \caption{MedTutor-style $M{=}13$ packet means. Human: three-rater equal weight. LLM: Qwen3-4B judge (same family as formatter).}\label{tab:medtutor}
 \end{table}
@@ -197,7 +197,7 @@ Safety / usability / overall & 4.51 / 4.12 / 4.26 & 5.00 / 4.85 / 4.26 \\
 \mathrm{Precision}(\tau)=\frac{C_\tau}{114},\qquad
 \mathrm{Recall}(\tau)=\frac{S_\tau}{86}.
 \]
-Full support covers 22 pairs and 20 statements. Counting 60 partial scores, the automated judge found support for most claim--citation pairs (82/114) and at least one supporting citation for 63/86 statements (Table~\ref{tab:cite}). PMID provenance measures retrieval membership. The automated attribution audit estimates claim support against abstracts. Section~5.4 reports two public web probes. A separate lexical screen finds support for 14/132 pairs (\nolinkurl{evaluation/claim_level_audit/}).
+Full support covers 22/114 pairs and 20/86 statements. With partial support included, those counts are 82/114 and 63/86 (Table~\ref{tab:cite}). A separate lexical screen found 14/132 supported pairs (\nolinkurl{evaluation/claim_level_audit/}).
 
 \begin{table}[t]\centering\small\setlength{\tabcolsep}{3pt}
 
@@ -205,9 +205,9 @@ Full support covers 22 pairs and 20 statements. Counting 60 partial scores, the 
 
 \textbf{ALCE-style metric} & \textbf{Value}\\\midrule
 
-Citation precision (attr$\geq$0.5) & 0.72\\
+Citation precision (full / partial or full) & 0.19 / 0.72\\
 
-Citation recall (attr$\geq$0.5) & 0.73\\
+Citation recall (full / partial or full) & 0.23 / 0.73\\
 
 \bottomrule\end{tabularx}
 
@@ -215,39 +215,39 @@ Citation recall (attr$\geq$0.5) & 0.73\\
 
 \subsection{Public Literature Probes}
 
-Two exploratory probes examined retrieval relevance and alignment with study outcomes in the public chat. A question about rural Project ECHO tele-mentoring returned PMIDs 11131773 and 37467205. The papers address rural physician education and physician assistant training, respectively. A second question supplied PMID 21631316. The reply attributed better clinical outcomes and fewer readmissions to the study. The study evaluated sustained virologic response and reported comparable rates across sites (Arora et al., 2011b). These probes are separate from the archived attribution set.
+A rural tele-mentoring query returned papers on physician and physician assistant training (PMIDs 11131773 and 37467205). A query about PMID 21631316 elicited a claim about reduced readmissions. The study instead measured sustained virologic response (Arora et al., 2011b).
 
 \subsection{Facilitator Usability}
 
-Four Project ECHO staff, not independent clinicians, completed the September 10, 2026 form after one simulated session; three watched and one submitted chat questions. The 4.13/5 mean uses 15 general items only (53 scored cells, 7 unable-to-judge; Table~2). Highest were appeal, ease, and ask clarity (4.50). Lowest were non-disruption (3.25; two Disagree) and voice-wake (3.33; $n{=}3$). Citation clarity is $n{=}1$. Concept explanation was unable-to-judge for all four raters and is excluded from the mean. Comments requested quieter replies and facilitator-only invocation. The release exposes \texttt{ECHO\_FACILITATOR\_ONLY}, \texttt{ECHO\_ALLOWED\_ASKERS}, and \texttt{ECHO\_QUIET\_REPLIES}.
+Four Project ECHO staff completed the form after the September 10, 2026 demonstration. Three watched and one submitted chat questions. The mean was 4.13/5 across 15 general items (53 scored and 7 unable to judge; Table~2). Appeal, ease, and question clarity each averaged 4.50. Non-disruption averaged 3.25 and voice-wake 3.33 ($n{=}3$). Citation clarity had one rating. All four staff marked concept explanation unable to judge. Staff requested quieter replies and facilitator-only invocation. The release includes these controls.
 
-\subsection{Frontier Generators and Education Outcomes}
+\subsection{Generator Comparison and Educational Usefulness}
 
-Table~\ref{tab:medtutor} is the primary packet comparison (deployed Qwen2.5-VL-3B + Qwen3-4B; human raters and the paper's Qwen3-4B judge). On the same $M{=}13$ questions a text-only bake-off used a smaller local Qwen2.5-1.5B judge (\nolinkurl{evaluation/frontier\_baselines/}): archived ECHO-AI 3.49, Qwen2.5-1.5B 3.82, SmolLM2-1.7B 4.12, Gemma-2-2B-IT (Q4 GGUF) 3.72, and Gemini-3.1-Flash-Lite 4.86 ($n{=}13$). Twelve of those thirteen Gemini items scored 5/5, so 4.86 is not on the Table~\ref{tab:medtutor} scale. GPT and Claude were not scored: both APIs rejected the calls for insufficient credit. Table~3's Qwen3 comparison is routing, not generator quality.
+A Qwen2.5-1.5B judge scored answers on 13 standalone questions. Archived ECHO-AI answers scored 3.49/5. Qwen2.5-1.5B, SmolLM2-1.7B, Gemma-2-2B-IT (Q4 GGUF), and Gemini-3.1-Flash-Lite scored 3.82, 4.12, 3.72, and 4.86. The standalone generators received only question text, while archived answers came from the deployed system. The judge gave Gemini 5/5 on 12 items. GPT and Claude have no scores because of API credit limits. The \href{https://github.com/238Plutonium/openreview/tree/main/evaluation/frontier_baselines}{released results} include generations and judgments.
 
-For education-related outcomes, facilitators rated educational usefulness at 4.00/5 ($n{=}4$) on the September~10 form (\nolinkurl{evaluation/education\_outcomes/facilitator\_survey\_likert\_summary.csv}). A fuller pre/post knowledge instrument is released but not yet run on a consented cohort.
+Staff rated educational usefulness at 4.00/5 ($n{=}4$). The release includes a \href{https://github.com/238Plutonium/openreview/tree/main/evaluation/education_outcomes}{pre/post instrument}.
 
 \section{Conclusion}
 
-ECHO-AI keeps slide, speech, PubMed, and prior-session lookup inside Project ECHO MOUD calls, and withholds or abstains when evidence is missing. Deployment logs, paired safeguards, facilitator ratings, and the MedTutor-style packet support the demo.
+ECHO-AI routes slide, speech, literature, and prior-session questions within a Project ECHO call. The paired experiments show how frame handling changes replies when slides conflict with speech or are unavailable.
 
-\clearpage
 \section*{Limitations}
 
-Logs are project-team-authored; facilitator usability is $n{=}4$ after one September~10 simulated session; the $M{=}13$ packet uses three graders, not a finished MOUD specialist panel. Speech-recall probes are synthetic; the citation audit (Table~\ref{tab:cite}) and the packet LLM judge (Table~\ref{tab:medtutor}) share the formatter's Qwen3 family. Frame coverage is availability, not visual correctness. The open-model bake-off and the Gemini row use a smaller local judge than Table~\ref{tab:medtutor}. GPT and Claude were not scored because those APIs rejected the calls for insufficient credit. Gated Gemma weights were not used. Learner pre/post knowledge gains are unmeasured (only post-session educational usefulness is available). The public site is PubMed-only and GPU-dependent.
+Logs use project-team questions. Four staff rated one demonstration, and the 13-answer packet used three graders. Speech and frame probes use synthetic cases. The citation and packet judges share the formatter's Qwen3 family. The generator comparison uses a separate automated judge. Clinical answer accuracy, slide correctness, and learner knowledge gains remain unmeasured.
 
+\section*{Acknowledgments}
+
+We thank Rui Zhang for manuscript feedback and Laura Felix, Jennifer Kraschnewski, Ashmita Grewal, Jessica Beiler, Ellie Hogentogler, Caitlin Kline, Melissa Huffman, Sesi Whaley, and Guido Cervone for supporting the demonstration. Cursor was used to proofread source code.
+
+\clearpage
 \section*{Ethics Statement}
 
 ECHO-AI is an educational aid for MOUD and related Project ECHO tele-mentoring. It is not intended to diagnose, prescribe, or create medical records. The system appends the following disclaimer to clinical questions or questions with retrieval records: ``Educational summary for ECHO discussion; not clinical advice or a medical record.'' The host controls admission. PubMed queries use sanitized medical concepts and do not forward raw meeting audio or slide images. Meeting audio and institutional indexes remain subject to the project's institutional retention rules; the public interface queries PubMed only.
 
 \textbf{Patient privacy.} Live ECHO sessions may discuss de-identified clinical cases. Prior-session chunks undergo an automatic redaction pass before indexing; automatic redaction is not a manual privacy certification. Index access is limited to the institutional Zoom path.
 
-\textbf{IRB / oversight.} No patients were enrolled for research, and no identifiable patient data appear in the paper. Facilitator feedback and the September 2026 MediaSpace recording derive from a scheduled demonstration with volunteer Project ECHO facilitators and participants from Penn State's Institute for Computational and Data Sciences (ICDS). Formal IRB determination language for broader research use of session media is being confirmed with the Project ECHO program office (contact: Laura Felix); this paper reports a system demonstration with voluntary educational feedback. Patient case text is excluded.
+Facilitator feedback and the September 2026 recording come from a scheduled demonstration with volunteer Project ECHO and Penn State Institute for Computational and Data Sciences participants. The paper reports staff feedback and excludes patient case text and identifiable patient data.
 
-
-\section*{Acknowledgments}
-
-We thank Rui Zhang for feedback on the manuscript. We thank Laura Felix for guidance on ECHO program practice and privacy/IRB wording. We also thank Jennifer Kraschnewski, Ashmita Grewal, Jessica Beiler, Ellie Hogentogler, Caitlin Kline, Melissa Huffman, Sesi Whaley, and Guido Cervone for joining the demonstration and returning the form. Cursor was used to proofread source code.
 
 \clearpage
 \begin{thebibliography}{31}
@@ -272,7 +272,7 @@ We thank Rui Zhang for feedback on the manuscript. We thank Laura Felix for guid
 
 \bibitem[Hu et al.(2026)]{ref11}Yuelin Hu, Jun Xu, Bingcong Lu, Zhengxue Cheng, Hongwei Hu, Ronghua Wu, and Li Song. 2026. MeetBench-XL: Calibrated multi-dimensional evaluation and learned dual-policy agents for real-time meetings. arXiv preprint arXiv:2602.03285.
 
-\bibitem[Jang et al.(2025)]{ref12}Dongsuk Jang, Ziyao Shangguan, Kyle Tegtmeyer, Anurag Gupta, Jan T. Czerminski, Sophie Chheang, and Arman Cohan. 2025. MedTutor: A retrieval-augmented LLM system for case-based medical education. In Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing: System Demonstrations, pages 319--353, Suzhou, China. Association for Computational Linguistics.
+\bibitem[Jang et al.(2025)]{ref12}Dongsuk Jang, Ziyao Shangguan, Kyle Tegtmeyer, Anurag Gupta, Jan Czerminski, Sophie Chheang, and Arman Cohan. 2025. MedTutor: A retrieval-augmented LLM system for case-based medical education. In Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing: System Demonstrations, pages 319--353, Suzhou, China. Association for Computational Linguistics.
 
 \bibitem[Ji et al.(2023)]{ref13}Ziwei Ji, Nayeon Lee, Rita Frieske, Tiezheng Yu, Dan Su, Yan Xu, Etsuko Ishii, Ye Jin Bang, Andrea Madotto, and Pascale Fung. 2023. Survey of hallucination in natural language generation. ACM Computing Surveys, 55(12):1--38.
 
@@ -348,7 +348,7 @@ Footnotes resolve only if the PMID appears in the retrieval record (provenance w
 
 \section{Citation Attribution Protocol and Examples}
 
-\textbf{Protocol.} Discard bibliography lines \texttt{[n]: PMID \ldots}; judge each body assertion--PMID pair against the abstract with attr $\in\{0,0.5,1\}$. Precision averages over pairs; recall is statements with $\geq$1 supporting cite. Rates are reported at attr$\geq$0.5. Judge: Qwen3-4B-Instruct-2507 (temp~0; same family as formatter). Package: \nolinkurl{evaluation/citation_faithfulness/}.
+\textbf{Protocol.} Discard bibliography lines \texttt{[n]: PMID \ldots}; judge each body assertion--PMID pair against the abstract with attr $\in\{0,0.5,1\}$. Precision averages over pairs; recall is statements with $\geq$1 supporting cite. Table~\ref{tab:cite} reports both thresholds. Judge: Qwen3-4B-Instruct-2507 (temp~0; same family as formatter). Package: \nolinkurl{evaluation/citation_faithfulness/}.
 
 \textbf{Strict$=$1.} ``CST has been associated with improved cognitive function \ldots'' $\rightarrow$ \mbox{PMID 30336989}.
 
