@@ -83,3 +83,8 @@ Cursor was used to assist with source-code proofreading and manuscript editing.
 MIT for original source in this repository ([LICENSE](LICENSE)). Model weights, Zoom components, and other dependencies retain their own terms.
 
 Educational use only — not clinical advice.
+
+## Co-author revision package
+
+MOUD / ECHO domain, evaluation, and IRB revision drafts live in [`revisions/moud-echo-feedback/`](revisions/moud-echo-feedback/). These address co-author feedback (name MOUD, characterize ECHO data, strengthen eval toward MedTutor, education-outcome protocol, IRB questions for Laura). No fabricated frontier-model or learning-outcome scores.
+
