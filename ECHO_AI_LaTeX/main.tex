@@ -34,7 +34,7 @@ Unequal access to specialist expertise remains a barrier for underserved communi
 
 ECHO-AI supports Project ECHO facilitators and spoke clinicians inside the live Zoom call. With host approval, the assistant receives shared-screen frames and audio through Zoom Real-Time Media Streams (RTMS). Participants can ask questions by public mention, private chat, or voice without uploading meeting materials. The system routes questions to timestamped slides, speech, PubMed, or prior ECHO sessions. It withholds slides for speech recall, returns a fixed reply when a visual question lacks a usable frame, and restricts cited PubMed identifiers (PMIDs) to the retrieval record. A minutes module preserves the discussion and Q\&A for later review. See Figure~\ref{fig:architecture}A.
 
-We contribute (i)~an MIT-licensed meeting assistant powered by a VLM-LLM pipeline with these evidence and delivery controls; (ii)~a quality-focused evaluation of routing accuracy, safeguard behavior, answer ratings, citation support, and facilitator judgments of usefulness; and (iii)~public code and replay artifacts,\footnote{\url{https://github.com/238Plutonium/echo-ai-naacl-submission}} a PubMed-only live demo (Figure~\ref{fig:architecture}B),\footnote{\url{https://chive-shrouded-gag.ngrok-free.dev/chat.html}} and a narrated screencast.\footnote{\url{https://www.youtube.com/watch?v=WwFCYDoYzm8}}
+We contribute (i)~an MIT-licensed meeting assistant powered by a VLM-LLM pipeline with these evidence and delivery controls; (ii)~an evaluation that checks whether the assistant picks the right evidence, refuses when slides are missing, earns usable human ratings, and cites abstracts that support its claims; and (iii)~public code and replay artifacts,\footnote{\url{https://github.com/238Plutonium/echo-ai-naacl-submission}} a PubMed-only live demo (Figure~\ref{fig:architecture}B),\footnote{\url{https://chive-shrouded-gag.ngrok-free.dev/chat.html}} and a narrated screencast.\footnote{\url{https://www.youtube.com/watch?v=WwFCYDoYzm8}}
 
 \section{Related Work}
 
@@ -112,7 +112,7 @@ Reviewers can ask their own literature question through the public website. The 
 
 \section{Evaluation}
 
-We evaluate \emph{answer and routing quality}: human and LLM packet ratings (Table~\ref{tab:medtutor}; Jang et al., 2025), citation support against abstracts (Table~\ref{tab:cite}), routing and safeguard accuracy against competing policies (Table~3), and facilitator judgments of usability and educational usefulness. Deployment logs contextualize coverage; they are not treated as a latency benchmark.
+We ask whether replies are useful and well grounded: Do facilitators find the assistant usable in a teaching session? Do raters judge archived answers as appropriate and safe? When a citation appears, does the abstract support the claim? When speech and slides disagree, or when no slide is available, does the system choose the right evidence or refuse? Table~2 summarizes the main scores. Table~3 compares routing and safeguard choices with simple alternatives. Table~\ref{tab:medtutor} follows MedTutor's human vs.\ LLM-as-a-judge layout (Jang et al., 2025), and Table~\ref{tab:cite} reports citation support against PubMed abstracts.
 
 \subsection{Deployment Behavior}
 
@@ -122,7 +122,7 @@ The archived log contains 419 answers to project-team-authored development quest
 
 \begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}p{.37\columnwidth}>{\raggedright\arraybackslash}X@{}}\toprule
 
-\textbf{Quality metric} & \textbf{Measured value}\\\midrule
+\textbf{What we measured} & \textbf{Result}\\\midrule
 
 Human answer packet & 4.26/5 equal-rater mean (3 raters, 13 items)\\
 
@@ -138,19 +138,19 @@ Frame attachment (coverage) & 86/122 slide questions (70.5\%)\\
 
 \bottomrule\end{tabularx}
 
-\caption{Primary quality measures from the deployment log, human ratings, and citation audit. PMID provenance means that an identifier appears in the retrieval record. Latency is an operational property of the deployment, not a reported evaluation criterion.}\end{table}
+\caption{How well answers and citations held up in the archived log and human ratings. PMID provenance means each cited identifier also appears in the retrieval record.}\end{table}
 
 \textbf{Citation provenance.} Twenty-seven answers cite 44 distinct PMIDs; every ID appears in the retrieval record. Eight historical diabetes answers cite veterinary PMID 29314873---motivation for the Humans[Mesh] filter on new retrieval. Twenty-five of 27 include an educational non-advice sentence.
 
 \subsection{Routing versus Competing Methods}
 
-Context routing chooses \emph{which} evidence reaches the generator. We compare ECHO's rule router and delivery policies to competing policies on the same cases (package \nolinkurl{evaluation/routing_comparison/}; relative paths; optional vLLM). Focus and intent labels are \emph{category-derived} from existing experiment sets and synthetic probes.
+Routing decides which evidence the generator may use. We compare ECHO's rule router and delivery policies with simple alternatives on the same cases (\nolinkurl{evaluation/routing_comparison/}). Focus and intent labels come from the existing experiment sets and synthetic probes.
 
 \begin{table}[t]\centering\small\setlength{\tabcolsep}{2pt}
 
 \begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}p{.26\columnwidth}>{\raggedright\arraybackslash}p{.32\columnwidth}X@{}}\toprule
 
-\textbf{Task} & \textbf{ECHO routing (quality)} & \textbf{Competing method}\\\midrule
+\textbf{Task} & \textbf{ECHO routing} & \textbf{Competing method}\\\midrule
 
 Speech/slide conflict (30$\times$3) & Withhold frame: spoken 1.00, slide-only 0.00 & Always attach slide: spoken 0.62, slide-only 0.38\\
 
@@ -162,26 +162,26 @@ Retrieval intent (n=32) & Rule accuracy 0.69 & Always-none 0.63; LLM intent 0.47
 
 \bottomrule\end{tabularx}
 
-\caption{Routing quality vs competing methods. Speech/no-frame: paired end-to-end runs scored by spoken-token recovery and abstention. Focus/retrieval: category-derived reference-label accuracy. Timing is omitted: the comparison criterion is decision quality, not latency.}\end{table}
+\caption{Did the router pick the right source? Speech and zero-frame rows score reply content and abstention; focus and retrieval rows score label accuracy against category-derived references.}\end{table}
 The focus set contains 30 speech, 38 visual, and 10 general examples. The retrieval-intent set contains eight literature, four prior-session, and 20 no-retrieval examples. On the focus set, the rule router assigned 73/78 labels correctly and the Qwen3-4B router assigned 75/78 correctly. On retrieval intent, the rule router assigned 22/32 correctly, compared with 20/32 for always-none and 15/32 for Qwen3-4B. On the 12 prompts that require retrieval, exact-label accuracy was 6/12 for the rule router, 12/12 for Qwen3-4B, 8/12 for always-literature, and 0/12 for always-none (Table~3).
 
-Accuracy is the fraction of prompts whose predicted label matches the reference, computed separately per task. The always-visual and always-none baselines show the accuracy of predicting the most frequent category; the two tasks have different label distributions, so differences are interpreted within each task.
+Accuracy is the share of prompts whose predicted label matches the reference, counted separately for each task. Always-visual and always-none show what happens if the system always picks the most common label; the two tasks have different label mixes, so we read each task on its own.
 
 \subsection{Safeguard Checks and Archived Answers}
 
-The paired probes below quantify two delivery controls---visual abstention and speech-frame withholding---alongside a retrieval filter check and archived-answer ratings. Table~3 summarizes the same contrasts against competing policies.
+The paired probes ask two practical questions: Will the system invent a slide when none is available? Will it prefer a spoken detail when the slide shows something else? We also check a retrieval filter and rate archived answers. Table~3 summarizes the same contrasts against competing policies.
 
-\textbf{Paired no-frame ablation.} The experimental control is the guard-disabled pipeline on the same 35 synthetic visual questions without frames. Enabling the guard raised abstention from 3/35 to 33/35: 31 guarded-only refusals, one unguarded-only refusal, two refusals in both conditions, and one in neither. The paired change was 85.7 percentage points, with 31 of the 32 discordant cases favoring the guard (two-sided exact McNemar $p=1.54\times10^{-8}$). The guard bypasses answer generation when no usable frame is available, which is the quality outcome of interest: fewer invented slide readings. The guard-enabled arm still generated replies on two zero-frame prompts. In VIS-ZERO-03, the reply stated that the slide was visible. In VIS-ZERO-21, the reply stated that the slide did not mention buprenorphine. The comparison therefore scores abstention correctness, not response time.
+\textbf{Paired no-frame ablation.} We ran the same 35 synthetic visual questions with no frames, once with the screen guard on and once with it off. With the guard, the system abstained on 33/35 prompts instead of 3/35: 31 refusals only when guarded, one only when unguarded, two in both conditions, and one in neither. The paired change was 85.7 percentage points, and 31 of the 32 discordant cases favored the guard (two-sided exact McNemar $p=1.54\times10^{-8}$). When the guard fires, it skips answer generation so the system does not invent slide content. Two zero-frame prompts still produced replies with the guard on. In VIS-ZERO-03, the reply said the slide was visible. In VIS-ZERO-21, it said the slide did not mention buprenorphine.
 
 The net change is $(31-1)/35\approx0.857$. The exact McNemar test uses the 32 discordant prompts.
 
-\textbf{Speech-recall frame withholding.} On 30 synthetic scheduling asks where transcript and slide disagree (3 reps; 180 calls), withholding the conflicting frame yields spoken-token 90/90 and slide-only 0/90; with the frame included, spoken falls to 62.2\% and slide-only rises to 37.8\% (case-mean $\Delta{+}0.38$/$-0.38$). In these scenarios, withholding conflicting slides helped the assistant preserve spoken values in its replies.
+\textbf{Speech-recall frame withholding.} On 30 synthetic scheduling asks where the transcript and slide disagree (3 reps; 180 calls), withholding the conflicting frame yields spoken-token 90/90 and slide-only 0/90; with the frame included, spoken falls to 62.2\% and slide-only rises to 37.8\% (case-mean $\Delta{+}0.38$/$-0.38$). In short, keeping the conflicting slide out of the prompt helped the assistant stick to what was said.
 
-The speech-recall test scores the value in the reply against two cues from the same scenario, one spoken and one shown on screen. For example, Appendix~A traces a case with a spoken time of 08:30 and a displayed time of 13:30. The spoken-token rate records whether the reply contains the spoken value, while the slide-only rate records whether it contains the displayed value alone. Three runs for each scenario capture variation in the generated reply. The 90 replies per arm therefore represent 30 distinct question scenarios.
+The speech-recall test checks the value in the reply against two cues from the same scenario, one spoken and one shown on screen. For example, Appendix~A traces a case with a spoken time of 08:30 and a displayed time of 13:30. The spoken-token rate records whether the reply contains the spoken value, while the slide-only rate records whether it contains the displayed value alone. Three runs for each scenario capture variation in the generated reply. The 90 replies per arm therefore represent 30 distinct question scenarios.
 
 \textbf{Retrieval check.} A Humans[Mesh] filter excludes veterinary PMID 29314873 in a title-query check for that single guideline. Historical diabetes answers in the archived log still cite that PMID; the filter is for new retrieval.
 
-\textbf{Archived-answer quality.} Three raters scored a fixed 13-question packet covering opioid use disorder (OUD), MOUD, and related topics (distinct from facilitator usability). After mapping one 1--3 sheet to 1--5, the equal-weight mean is \textbf{4.26/5} (per-rater 5.00, 4.87, 2.92). Evidence usefulness is lowest (3.78); $\geq$1 rater flagged 9/13 answers. Table~\ref{tab:medtutor} follows MedTutor's human vs.\ LLM-as-a-judge layout (Jang et al., 2025); item-level Spearman $\rho{\approx}0.34$. The three packet graders provide preliminary human ratings (\nolinkurl{evaluation/RUBRIC.md}).
+\textbf{Archived-answer quality.} Three raters scored a fixed 13-question packet on opioid use disorder (OUD), MOUD, and related topics (separate from the facilitator usability form). After mapping one 1--3 sheet to 1--5, the equal-weight mean is \textbf{4.26/5} (per-rater 5.00, 4.87, 2.92). Evidence usefulness is the weakest dimension (3.78); at least one rater flagged 9/13 answers. Table~\ref{tab:medtutor} places human means next to an LLM judge, following MedTutor (Jang et al., 2025); item-level Spearman $\rho{\approx}0.34$. Rubric details are in \nolinkurl{evaluation/RUBRIC.md}.
 
 \begin{table}[t]\centering\small\setlength{\tabcolsep}{2pt}
 \begin{tabular}{@{}lrr@{}}\toprule
@@ -223,17 +223,17 @@ Four Project ECHO staff completed the form after the September 10, 2026 demonstr
 
 \subsection{Generator Comparison and Educational Usefulness}
 
-Generator comparison uses the same five quality axes as the human packet (factual appropriateness, grounding, evidence usefulness, safety/hedging, usability), not latency. A Qwen2.5-1.5B judge scored answers on 13 standalone questions. Archived ECHO-AI answers scored 3.49/5. Qwen2.5-1.5B, SmolLM2-1.7B, Gemma-2-2B-IT (Q4 GGUF), and Gemini-3.1-Flash-Lite scored 3.82, 4.12, 3.72, and 4.86. The standalone generators received only question text, while archived answers came from the deployed system. The judge gave Gemini 5/5 on 12 items. GPT and Claude have no scores because of API credit limits. The \href{https://github.com/238Plutonium/openreview/tree/main/evaluation/frontier_baselines}{released results} include generations and judgments.
+We compared generators on the same five rating axes used for the human packet: factual appropriateness, grounding, evidence usefulness, safety/hedging, and usability. A Qwen2.5-1.5B judge scored answers to 13 standalone questions. Archived ECHO-AI answers scored 3.49/5. Qwen2.5-1.5B, SmolLM2-1.7B, Gemma-2-2B-IT (Q4 GGUF), and Gemini-3.1-Flash-Lite scored 3.82, 4.12, 3.72, and 4.86. The standalone generators saw only the question text; archived answers came from the deployed system. The judge gave Gemini 5/5 on 12 items. GPT and Claude have no scores because of API credit limits. Generations and judgments are in the \href{https://github.com/238Plutonium/openreview/tree/main/evaluation/frontier_baselines}{released results}.
 
 Staff rated educational usefulness at 4.00/5 ($n{=}4$). The release includes a \href{https://github.com/238Plutonium/openreview/tree/main/evaluation/education_outcomes}{pre/post instrument}.
 
 \section{Conclusion}
 
-ECHO-AI routes slide, speech, literature, and prior-session questions within a Project ECHO call. The evaluation emphasizes reply quality---routing accuracy, safeguard abstention, human and LLM ratings, and citation support---rather than response latency. Paired experiments show how frame handling changes reply content when slides conflict with speech or are unavailable.
+ECHO-AI routes slide, speech, literature, and prior-session questions inside a Project ECHO call. We judge the system by whether it chooses the right evidence, refuses when a slide is missing, earns usable human ratings, and cites abstracts that support its claims. The paired experiments show how frame handling changes what the assistant says when slides conflict with speech or are unavailable.
 
 \section*{Limitations}
 
-Evaluation uses project-team queries, four staff ratings from one demo, three packet graders, and synthetic safeguard probes. The citation and packet judges share the formatter's Qwen3 family. A separate automated judge scores generators on quality axes; it is not a latency study. Clinical accuracy, slide correctness, and learner gains remain unmeasured.
+We rely on project-team queries, four staff ratings from one demo, three packet graders, and synthetic safeguard probes. The citation and packet judges share the formatter's Qwen3 family. A separate automated judge scores generators on the five rating axes above. We have not yet measured clinical accuracy, slide correctness, or learner knowledge gains.
 
 \section*{Acknowledgments}
 
@@ -344,7 +344,7 @@ Footnotes resolve only if the PMID appears in the retrieval record (provenance w
 
 \textbf{Human packet rubric (1--5).} Factual appropriateness; contextual grounding; evidence usefulness; safety/hedging; usability. Facilitator form: 15 usability items (appeal, ease, non-disruption, voice-wake, \ldots). Sheets and \nolinkurl{evaluation/RUBRIC.md} are in the release; filled individual facilitator sheets stay private. MedTutor-style aggregates: \nolinkurl{evaluation/frontier\_baselines/}. Education-outcome instrument: \nolinkurl{evaluation/education\_outcomes/}.
 
-\newpage\textbf{Inspecting individual cases.} Open \nolinkurl{evaluation/recorded_replay/index.html} for the paired zero-frame outputs and labels. The two runs share the case ID and question and differ in the guard setting. The underlying JSONL records output text, attached-frame count, and optional timing fields; reported comparisons use abstention and reply-content labels, not latency. For speech conflicts, inspect the included and withheld arms in \nolinkurl{evaluation/speech_recall_ablation/}; group the three repetitions by case before comparing token-mention rates. Replaying the inputs and verifying the archived outputs are separate checks: the former executes current models, while the latter checks the artifact underlying Table~3.
+\newpage\textbf{Inspecting individual cases.} Open \nolinkurl{evaluation/recorded_replay/index.html} for the paired zero-frame outputs and labels. The two runs share the case ID and question and differ in the guard setting. The underlying JSONL records output text and attached-frame count (and may include timing fields for debugging). The reported comparisons look at whether the system abstained and what values appeared in the reply. For speech conflicts, inspect the included and withheld arms in \nolinkurl{evaluation/speech_recall_ablation/}; group the three repetitions by case before comparing token-mention rates. Replaying the inputs and verifying the archived outputs are separate checks: the former executes current models, while the latter checks the artifact underlying Table~3.
 
 \section{Citation Attribution Protocol and Examples}
 
