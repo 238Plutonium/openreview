@@ -1,0 +1,51 @@
+{
+  "summary": [
+    {
+      "generator": "ECHO-AI_archived",
+      "n": 13,
+      "factual": 3.31,
+      "grounding": 3.38,
+      "evidence": 3.08,
+      "safety": 3.85,
+      "usability": 3.85,
+      "overall": 3.49,
+      "judge": "Qwen/Qwen2.5-1.5B-Instruct"
+    },
+    {
+      "generator": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
+      "n": 13,
+      "factual": 4.08,
+      "grounding": 4.08,
+      "evidence": 4.0,
+      "safety": 4.23,
+      "usability": 4.23,
+      "overall": 4.12,
+      "judge": "Qwen/Qwen2.5-1.5B-Instruct"
+    },
+    {
+      "generator": "Qwen/Qwen2.5-1.5B-Instruct",
+      "n": 13,
+      "factual": 3.62,
+      "grounding": 3.69,
+      "evidence": 3.62,
+      "safety": 4.08,
+      "usability": 4.08,
+      "overall": 3.82,
+      "judge": "Qwen/Qwen2.5-1.5B-Instruct"
+    },
+    {
+      "generator": "google/gemma-2-2b-it (bartowski Q4_K_M GGUF)",
+      "n": 13,
+      "factual": 3.38,
+      "grounding": 3.62,
+      "evidence": 3.62,
+      "safety": 4.0,
+      "usability": 4.0,
+      "overall": 3.72,
+      "judge": "Qwen/Qwen2.5-1.5B-Instruct"
+    }
+  ],
+  "n_generations": 52,
+  "n_judgments_with_scores": 52,
+  "note": "Includes Gemma-2-2B-IT GGUF. GPT/Claude/Gemini still need API secrets. Local judge remains Qwen2.5-1.5B-Instruct."
+}

@@ -1,0 +1,14 @@
+{
+  "generator": "gemini-3.1-flash-lite",
+  "judge": "Qwen/Qwen2.5-1.5B-Instruct",
+  "n": 13,
+  "factual": 4.77,
+  "grounding": 4.77,
+  "evidence": 4.77,
+  "safety": 5.0,
+  "usability": 5.0,
+  "overall": 4.86,
+  "openai": "key present; API insufficient_quota",
+  "anthropic": "key present; API credit_balance too low",
+  "note": "Same local judge as the open CPU bake-off, not the paper Qwen3-4B Table 5 judge."
+}

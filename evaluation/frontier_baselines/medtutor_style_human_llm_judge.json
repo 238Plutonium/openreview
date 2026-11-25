@@ -1,0 +1,23 @@
+{
+  "protocol": "MedTutor-style human vs LLM-as-a-judge on fixed M=13 MOUD/OUD packet. Human = equal-weight mean of 3 raters (packet_scores_summary.json). LLM judge = Qwen3-4B-Instruct-2507 (llm_judge_m13_summary.json). Spearman item-mean rho\u22480.34.",
+  "human_dim_means": {
+    "factual": 4.19,
+    "grounding": 5.0,
+    "evidence": 3.778,
+    "safety": 4.513,
+    "usability": 4.115,
+    "overall": 4.263
+  },
+  "llm_judge_dim_means": {
+    "factual": 4.154,
+    "grounding": 3.615,
+    "evidence": 3.636,
+    "safety": 5.0,
+    "usability": 4.846,
+    "overall": 4.262
+  },
+  "spearman_item_means": 0.341,
+  "n_items": 13,
+  "n_human_raters": 3,
+  "caveat": "Raters are human packet graders, not a completed MOUD specialist panel. LLM judge is same family as formatter."
+}
