@@ -40,7 +40,7 @@ We contribute (i)~an MIT-licensed meeting assistant powered by a VLM-LLM pipelin
 
 \textbf{Medical retrieval and education.} Retrieval-augmented generation (RAG) supplies source passages to a generator (Lewis et al., 2020; Karpukhin et al., 2020). Almanac grounds clinical answers in retrieved sources, while MedRAG and PubMedQA benchmark medical retrieval and question answering (Zakka et al., 2024; Xiong et al., 2024; Jin et al., 2019). AMIE studies conversational diagnosis (Tu et al., 2025). MedTutor builds a learning module from a clinical report using textbooks and research articles. It evaluates outputs with radiologists and model-based judges (Jang et al., 2025). ECHO-AI addresses questions asked mid-discussion, where the system must identify which evidence the participant means and whether it is available.
 
-\textbf{Meeting understanding.} AMI captures synchronized audio and visual meeting context. QMSum and MeetingBank support analysis of recorded meetings, and MeetBench-XL evaluates real-time meeting agents (Carletta et al., 2006; Zhong et al., 2021; Hu et al., 2023, 2026). Zoom AI Companion can use transcript and optional screen text, while Otter AI Chat and Fireflies AskFred support transcript Q\&A (Zoom Video Communications, 2025a,b; Otter.ai, 2025; Fireflies.ai, 2025). Table~1 shows how ECHO-AI adds biomedical and prior-session retrieval to live screen and speech context.
+\textbf{Meeting understanding.} AMI captures synchronized audio and visual meeting context. QMSum and MeetingBank support analysis of recorded meetings, and MeetBench-XL evaluates real-time meeting agents (Carletta et al., 2006; Zhong et al., 2021; Hu et al., 2023, 2026). Zoom AI Companion can use speech and optional screen OCR. Otter AI Chat can answer questions about captured slides, and Fireflies documents live AskFred for Google Meet via a Chrome extension (Zoom Video Communications, n.d.-a,b; Otter.ai, n.d.; Fireflies.ai, n.d.). Table~1 summarizes documented features.
 
 \textbf{Grounding and reliability.} Prior work on hallucination and citation faithfulness motivates abstention and source checks (Ji et al., 2023; Manakul et al., 2023; Gao et al., 2023). ECHO-AI applies these checks when replying in the meeting. Its controlled comparisons isolate evidence selection and reply policies within a shared answer-generation stack (Table~3).
 
@@ -55,7 +55,7 @@ ECHO-AI combines live multimodal capture, evidence routing, and constrained gene
 
 \subsection{Live Meeting Context}
 
-With host approval, ECHO-AI joins a Zoom meeting and receives shared-screen images and audio via RTMS. Participants interact through public mentions, private chat, or voice. Faster-whisper large-v3 (Radford et al., 2022) transcribes speech, and frame deduplication retains distinct visual context. Frames are selected at or before the question timestamp, preserving the temporal relationship between a question and the displayed material.
+With host approval, ECHO-AI joins a Zoom meeting and receives shared-screen images and audio via RTMS. Participants interact through public mentions, private chat, or voice. Faster-Whisper runs Whisper large-v3 to transcribe speech (Radford et al., 2023).\footnote{\href{https://github.com/SYSTRAN/faster-whisper}{Faster-Whisper implementation} and \href{https://huggingface.co/openai/whisper-large-v3}{Whisper large-v3 model card}.} Frame deduplication retains distinct visual context. Frames are selected at or before the question timestamp, preserving the temporal relationship between a question and the displayed material.
 
 \subsection{Evidence Routing and Response Generation}
 
@@ -92,17 +92,17 @@ Node.js orchestrates the bot; Python/vLLM hosts models on local GPUs. \textbf{Li
 
 MedTutor & --- & --- & Textbooks + PubMed and Semantic Scholar & Web UI\\
 
-Zoom AI Companion & Yes & ASR; optional screen OCR & --- & Transcript chat\\
+Zoom AI Companion & Yes & ASR; optional screen OCR & --- & Meeting Q\&A\\
 
-Otter AI Chat & Yes & ASR & --- & Transcript chat\\
+Otter AI Chat & Yes & ASR; captured slides & --- & Transcript and slide Q\&A\\
 
-Fireflies AskFred & Yes & ASR & --- & Transcript chat\\
+Fireflies AskFred & Google Meet via extension & ASR & --- & Transcript chat\\
 
 ECHO-AI & Zoom bot & Deskshare + ASR & PubMed + prior ECHO & Chat + voice\\
 
 \bottomrule\end{tabularx}
 
-\caption{Feature comparison based on public product pages (November 2026). Controlled baselines are reported in Table~3.}\end{table*}
+\caption{Documented features as of November 2026. A dash indicates that the sources reviewed do not document a dedicated feature in that category. Table~3 reports the controlled comparisons.}\end{table*}
 
 \section{System Demonstration}
 
@@ -262,11 +262,11 @@ Facilitator feedback and the September 2026 recording come from a scheduled demo
 
 \bibitem[Carletta et al.(2006)]{ref6}Jean Carletta, Simone Ashby, Sebastien Bourban, Mike Flynn, Mael Guillemot, Thomas Hain, Jaroslav Kadlec, Vasilis Karaiskos, Wessel Kraaij, Melissa Kronenthal, Guillaume Lathoud, Mike Lincoln, Agnes Lisowska, Iain McCowan, Wilfried Post, Dennis Reidsma, and Pierre Wellner. 2006. The AMI meeting corpus: A pre-announcement. In Machine Learning for Multimodal Interaction (MLMI), Lecture Notes in Computer Science, pages 28--39.
 
-\bibitem[Chen et al.(2024)]{ref7}Jianlv Chen, Shitao Xiao, Peitian Zhang, Kun Luo, Defu Lian, and Zheng Liu. 2024. BGE M3-embedding: Multi-lingual, multi-functionality, multi-granularity text embeddings through self-knowledge distillation. arXiv preprint arXiv:2402.03216.
+\bibitem[Chen et al.(2024)]{ref7}Jianlyu Chen, Shitao Xiao, Peitian Zhang, Kun Luo, Defu Lian, and Zheng Liu. 2024. M3-Embedding: Multi-linguality, multi-functionality, multi-granularity text embeddings through self-knowledge distillation. In Findings of the Association for Computational Linguistics: ACL 2024, pages 2318--2335, Bangkok, Thailand. Association for Computational Linguistics.
 
-\bibitem[Fireflies.ai(2025)]{ref8}Fireflies.ai. 2025. Fireflies.ai AI notetaker. \url{https://fireflies.ai/}. Product page; accessed 21 Nov 2026.
+\bibitem[Fireflies.ai(n.d.)]{ref8}Fireflies.ai. n.d. How to use AskFred during live meetings. \url{https://guide.fireflies.ai/articles/4228644685}. Accessed 25 Nov 2026.
 
-\bibitem[Gao et al.(2023)]{ref9}Tianyu Gao, Howard Yen, Jiatong Yu, and Danqi Chen. 2023. Enabling large language models to generate text with citations. In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing, pages 6465-- 6488, Singapore. Association for Computational Linguistics.
+\bibitem[Gao et al.(2023)]{ref9}Tianyu Gao, Howard Yen, Jiatong Yu, and Danqi Chen. 2023. Enabling large language models to generate text with citations. In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing, pages 6465--6488, Singapore. Association for Computational Linguistics.
 
 \bibitem[Hu et al.(2023)]{ref10}Yebowen Hu, Timothy Ganter, Hanieh Deilamsalehy, Franck Dernoncourt, Hassan Foroosh, and Fei Liu. 2023. MeetingBank: A benchmark dataset for meeting summarization. In Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages 16409--16423, Toronto, Canada. Association for Computational Linguistics.
 
@@ -274,9 +274,9 @@ Facilitator feedback and the September 2026 recording come from a scheduled demo
 
 \bibitem[Jang et al.(2025)]{ref12}Dongsuk Jang, Ziyao Shangguan, Kyle Tegtmeyer, Anurag Gupta, Jan Czerminski, Sophie Chheang, and Arman Cohan. 2025. MedTutor: A retrieval-augmented LLM system for case-based medical education. In Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing: System Demonstrations, pages 319--353, Suzhou, China. Association for Computational Linguistics.
 
-\bibitem[Ji et al.(2023)]{ref13}Ziwei Ji, Nayeon Lee, Rita Frieske, Tiezheng Yu, Dan Su, Yan Xu, Etsuko Ishii, Ye Jin Bang, Andrea Madotto, and Pascale Fung. 2023. Survey of hallucination in natural language generation. ACM Computing Surveys, 55(12):1--38.
+\bibitem[Ji et al.(2023)]{ref13}Ziwei Ji, Nayeon Lee, Rita Frieske, Tiezheng Yu, Dan Su, Yan Xu, Etsuko Ishii, Ye Jin Bang, Andrea Madotto, and Pascale Fung. 2023. Survey of hallucination in natural language generation. ACM Computing Surveys, 55(12), article 248, pages 1--38.
 
-\bibitem[Jin et al.(2019)]{ref14}Qiao Jin, Bhuwan Dhingra, Zhengping Liu, William Cohen, and Xinghua Lu. 2019. PubMedQA: A dataset for biomedical research question answering. In Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP), pages 2567--2577, Hong Kong, China. Association for Computational Linguistics.
+\bibitem[Jin et al.(2019)]{ref14}Qiao Jin, Bhuwan Dhingra, Zhengping Liu, William W. Cohen, and Xinghua Lu. 2019. PubMedQA: A dataset for biomedical research question answering. In Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP), pages 2567--2577, Hong Kong, China. Association for Computational Linguistics.
 
 \bibitem[Karpukhin et al.(2020)]{ref15}Vladimir Karpukhin, Barlas Oguz, Sewon Min, Patrick Lewis, Ledell Wu, Sergey Edunov, Danqi Chen, and Wen-tau Yih. 2020. Dense passage retrieval for open-domain question answering. In Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP), pages 6769--6781, Online. Association for Computational Linguistics.
 
@@ -284,13 +284,13 @@ Facilitator feedback and the September 2026 recording come from a scheduled demo
 
 \bibitem[Manakul et al.(2023)]{ref17}Potsawee Manakul, Adian Liusie, and Mark Gales. 2023. SelfCheckGPT: Zero-resource black-box hallucination detection for generative large language models. In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing, pages 9004--9017, Singapore. Association for Computational Linguistics.
 
-\bibitem[Otter.ai(2025)]{ref19}Otter.ai. 2025. Otter.ai AI meeting assistant. \url{https://otter.ai/}. Product page; accessed 21 Nov 2026.
+\bibitem[Otter.ai(n.d.)]{ref19}Otter.ai. n.d. Automated slide capture overview. \url{https://help.otter.ai/hc/en-us/articles/5093321813911}. Accessed 25 Nov 2026.
 
 \bibitem[Yang et al.(2025)]{ref20}An Yang et al. 2025. Qwen3 technical report. arXiv preprint arXiv:2505.09388.
 
-\bibitem[Radford et al.(2022)]{ref21}Alec Radford, Jong Wook Kim, Tao Xu, Greg Brockman, Christine McLeavey, and Ilya Sutskever. 2022. Robust speech recognition via large-scale weak supervision. arXiv preprint arXiv:2212.04356.
+\bibitem[Radford et al.(2023)]{ref21}Alec Radford, Jong Wook Kim, Tao Xu, Greg Brockman, Christine McLeavey, and Ilya Sutskever. 2023. Robust speech recognition via large-scale weak supervision. In Proceedings of the 40th International Conference on Machine Learning, volume 202 of Proceedings of Machine Learning Research, pages 28492--28518. PMLR.
 
-\bibitem[Robertson and Zaragoza(2009)]{ref22}Stephen Robertson and Hugo Zaragoza. 2009. The probabilistic relevance framework: BM25 and beyond. Foundations and Trends in Information Retrieval, 3:333--389.
+\bibitem[Robertson and Zaragoza(2009)]{ref22}Stephen E. Robertson and Hugo Zaragoza. 2009. The probabilistic relevance framework: BM25 and beyond. Foundations and Trends in Information Retrieval, 3:333--389.
 
 \bibitem[Sayers et al.(2022)]{ref23}Eric W. Sayers, Evan E. Bolton, J. Rodney Brister, Kathi Canese, Jessica Chan, Donald C. Comeau, Ryan Connor, Kathryn Funk, et al. 2022. Database resources of the national center for biotechnology information. Nucleic Acids Research, 50(D1):D20--D26.
 
@@ -302,9 +302,9 @@ Facilitator feedback and the September 2026 recording come from a scheduled demo
 
 \bibitem[Zhong et al.(2021)]{ref29}Ming Zhong, Da Yin, Tao Yu, Ahmad Zaidi, Mutethia Mutuma, Rahul Jha, Ahmed Hassan Awadallah, Asli Celikyilmaz, Yang Liu, Xipeng Qiu, and Dragomir Radev. 2021. QMSum: A new benchmark for query-based multi-domain meeting summarization. In Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, pages 5905--5921, Online. Association for Computational Linguistics.
 
-\bibitem[Zoom Video Communications(2025a)]{ref30}Zoom Video Communications. 2025a. Real-time media streams (RTMS) developer documentation. \url{https://developers.zoom.us/docs/rtms/}. Product documentation page dated 2025; accessed 21 Nov 2026.
+\bibitem[Zoom Video Communications(n.d.-a)]{ref30}Zoom Video Communications. n.d.-a. Realtime Media Streams developer documentation. \url{https://developers.zoom.us/docs/rtms/}. Accessed 25 Nov 2026.
 
-\bibitem[Zoom Video Communications(2025b)]{ref31}Zoom Video Communications. 2025b. Zoom AI Companion. \url{https://www.zoom.com/en/ai-assistant/}. Product page; accessed 21 Nov 2026.
+\bibitem[Zoom Video Communications(n.d.-b)]{ref31}Zoom Video Communications. n.d.-b. Asking in-meeting questions with AI. \url{https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0057748}. Accessed 25 Nov 2026.
 
 \end{thebibliography}
 
