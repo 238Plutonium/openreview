@@ -30,11 +30,11 @@ During Project ECHO (Extension for Community Healthcare Outcomes) case-based tel
 
 \section{Introduction}
 
-Unequal access to specialist expertise remains a barrier for underserved communities. Project ECHO connects hub specialists and frontline clinicians at spoke sites in recurring, case-based videoconferences (Arora et al., 2010, 2011a). In its hepatitis~C program, sustained virologic response rates were comparable across primary-care and specialty sites (Arora et al., 2011b). In September 2026, Penn State Project ECHO staff recreated a case presentation and discussion to show how facilitators could use ECHO-AI during a teaching session. One question asked about medications for opioid use disorder (MOUD).
+Unequal access to specialist expertise remains a barrier for underserved communities. Project ECHO connects hub specialists and frontline clinicians at spoke sites in recurring, case-based videoconferences (Arora et al., 2010, 2011a). In its hepatitis~C program, sustained virologic response rates were comparable across primary-care and specialty sites (Arora et al., 2011b). In September 2026, Penn State Project ECHO staff recreated a case presentation and discussion to show how facilitators could use ECHO-AI during a teaching session. One question asked about medications for opioid use disorder (MOUD). During a teaching session, participants may need to clarify a slide, recall a remark, consult an earlier session, or find biomedical literature before the discussion moves on.
 
-ECHO-AI supports Project ECHO facilitators and spoke clinicians inside the live Zoom call. With host approval, the assistant receives shared-screen frames and audio through Zoom Real-Time Media Streams (RTMS). Participants can ask questions by public mention, private chat, or voice without uploading meeting materials. The system routes questions to timestamped slides, speech, PubMed, or prior ECHO sessions. It withholds slides for speech recall, returns a fixed reply when a visual question lacks a usable frame, and restricts cited PubMed identifiers (PMIDs) to the retrieval record. A minutes module preserves the discussion and Q\&A for later review. See Figure~\ref{fig:architecture}A. To our knowledge, as of November 2026, none of Zoom AI Companion, Otter, or Fireflies retrieves PubMed or an institution's curated session archive and returns identifier-checked citations inside the call (Table~1).
+ECHO-AI supports Project ECHO facilitators and spoke clinicians inside the live Zoom call. With host approval, the assistant receives shared-screen frames and audio through Zoom Real-Time Media Streams (RTMS). Participants can ask questions by public mention, private chat, or voice without uploading meeting materials. The system routes questions to timestamped slides, speech, PubMed, or prior ECHO sessions. It withholds slides for speech recall, returns a fixed reply when a visual question lacks a usable frame, and restricts cited PubMed identifiers (PMIDs) to the retrieval record. A minutes module preserves the discussion and Q\&A for later review. See Figure~\ref{fig:architecture}A.
 
-We release the MIT-licensed system and report project-team logs, paired safeguard tests, human ratings, and citation audits. Review materials include code and replay artifacts,\footnote{\url{https://github.com/238Plutonium/echo-ai-naacl-submission}} a PubMed-only live demo (Figure~\ref{fig:architecture}B),\footnote{\url{https://chive-shrouded-gag.ngrok-free.dev/chat.html}} and a narrated screencast.\footnote{\url{https://www.youtube.com/watch?v=WwFCYDoYzm8}}
+We contribute (i)~an MIT-licensed meeting assistant powered by a VLM-LLM pipeline with these evidence and delivery controls; (ii)~an evaluation that uses project-team logs to characterize deployment, paired comparisons to test specific safeguards, and human ratings and citation audits to assess outputs and usability; and (iii)~public code and replay artifacts,\footnote{\url{https://github.com/238Plutonium/echo-ai-naacl-submission}} a PubMed-only live demo (Figure~\ref{fig:architecture}B),\footnote{\url{https://chive-shrouded-gag.ngrok-free.dev/chat.html}} and a narrated screencast.\footnote{\url{https://www.youtube.com/watch?v=WwFCYDoYzm8}}
 
 \section{Related Work}
 
@@ -173,7 +173,7 @@ The paired probes below quantify two delivery controls---visual abstention and s
 
 \textbf{Paired no-frame ablation.} The experimental control is the guard-disabled pipeline on the same 35 synthetic visual questions without frames. Enabling the guard raised abstention from 3/35 to 33/35: 31 guarded-only refusals, one unguarded-only refusal, two refusals in both conditions, and one in neither. The paired change was 85.7 percentage points, with 31 of the 32 discordant cases favoring the guard (two-sided exact McNemar $p=1.54\times10^{-8}$). Mean latency was 374\,ms with the guard and 1{,}524\,ms without it; the corresponding medians were 3.2 and 865.3\,ms. The guard bypasses answer generation. The guard-enabled arm generated replies on two zero-frame prompts. In VIS-ZERO-03, the reply stated that the slide was visible. In VIS-ZERO-21, the reply stated that the slide did not mention buprenorphine. Taken together, the abstention and latency results show that the guard provides a faster fallback on zero-frame prompts.
 
-The change in abstention rate is $(b-c)/N=(31-1)/35\approx0.857$, where $b$ and $c$ count prompts abstaining only with and only without the guard; the two prompts abstaining under both settings cancel. The exact McNemar test uses the 32 discordant prompts.
+The net change is $(31-1)/35\approx0.857$. The exact McNemar test uses the 32 discordant prompts.
 
 \textbf{Speech-recall frame withholding.} On 30 synthetic scheduling asks where transcript and slide disagree (3 reps; 180 calls), withholding the conflicting frame yields spoken-token 90/90 and slide-only 0/90; with the frame included, spoken falls to 62.2\% and slide-only rises to 37.8\% (case-mean $\Delta{+}0.38$/$-0.38$). In these scenarios, withholding conflicting slides helped the assistant preserve spoken values in its replies.
 
@@ -197,7 +197,7 @@ Safety / usability / mean & 4.51/4.12/4.26 & 5.00/4.85/4.26 \\
 \mathrm{Precision}(\tau)=\frac{C_\tau}{114},\qquad
 \mathrm{Recall}(\tau)=\frac{S_\tau}{86}.
 \]
-Full support covers 22/114 pairs and 20/86 statements. With partial support included, those counts are 82/114 and 63/86 (Table~\ref{tab:cite}). A separate lexical screen found 14/132 supported pairs (\nolinkurl{evaluation/claim_level_audit/}).
+Full support covers 22 pairs and 20 statements. Counting 60 partial scores, the automated judge found support for most claim--citation pairs (82/114) and at least one supporting citation for 63/86 statements (Table~\ref{tab:cite}). PMID provenance measures retrieval membership. A separate lexical screen finds support for 14/132 pairs (\nolinkurl{evaluation/claim_level_audit/}).
 
 \begin{table}[t]\centering\small\setlength{\tabcolsep}{3pt}
 
@@ -205,9 +205,9 @@ Full support covers 22/114 pairs and 20/86 statements. With partial support incl
 
 \textbf{ALCE-style metric} & \textbf{Value}\\\midrule
 
-Citation precision (full / partial or full) & 0.19 / 0.72\\
+Citation precision (attr$\geq$0.5) & 0.72\\
 
-Citation recall (full / partial or full) & 0.23 / 0.73\\
+Citation recall (attr$\geq$0.5) & 0.73\\
 
 \bottomrule\end{tabularx}
 
@@ -233,7 +233,7 @@ ECHO-AI routes slide, speech, literature, and prior-session questions within a P
 
 \section*{Limitations}
 
-Logs use project-team questions. Four staff rated one demonstration, and the 13-answer packet used three graders. Speech and frame probes use synthetic cases. The citation and packet judges share the formatter's Qwen3 family. The generator comparison uses a separate automated judge. Clinical answer accuracy, slide correctness, and learner knowledge gains remain unmeasured.
+Evaluation uses project-team queries, four staff ratings from one demo, three packet graders, and synthetic safeguard probes. The citation and packet judges share the formatter's Qwen3 family. A separate automated judge scores generators. Clinical accuracy, slide correctness, and learner gains remain unmeasured.
 
 \section*{Acknowledgments}
 
@@ -348,7 +348,7 @@ Footnotes resolve only if the PMID appears in the retrieval record (provenance w
 
 \section{Citation Attribution Protocol and Examples}
 
-\textbf{Protocol.} Discard bibliography lines \texttt{[n]: PMID \ldots}; judge each body assertion--PMID pair against the abstract with attr $\in\{0,0.5,1\}$. Precision averages over pairs; recall is statements with $\geq$1 supporting cite. Table~\ref{tab:cite} reports both thresholds. Judge: Qwen3-4B-Instruct-2507 (temp~0; same family as formatter). Package: \nolinkurl{evaluation/citation_faithfulness/}.
+\textbf{Protocol.} Discard bibliography lines \texttt{[n]: PMID \ldots}; judge each body assertion--PMID pair against the abstract with attr $\in\{0,0.5,1\}$. Precision averages over pairs; recall is statements with $\geq$1 supporting cite. Table~\ref{tab:cite} reports rates at attr$\geq$0.5. Judge: Qwen3-4B-Instruct-2507 (temp~0; same family as formatter). Package: \nolinkurl{evaluation/citation_faithfulness/}.
 
 \textbf{Strict$=$1.} ``CST has been associated with improved cognitive function \ldots'' $\rightarrow$ \mbox{PMID 30336989}.
 
