@@ -12,6 +12,6 @@ Response to feedback on MOUD/ECHO domain coverage, evaluation strength (MedTutor
 
 **Applied into manuscript (this branch):** MOUD/OUD domain; 98 sessions vs 3,310 chunks; MedTutor-style Table~5 (human vs LLM judge); frontier/education subsections with release instruments; ethics privacy + IRB-pending; bibliography Robertson label.
 
-**Still empty until external runs:** GPT/Claude/Gemini/Gemma generator rows (`evaluation/frontier_baselines/generator_baseline_scores.csv`); education pilot rows (`evaluation/education_outcomes/pilot_results.csv`); MOUD specialist panel beyond the current 3 packet raters.
+**Still empty until external runs:** GPT and Claude rows (keys were present; both APIs rejected for insufficient credit). Gemini-3.1-Flash-Lite is scored at 4.86 by the local Qwen2.5-1.5B judge (`evaluation/frontier_baselines/generator_baseline_scores.csv`). Education pilot rows (`evaluation/education_outcomes/pilot_results.csv`) and a MOUD specialist panel beyond the current 3 packet raters are still empty.
 
 Source paper context: `ECHO_AI_Demo_Paper_SUBMIT.pdf` / `ECHO_AI_LaTeX/` in this repo.

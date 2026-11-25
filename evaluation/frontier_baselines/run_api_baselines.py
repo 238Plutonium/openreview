@@ -40,7 +40,7 @@ def append_jsonl(path: Path, rec: dict) -> None:
         f.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
 
-def http_json(url: str, headers: dict, body: dict, timeout: int = 120) -> dict:
+def http_json(url: str, headers: dict, body: dict, timeout: int = 180) -> dict:
     req = urllib.request.Request(
         url,
         data=json.dumps(body).encode(),
@@ -94,7 +94,9 @@ def gen_anthropic(question: str) -> tuple[str, str]:
 
 def gen_gemini(question: str) -> tuple[str, str]:
     key = os.environ["GOOGLE_API_KEY"]
-    model = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
+    # gemini-2.0-flash and gemini-2.5-flash are closed to this key.
+    # gemini-3.8-flash returned repeated 503s; gemini-3.1-flash-lite answered.
+    model = os.environ.get("GEMINI_MODEL", "gemini-3.1-flash-lite")
     url = (
         f"https://generativelanguage.googleapis.com/v1beta/models/"
         f"{model}:generateContent?key={key}"
@@ -104,7 +106,7 @@ def gen_gemini(question: str) -> tuple[str, str]:
         {},
         {
             "contents": [{"role": "user", "parts": [{"text": f"{SYS}\n\n{question}"}]}],
-            "generationConfig": {"temperature": 0, "maxOutputTokens": 400},
+            "generationConfig": {"temperature": 0, "maxOutputTokens": 2048},
         },
     )
     parts = data["candidates"][0]["content"]["parts"]
@@ -147,12 +149,33 @@ def main() -> None:
                 continue
             log(f"generate {name} qa_id={it['qa_id']}")
             t0 = time.time()
-            try:
-                model, ans = fn(it["question"])
-            except urllib.error.HTTPError as e:
-                body = e.read().decode(errors="replace")[:300]
-                log(f"HTTP {e.code} {name}: {body}")
-                raise
+            model, ans = None, None
+            for attempt in range(1, 6):
+                try:
+                    model, ans = fn(it["question"])
+                    break
+                except urllib.error.HTTPError as e:
+                    body = e.read().decode(errors="replace")[:300]
+                    log(f"HTTP {e.code} {name} attempt {attempt}: {body}")
+                    billing = e.code in {400, 402, 429} and (
+                        "credit" in body.lower() or "quota" in body.lower() or "billing" in body.lower()
+                    )
+                    if billing:
+                        log(f"skip provider {name}: billing or quota")
+                        model = None
+                        break
+                    if e.code in {429, 503} and attempt < 5:
+                        time.sleep(8 * attempt)
+                        continue
+                    raise
+                except (urllib.error.URLError, TimeoutError) as e:
+                    log(f"timeout {name} attempt {attempt}: {type(e).__name__}")
+                    if attempt < 5:
+                        time.sleep(8 * attempt)
+                        continue
+                    raise
+            if model is None:
+                break
             append_jsonl(
                 GENS,
                 {

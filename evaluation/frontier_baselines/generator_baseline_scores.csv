@@ -5,3 +5,4 @@ ECHO-AI_archived,Qwen/Qwen2.5-1.5B-Instruct,3.31,3.38,3.08,3.85,3.85,3.49,13,ope
 HuggingFaceTB/SmolLM2-1.7B-Instruct,Qwen/Qwen2.5-1.5B-Instruct,4.08,4.08,4.0,4.23,4.23,4.12,13,open CPU bake-off
 Qwen/Qwen2.5-1.5B-Instruct,Qwen/Qwen2.5-1.5B-Instruct,3.62,3.69,3.62,4.08,4.08,3.82,13,open CPU bake-off
 google/gemma-2-2b-it (bartowski Q4_K_M GGUF),Qwen/Qwen2.5-1.5B-Instruct,3.38,3.62,3.62,4.0,4.0,3.72,13,Gemma-2-2B-IT via ungated bartowski Q4_K_M GGUF; no HF_TOKEN
+gemini-3.1-flash-lite,Qwen/Qwen2.5-1.5B-Instruct,4.77,4.77,4.77,5.00,5.00,4.86,13,API generation on M=13; same local judge as the open bake-off; OpenAI and Anthropic keys present but both APIs rejected for insufficient credit

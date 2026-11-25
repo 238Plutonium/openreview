@@ -223,18 +223,18 @@ Four Project ECHO facilitators completed the anonymous usability survey after th
 
 \subsection{Frontier Generators and Education Outcomes}
 
-Table~5 is the primary generator evaluation (deployed Qwen2.5-VL-3B + Qwen3-4B; human and paper Qwen3-4B judge). On the same $M{=}13$ questions we also ran a text-only open-model bake-off judged by a local Qwen2.5-1.5B model (\nolinkurl{evaluation/frontier\_baselines/}): archived ECHO-AI 3.49, Qwen2.5-1.5B 3.82, SmolLM2-1.7B 4.12, Gemma-2-2B-IT (Q4 GGUF) 3.72 (overall means; $n{=}13$). That local judge is not the Table~5 judge, and these open models are not GPT/Claude/Gemini API systems. Official gated Gemma weights were skipped; the GGUF checkpoint did not need a Hugging Face token. GPT/Claude/Gemini rows stay empty until API credentials are available. Table~3's Qwen3 comparison is routing, not generator quality.
+Table~5 is the primary generator evaluation (deployed Qwen2.5-VL-3B + Qwen3-4B; human and paper Qwen3-4B judge). On the same $M{=}13$ questions we also ran a text-only bake-off judged by a local Qwen2.5-1.5B model (\nolinkurl{evaluation/frontier\_baselines/}): archived ECHO-AI 3.49, Qwen2.5-1.5B 3.82, SmolLM2-1.7B 4.12, Gemma-2-2B-IT (Q4 GGUF) 3.72, and Gemini-3.1-Flash-Lite 4.86 (overall means; $n{=}13$). That local judge is not the Table~5 judge. Official gated Gemma weights were skipped; the GGUF checkpoint did not need a Hugging Face token. OpenAI and Anthropic keys were present, but both APIs rejected the calls for insufficient credit, so GPT and Claude are not scored. Table~3's Qwen3 comparison is routing, not generator quality.
 
 For education-related outcomes, facilitators rated educational usefulness at 4.00/5 ($n{=}4$) on the September~10 form (\nolinkurl{evaluation/education\_outcomes/facilitator\_survey\_likert\_summary.csv}). A fuller pre/post knowledge instrument is released but not yet run on a consented cohort.
 
 \section{Conclusion}
 
-ECHO-AI brings multimodal meeting context and biomedical retrieval into Project ECHO MOUD tele-education. Routing to speech, slides, PubMed, or prior sessions---and abstaining or withholding frames when evidence is missing or mismatched---keeps lookups inside the call. Deployment logs, paired safeguard comparisons, facilitator ratings, and a MedTutor-style human/LLM packet table support the demo; frontier generator rows and learner pre/post scores remain to be filled from the released instruments.
+ECHO-AI keeps slide, speech, PubMed, and prior-session lookup inside Project ECHO MOUD calls, and withholds or abstains when evidence is missing. Deployment logs, paired safeguards, facilitator ratings, and the MedTutor-style packet support the demo. Gemini-3.1-Flash-Lite scores 4.86 under the local open-bake-off judge; GPT, Claude, and learner pre/post scores remain unfilled.
 
 \clearpage
 \section*{Limitations}
 
-Logs are project-team-authored; facilitator usability is $n{=}4$ after one September~10 simulated session; the $M{=}13$ packet uses three graders, not a finished MOUD specialist panel. Speech-recall probes are synthetic; the citation audit and Table~5 LLM judge share the formatter's Qwen3 family. Frame coverage is availability, not visual correctness. The open-model bake-off uses a smaller local judge than Table~5; GPT/Claude/Gemini and gated Gemma are not yet scored. Learner pre/post knowledge gains are unmeasured (only post-session educational usefulness is available). The public site is PubMed-only and GPU-dependent.
+Logs are project-team-authored; facilitator usability is $n{=}4$ after one September~10 simulated session; the $M{=}13$ packet uses three graders, not a finished MOUD specialist panel. Speech-recall probes are synthetic; the citation audit and Table~5 LLM judge share the formatter's Qwen3 family. Frame coverage is availability, not visual correctness. The open-model bake-off and the Gemini row use a smaller local judge than Table~5. GPT and Claude were not scored because those APIs rejected the calls for insufficient credit. Gated Gemma weights were not used. Learner pre/post knowledge gains are unmeasured (only post-session educational usefulness is available). The public site is PubMed-only and GPU-dependent.
 
 \section*{Ethics Statement}
 
