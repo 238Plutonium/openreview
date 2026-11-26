@@ -1,0 +1,73 @@
+{
+  "summary": [
+    {
+      "generator": "gemini-3.1-flash-lite",
+      "n": 13,
+      "factual": 4.85,
+      "grounding": 4.31,
+      "evidence": 4.23,
+      "safety": 5.0,
+      "usability": 4.92,
+      "overall": 4.66,
+      "judge": "Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF)"
+    },
+    {
+      "generator": "meta-llama/Llama-3.2-3B-Instruct (bartowski Q4_K_M GGUF)",
+      "n": 13,
+      "factual": 4.38,
+      "grounding": 3.62,
+      "evidence": 3.46,
+      "safety": 4.54,
+      "usability": 4.92,
+      "overall": 4.18,
+      "judge": "Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF)"
+    },
+    {
+      "generator": "ECHO-AI_archived",
+      "n": 13,
+      "factual": 4.08,
+      "grounding": 3.23,
+      "evidence": 3.08,
+      "safety": 4.46,
+      "usability": 4.62,
+      "overall": 3.89,
+      "judge": "Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF)"
+    },
+    {
+      "generator": "Qwen/Qwen2.5-1.5B-Instruct",
+      "n": 13,
+      "factual": 4.15,
+      "grounding": 3.0,
+      "evidence": 3.0,
+      "safety": 4.31,
+      "usability": 4.62,
+      "overall": 3.82,
+      "judge": "Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF)"
+    },
+    {
+      "generator": "google/gemma-2-2b-it (bartowski Q4_K_M GGUF)",
+      "n": 13,
+      "factual": 4.15,
+      "grounding": 3.08,
+      "evidence": 3.08,
+      "safety": 4.15,
+      "usability": 4.54,
+      "overall": 3.8,
+      "judge": "Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF)"
+    },
+    {
+      "generator": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
+      "n": 13,
+      "factual": 4.0,
+      "grounding": 2.92,
+      "evidence": 3.0,
+      "safety": 4.08,
+      "usability": 4.46,
+      "overall": 3.69,
+      "judge": "Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF)"
+    }
+  ],
+  "n_judgments_with_scores": 78,
+  "judge": "Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF)",
+  "note": "Fair re-judge of all bake-off generators with paper-family Qwen3-4B Instruct-2507 (GGUF). Rubric penalizes fluent ungrounded slide/meeting invention. Not clinician validation; companion to human 4.26 / paper Qwen3-4B Echo-only 4.26."
+}

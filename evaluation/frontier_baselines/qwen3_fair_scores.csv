@@ -1,0 +1,7 @@
+generator,judge,factual,grounding,evidence,safety,usability,overall,n_items,notes
+gemini-3.1-flash-lite,Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF),4.85,4.31,4.23,5.0,4.92,4.66,13,Qwen3-4B fair re-judge; grounding-aware rubric
+meta-llama/Llama-3.2-3B-Instruct (bartowski Q4_K_M GGUF),Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF),4.38,3.62,3.46,4.54,4.92,4.18,13,Qwen3-4B fair re-judge; grounding-aware rubric
+ECHO-AI_archived,Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF),4.08,3.23,3.08,4.46,4.62,3.89,13,Qwen3-4B fair re-judge; grounding-aware rubric
+Qwen/Qwen2.5-1.5B-Instruct,Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF),4.15,3.0,3.0,4.31,4.62,3.82,13,Qwen3-4B fair re-judge; grounding-aware rubric
+google/gemma-2-2b-it (bartowski Q4_K_M GGUF),Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF),4.15,3.08,3.08,4.15,4.54,3.8,13,Qwen3-4B fair re-judge; grounding-aware rubric
+HuggingFaceTB/SmolLM2-1.7B-Instruct,Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF),4.0,2.92,3.0,4.08,4.46,3.69,13,Qwen3-4B fair re-judge; grounding-aware rubric

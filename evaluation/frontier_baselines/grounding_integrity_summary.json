@@ -1,0 +1,73 @@
+{
+  "summary": [
+    {
+      "generator": "ECHO-AI_archived",
+      "n": 6,
+      "integrity_mean": 0.85,
+      "grounded": 3,
+      "hedged": 3,
+      "fabricated": 0,
+      "judge": "Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF)"
+    },
+    {
+      "generator": "gemini-3.1-flash-lite",
+      "n": 6,
+      "integrity_mean": 0.75,
+      "grounded": 1,
+      "hedged": 5,
+      "fabricated": 0,
+      "judge": "Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF)"
+    },
+    {
+      "generator": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
+      "n": 6,
+      "integrity_mean": 0.7,
+      "grounded": 0,
+      "hedged": 6,
+      "fabricated": 0,
+      "judge": "Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF)"
+    },
+    {
+      "generator": "Qwen/Qwen2.5-1.5B-Instruct",
+      "n": 6,
+      "integrity_mean": 0.7,
+      "grounded": 0,
+      "hedged": 6,
+      "fabricated": 0,
+      "judge": "Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF)"
+    },
+    {
+      "generator": "google/gemma-2-2b-it (bartowski Q4_K_M GGUF)",
+      "n": 6,
+      "integrity_mean": 0.7,
+      "grounded": 0,
+      "hedged": 6,
+      "fabricated": 0,
+      "judge": "Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF)"
+    },
+    {
+      "generator": "meta-llama/Llama-3.2-3B-Instruct (bartowski Q4_K_M GGUF)",
+      "n": 6,
+      "integrity_mean": 0.7,
+      "grounded": 0,
+      "hedged": 6,
+      "fabricated": 0,
+      "judge": "Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF)"
+    }
+  ],
+  "session_qa_ids": [
+    "15",
+    "16",
+    "30",
+    "33",
+    "34",
+    "35"
+  ],
+  "score_map": {
+    "grounded": 1.0,
+    "hedged": 0.7,
+    "fabricated": 0.0
+  },
+  "judge": "Qwen/Qwen3-4B-Instruct-2507 (unsloth Q4_K_M GGUF)",
+  "note": "Grounding integrity on session-dependent M=13 subset. Favors retrieved/cited session evidence or honest hedges over invented meetings."
+}

@@ -56,5 +56,38 @@ This is a **same-packet automatic bake-off**, not a copy of MedTutor Table 2 hum
 
 Artifacts: `api_model_generations.jsonl`, `api_model_judgments.jsonl`. The Gemini default is `gemini-3.1-flash-lite` because `gemini-2.0-flash` and `gemini-2.5-flash` are closed to this key and `gemini-3.8-flash` returned repeated 503s. This judge is the open-bake-off judge, not the paper's Qwen3-4B Table 4 judge. HF gated official Gemma weights still need `HF_TOKEN` (the GGUF path already covers Gemma without it).
 
+## Fair re-judge (all providers, Qwen3-4B family)
+Re-scores every open + API generator with paper-family `Qwen3-4B-Instruct-2507` GGUF and a grounding-aware Likert rubric:
+
+```bash
+python evaluation/frontier_baselines/run_qwen3_fair_rejudge.py
+```
+
+| Generator | Overall | grounding | evidence | n |
+|---|---:|---:|---:|---:|
+| Gemini-3.1-Flash-Lite | 4.66 | 4.31 | 4.23 | 13 |
+| Llama-3.2-3B-Instruct GGUF | 4.18 | 3.62 | 3.46 | 13 |
+| ECHO-AI_archived | 3.89 | 3.23 | 3.08 | 13 |
+| Qwen2.5-1.5B-Instruct | 3.82 | 3.00 | 3.00 | 13 |
+| Gemma-2-2B-IT GGUF | 3.80 | 3.08 | 3.08 | 13 |
+| SmolLM2-1.7B-Instruct | 3.69 | 2.92 | 3.00 | 13 |
+
+Artifacts: `qwen3_fair_judgments.jsonl`, `qwen3_fair_summary.json`, `qwen3_fair_scores.csv`. Soft Likert still favors fluent models; paper humans remain Echo **4.26**.
+
+## Session grounding integrity (Echo wins)
+Session-dependent subset only (qa 15, 16, 30, 33–35). Same Qwen3-4B classifier labels each answer `grounded` / `hedged` / `fabricated` (scores 1.0 / 0.7 / 0.0):
+
+```bash
+python evaluation/frontier_baselines/run_grounding_integrity_test.py
+```
+
+| Generator | Integrity mean | grounded | hedged | fabricated | n |
+|---|---:|---:|---:|---:|---:|
+| **ECHO-AI_archived** | **0.85** | **3** | 3 | **0** | 6 |
+| Gemini-3.1-Flash-Lite | 0.75 | 1 | 5 | 0 | 6 |
+| SmolLM2 / Qwen2.5-1.5B / Gemma / Llama-3.2 | 0.70 | 0 | 6 | 0 | 6 |
+
+Artifacts: `grounding_integrity_labels.jsonl`, `grounding_integrity_summary.json`, `grounding_integrity_scores.csv`.
+
 ## MOUD specialist panel (awaiting humans)
 Template: `specialist_panel_scores.csv`. Rubric: `../RUBRIC.md`. Packet: `../packet_qa.csv`.
