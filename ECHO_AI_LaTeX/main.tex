@@ -112,11 +112,13 @@ The discussion can then move from the slide to the literature. A request for a P
 
 \section{System Evaluation}\label{sec:eval}
 
-The walkthrough raises three questions. Does the assistant pick the evidence the user asked for? What quality of answer does it deliver? How do facilitators experience the interaction? We trace these questions from routing to output. Following MedTutor (Jang et al., 2025), we place human and automated answer ratings side by side.
+A useful reply in a case discussion starts with the right source and ends with an answer the participant can use. Following MedTutor's upstream and downstream evaluation (Jang et al., 2025), we first test evidence selection and then assess the answers. We compare human and model ratings on the same answer packet and report how closely they agree. Demonstration feedback answers a separate question about the experience of using ECHO-AI in Zoom.
 
 \subsection{Upstream Evaluation: Evidence Selection}\label{sec:upstream}
 
-The archived log contains 419 answers to project-team-authored development questions across 55 streams (Table~2). Slide questions contain ``slide'' or ``screen''. Frames attach to 86/122 slide asks (70.5\%); fingerprinting yields unique-frame ratio 0.015 (290 kept / 19{,}078 near-duplicates dropped). Full-pipeline latency mean 6.0\,s (median 4.1\,s; $n{=}213$); wake-to-submit mean 7.8\,s ($n{=}58$). Of answers with a retrieval record ($n{=}52$), routing is literature 33 / both 14 / prior-session 5. Frame counts 0/1/2/3: 227/129/20/43. The public literature UI is excluded from this log; when GPUs are down, screencast and recorded packages remain offline.
+\textbf{What reached the assistant.} The development log contains 419 answers across 55 streams. Questions came from the project team. Of 122 slide questions, 86 had an attached frame (70.5\%). Fingerprinting retained 290 frames and removed 19,078 near-duplicates. Among the 52 answers with a retrieval record, 33 used literature, 14 used both sources, and five used prior sessions only. Across all answers, the counts with zero, one, two, and three frames were 227, 129, 20, and 43. The public web interface is outside this log.
+
+\textbf{Time to reply.} End-to-end replies averaged 6.0 seconds across 213 logged responses. The median was 4.1 seconds (Table~\ref{tab:deployment}). Wake-to-submit averaged 7.8 seconds across 58 logged interactions. These two measures describe different parts of the interaction.
 
 \begin{table}[t]\centering\small\setlength{\tabcolsep}{3pt}
 
@@ -138,11 +140,9 @@ Human answer packet & 4.26/5 equal-rater mean (3 raters, 13 items)\\
 
 \bottomrule\end{tabularx}
 
-\caption{Deployment log and human ratings. PMID provenance means that an identifier appears in the retrieval record.}\end{table}
+\caption{Deployment and evaluation at a glance. The development log, answer packet, and facilitator survey cover different samples.}\label{tab:deployment}\end{table}
 
-\textbf{Routing versus competing methods.}
-
-We compare the rule router and delivery policies on shared cases (\nolinkurl{evaluation/routing_comparison/}). Focus and intent labels come from experiment categories and synthetic probes.
+\textbf{Choosing the source.} We tested whether the router recognized what a question referred to and whether it selected PubMed or the prior-session index when retrieval was needed. The focus set contains 30 speech, 38 visual, and 10 general questions. The intent set contains eight literature, four prior-session, and 20 no-retrieval questions. The reference labels came from the experiment categories and synthetic probes. Accuracy counts exact label matches.
 
 \begin{table}[t]\centering\small\setlength{\tabcolsep}{2pt}
 
@@ -160,33 +160,35 @@ Retrieval intent (n=32) & Rule acc.\ 0.69; mean 0.221\,ms & Always-none 0.63; LL
 
 \bottomrule\end{tabularx}
 
-\caption{Routing vs competing methods. Speech/no-frame: paired end-to-end runs. Focus/retrieval: category-derived reference labels. Section~\ref{sec:upstream} reports results for all prompts and for those requiring retrieval.}\end{table}
-The focus set contains 30 speech, 38 visual, and 10 general examples. The retrieval-intent set contains eight literature, four prior-session, and 20 no-retrieval examples. On the focus set, the rule router assigned 73/78 labels correctly and the Qwen3-4B router assigned 75/78 correctly. On retrieval intent, the rule router assigned 22/32 correctly, compared with 20/32 for always-none and 15/32 for Qwen3-4B. On the 12 prompts that require retrieval, exact-label accuracy was 6/12 for the rule router, 12/12 for Qwen3-4B, 8/12 for always-literature, and 0/12 for always-none. The rule router averaged under 1\,ms for each routing task (Table~3). Table~2 reports end-to-end response latency.
+\caption{Routing vs competing methods. Speech/no-frame: paired end-to-end runs. Focus/retrieval: category-derived reference labels. Times for the label tasks measure routing alone.}\end{table}
+On the focus task, the rule router matched 73 of 78 labels and Qwen3-4B matched 75. On the full retrieval-intent set, they matched 22 and 15 of 32 labels, respectively. An always-none baseline matched 20. On the 12 questions that required retrieval, the rule router matched six, Qwen3-4B matched all 12, and an always-literature baseline matched eight. The rule router took less than 1 ms on average for each task (Table~3). The two views distinguish overall routing accuracy from performance on questions that need a source.
 
-Accuracy is the fraction of prompts whose predicted label matches the reference, computed separately per task. The always-visual and always-none baselines show the accuracy of predicting the most frequent category; the two tasks have different label distributions, so differences are interpreted within each task.
+\textbf{When the screen frame is missing.} We sent the same 35 synthetic visual questions through the pipeline with the guard on and off. Enabling the guard increased abstentions from 3/35 to 33/35. Thirty-one questions triggered abstention only with the guard and one only without it. Both runs abstained on two questions and answered one. The net gain was 85.7 percentage points, $(31-1)/35$ (two-sided exact McNemar $p=1.54\times10^{-8}$).
 
-\textbf{Paired no-frame ablation.} The experimental control is the guard-disabled pipeline on the same 35 synthetic visual questions without frames. Enabling the guard raised abstention from 3/35 to 33/35: 31 guarded-only refusals, one unguarded-only refusal, two refusals in both conditions, and one in neither. The paired change was 85.7 percentage points, with 31 of the 32 discordant cases favoring the guard (two-sided exact McNemar $p=1.54\times10^{-8}$). Mean latency was 374\,ms with the guard and 1{,}524\,ms without it; the corresponding medians were 3.2 and 865.3\,ms. The guard bypasses answer generation. The two guard-on replies are documented in Appendix~B. The paired test shows that the guard increases abstention while shortening response time on these prompts.
+The guard can answer immediately with a screen-unavailable reply. In this replay, mean latency fell from 1{,}524 to 374 ms and the median from 865.3 to 3.2 ms. Appendix~B describes the two guard-on replies that continued to generation.
 
-The net change is $(31-1)/35\approx0.857$. The exact McNemar test uses the 32 discordant prompts.
+\textbf{When the slide and speaker disagree.} In 30 synthetic timing scenarios, we asked for the spoken value and ran each scenario three times per condition. Withholding the slide raised spoken-token recovery from 56/90 to 90/90. The share of replies containing only the slide token went from 37.8\% to 0\%. The case-mean changes were $+0.38$ and $-0.38$, respectively. Appendix~A traces a question about \texttt{08:30} when the slide displays \texttt{13:30}. The metric checks which value appears in the reply across 30 cases, with three replies per case.
 
-\textbf{Speech-recall frame withholding.} On 30 synthetic scheduling asks where transcript and slide disagree (3 reps; 180 calls), withholding the conflicting frame yields spoken-token 90/90 and slide-only 0/90; with the frame included, spoken falls to 62.2\% and slide-only rises to 37.8\% (case-mean $\Delta{+}0.38$/$-0.38$). In these scenarios, withholding conflicting slides helped the assistant preserve spoken values in its replies.
-
-The speech-recall test scores the value in the reply against two cues from the same scenario, one spoken and one shown on screen. For example, Appendix~A traces a case with a spoken time of 08:30 and a displayed time of 13:30. The spoken-token rate records whether the reply contains the spoken value, while the slide-only rate records whether it contains the displayed value alone. Three runs for each scenario capture variation in the generated reply. The 90 replies per arm therefore represent 30 distinct question scenarios.
-
-\textbf{Retrieval check.} In a title-query check for a single guideline, a Humans[Mesh] filter excluded veterinary PMID 29314873 from new retrieval. Appendix~C reports the corresponding archive audit.
+\textbf{Checking retrieved literature.} MedTutor evaluates search queries and paper relevance before generation. Our upstream retrieval check has a narrower scope. A title query for one guideline tested whether the Humans[Mesh] filter excludes veterinary PMID 29314873. The filter excluded it from new retrieval. The downstream citation audit asks a separate question about how the retrieved papers support generated claims (Appendix~C).
 
 \subsection{Downstream Evaluation: Answer Quality}\label{sec:downstream}
 
-\textbf{Human ratings.} Three raters scored a fixed 13-question packet covering opioid use disorder (OUD), MOUD, and related topics (distinct from facilitator usability). After mapping one 1--3 sheet to 1--5, the equal-weight mean is \textbf{4.26/5} (per-rater 5.00, 4.87, 2.92). Mean ratings were 5.00 for grounding and 4.51 for safety (Table~\ref{tab:medtutor}). Appendix~B gives the review details. The three graders provide preliminary ratings (\nolinkurl{evaluation/RUBRIC.md}).
+\textbf{Rating the same answers.} The packet contains 13 archived answers about opioid use disorder (OUD), MOUD, and related topics. The questions cover four summaries, three literature requests, three slide requests, one prior-session request, and two other requests. This mix gives graders examples from several parts of the meeting workflow. Three human graders rated factual appropriateness, contextual grounding, evidence usefulness, safety, and usability. One grader used a 1--3 scale, which we mapped onto 1--5. The human score gives each grader equal weight. Individual means were 5.00, 4.87, and 2.92. A Qwen3-4B judge scored the same answers. Appendix~B gives the rubric and additional details.
 
-\begin{table}[t]\centering\small\setlength{\tabcolsep}{2pt}
+\begin{table}[t]\centering\small\setlength{\tabcolsep}{5pt}
 \begin{tabular}{@{}lrr@{}}\toprule
-\textbf{Rating (1--5)} & \textbf{Human} & \textbf{LLM}\\\midrule
-Fact / grounding / evidence & 4.19/5.00/3.78 & 4.15/3.62/3.64 \\
-Safety / usability / mean & 4.51/4.12/4.26 & 5.00/4.85/4.26 \\
+\textbf{Dimension (1--5)} & \textbf{Human} & \textbf{Model}\\\midrule
+Factual appropriateness & 4.19 & 4.15 \\
+Contextual grounding & 5.00 & 3.62 \\
+Evidence usefulness & 3.78 & 3.64 \\
+Safety and hedging & 4.51 & 5.00 \\
+Usability & 4.12 & 4.85 \\
+\textbf{Overall} & \textbf{4.26} & \textbf{4.26} \\
 \bottomrule\end{tabular}
-\caption{Human and automated rating means on the 13-answer packet. Human: three-rater equal weight. LLM: Qwen3-4B judge (same family as formatter).}\label{tab:medtutor}
+\caption{Human and Qwen3-4B ratings of the same 13 answers. The model judge shares the deployed formatter's Qwen3 family.}\label{tab:medtutor}
 \end{table}
+
+\textbf{What the ratings assess.} For a meeting answer, contextual grounding asks whether the reply uses the right slide or speech context. Evidence usefulness concerns whether the returned material helps answer the question. The rubric scores these separately so that a clear reply can be distinguished from one with useful supporting evidence (Table~\ref{tab:medtutor}). Graders can mark grounding unjudgeable when the context they need is unavailable. They also classify material claims as supported, unsupported, contradicted, or unjudgeable. An answer that asserts screen content when no frame is available is a specific error under this rubric. These checks connect the replay behavior to the criteria used for archived answers.
 
 \textbf{Citation provenance.} Twenty-seven answers cite 44 distinct PMIDs; every ID appears in the retrieval record. Twenty-five of the 27 answers include an educational-use sentence. Appendix~C records the audit examples.
 
@@ -213,17 +215,16 @@ Citation recall (attr$\geq$0.5) & 0.73\\
 
 \subsection{Human--Model Agreement}\label{sec:agreement}
 
-The Qwen3-4B judge and human mean were both 4.26/5 overall (Table~\ref{tab:medtutor}), with item-level Spearman $\rho{\approx}0.34$. The dimension scores in Table~
-ef{tab:medtutor} show how each evaluator rated the answers. We retain the two views when interpreting the results.
+The human and model averages both round to 4.26/5 (Table~\ref{tab:medtutor}). To see how they score individual replies, we compare the published human mean and model score on each of the 13 items. As a measure of score proximity, 12 of the 13 items were within one point and the mean absolute difference was 0.43 points. Item-level Spearman rank correlation was $\rho{\approx}0.34$. These measures describe proximity and ranking between the pooled human scores and one model judge. Inter-rater statistics between individual human graders require their item-level ratings. The \href{https://github.com/238Plutonium/openreview/blob/main/evaluation/packet_scores.csv}{released packet scores} contain pooled human item means. The table also helps explain why both views matter. Human and automated factual ratings are 4.19 and 4.15, while the grounding ratings are 5.00 and 3.62. The latter comparison identifies a dimension for closer review with the underlying meeting context.
 
 A separate text-only generator comparison uses the 13 standalone questions and a Qwen2.5-1.5B judge. Appendix~B reports the models, scores, and input conditions. The \href{https://github.com/238Plutonium/openreview/tree/main/evaluation/frontier_baselines}{released results} include generations and judgments.
 
 \balance
 \subsection{Facilitator Usability and Educational Usefulness}
 
-Four Project ECHO staff completed the form after the September 10, 2026 demonstration. Three watched and one submitted chat questions. They rated usability 4.13/5 across 15 general items (53 scored and 7 unable to judge; Table~2). Appeal, ease of use, and question clarity each averaged 4.50/5. Staff also requested quieter replies and facilitator-only invocation. The release includes both controls. Appendix~B reports the remaining item-level details.
+Four Project ECHO staff completed the form after the September 10, 2026 demonstration. Three watched and one submitted chat questions. They rated usability 4.13/5 across 15 general items (53 scored and 7 unable to judge; Table~\ref{tab:deployment}). Appeal, ease of use, and question clarity each averaged 4.50/5. Staff also requested quieter replies and facilitator-only invocation. The release includes both controls. In a session led by a facilitator, the invocation setting lets that person decide when to bring the assistant into the discussion. The reply setting gives facilitators a way to adjust how the assistant participates in chat. Appendix~B reports the remaining item-level details.
 
-Educational usefulness averaged 4.00/5 ($n{=}4$). This item captures staff perceptions after the demonstration. The released \href{https://github.com/238Plutonium/openreview/tree/main/evaluation/education_outcomes}{pre/post instrument} supports a future assessment of what learners retain.
+Educational usefulness averaged 4.00/5 ($n{=}4$). Staff judged the interaction from their demonstration experience. The staff survey and answer packet therefore speak to two parts of a live session: how the assistant fits the conversation and what its replies contain. The released \href{https://github.com/238Plutonium/openreview/tree/main/evaluation/education_outcomes}{pre/post instrument} supports a future assessment of what learners retain.
 
 \section{Conclusion}
 
