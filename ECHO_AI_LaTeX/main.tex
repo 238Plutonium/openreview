@@ -24,7 +24,7 @@
 
 \begin{abstract}
 
-A question can change the direction of a live Project ECHO (Extension for Community Healthcare Outcomes) case discussion. The facilitator may need to explain a slide, recall what a speaker said, or find a relevant study while everyone is still in the call. We introduce ECHO-AI, a Zoom assistant that finds the evidence each question calls for. It selects timestamped slides or speech and uses retrieval-augmented generation (RAG) to consult PubMed and prior ECHO sessions. It also checks that cited PubMed identifiers appear in the retrieval record. In paired replay tests on 35 visual questions without usable frames, the screen guard increased abstentions from 3 to 33. A separate replay shows how using the transcript preserves spoken details when a slide displays a different value. Project ECHO staff evaluated usability after a case-based demonstration. We release the code, replay artifacts, and a narrated screencast.
+A facilitator in a live Project ECHO (Extension for Community Healthcare Outcomes) case discussion may need to explain a slide, recall what a speaker said, or find a relevant study. We introduce ECHO-AI, a Zoom assistant that selects timestamped slides or speech and uses retrieval-augmented generation (RAG) to consult PubMed and prior ECHO sessions. It checks that cited PubMed identifiers appear in the retrieval record. We evaluate evidence routing, response latency, answer quality, citation support, and usability. In paired replays, the screen guard prompted the assistant to abstain when it had no usable image, and selecting the transcript helped preserve spoken details when the slide displayed a different value. Most audited statements had at least partial support from a cited abstract. Project ECHO staff gave positive usability feedback after a case-based demonstration. We release the code, replay artifacts, and a narrated screencast.
 
 \end{abstract}
 
@@ -112,7 +112,7 @@ The discussion can then move from the slide to the literature. A request for a P
 
 \section{System Evaluation}\label{sec:eval}
 
-A useful reply in a case discussion starts with the right source and ends with an answer the participant can use. Following MedTutor's upstream and downstream evaluation (Jang et al., 2025), we first test evidence selection and then assess the answers. We compare human and model ratings on the same answer packet and report how closely they agree. Demonstration feedback answers a separate question about the experience of using ECHO-AI in Zoom.
+Following MedTutor's upstream and downstream evaluation structure (Jang et al., 2025), we first test how ECHO-AI selects evidence and then assess its answers. We compare human and model ratings on the same answers and report feedback from staff who took part in the Zoom demonstration.
 
 \subsection{Upstream Evaluation: Evidence Selection}\label{sec:upstream}
 
@@ -197,27 +197,21 @@ Usability & 4.12 & 4.85 \\
 \mathrm{Precision}(\tau)=\frac{C_\tau}{114},\qquad
 \mathrm{Recall}(\tau)=\frac{S_\tau}{86}.
 \]
-Full support covers 22 pairs and 20 statements. Counting 60 partial scores, the automated judge found support for most claim--citation pairs (82/114) and at least one supporting citation for 63/86 statements (Table~\ref{tab:cite}). PMID provenance measures retrieval membership. A separate lexical screen finds support for 14/132 pairs (\nolinkurl{evaluation/claim_level_audit/}).
+The judge assigned full support to 22 pairs and partial support to 60. At least one citation scored partial or full for 63 of 86 statements (Table~\ref{tab:cite}). A separate lexical screen flags 14 of 132 pairs as supported (\nolinkurl{evaluation/claim_level_audit/}).
 
-\begin{table}[t]\centering\small\setlength{\tabcolsep}{3pt}
-
-\begin{tabularx}{\columnwidth}{@{}Xr@{}}\toprule
-
-\textbf{ALCE-style metric} & \textbf{Value}\\\midrule
-
-Citation precision (attr$\geq$0.5) & 0.72\\
-
-Citation recall (attr$\geq$0.5) & 0.73\\
-
+\begin{table}[t]\centering\small\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\columnwidth}{@{}Xrr@{}}\toprule
+\textbf{Support threshold} & \textbf{Precision} & \textbf{Recall}\\\midrule
+Partial or full ($\tau=0.5$) & 0.72 & 0.73\\
+Full only ($\tau=1$) & 0.19 & 0.23\\
 \bottomrule\end{tabularx}
-
-\caption{Automatic citation attribution vs.\ PubMed abstracts (Qwen3-4B judge; same family as the formatter).}\label{tab:cite}\end{table}
+\caption{ALCE-style citation support against PubMed abstracts, scored by a Qwen3-4B judge.}\label{tab:cite}\end{table}
 
 \subsection{Human--Model Agreement}\label{sec:agreement}
 
-The human and model averages both round to 4.26/5 (Table~\ref{tab:medtutor}). To see how they score individual replies, we compare the published human mean and model score on each of the 13 items. As a measure of score proximity, 12 of the 13 items were within one point and the mean absolute difference was 0.43 points. Item-level Spearman rank correlation was $\rho{\approx}0.34$. These measures describe proximity and ranking between the pooled human scores and one model judge. Inter-rater statistics between individual human graders require their item-level ratings. The \href{https://github.com/238Plutonium/openreview/blob/main/evaluation/packet_scores.csv}{released packet scores} contain pooled human item means. The table also helps explain why both views matter. Human and automated factual ratings are 4.19 and 4.15, while the grounding ratings are 5.00 and 3.62. The latter comparison identifies a dimension for closer review with the underlying meeting context.
+The human and model averages both round to 4.26/5 (Table~\ref{tab:medtutor}). To see how they score individual replies, we compare the published human mean and model score on each of the 13 items. As a measure of score proximity, 12 of the 13 items were within one point and the mean absolute difference was 0.43 points. Item-level Spearman rank correlation was $\rho{\approx}0.34$. These measures compare pooled human scores with one model judge. The \href{https://github.com/238Plutonium/openreview/blob/main/evaluation/packet_scores.csv}{released packet scores} contain the item means. Human and model ratings are close on factual appropriateness (4.19 and 4.15) and further apart on grounding (5.00 and 3.62).
 
-A separate text-only generator comparison uses the 13 standalone questions and a Qwen2.5-1.5B judge. Appendix~B reports the models, scores, and input conditions. The \href{https://github.com/238Plutonium/openreview/tree/main/evaluation/frontier_baselines}{released results} include generations and judgments.
+\textbf{Exploratory generator scores.} Standalone models answered the 13 questions from text, and the archived ECHO-AI answers came from the meeting workflow. The new Llama-3.2-3B-Instruct run scored 4.31/5 with a quantized Qwen2.5-1.5B judge. Archived ECHO-AI answers scored 3.49/5 in the earlier run with a different configuration of that judge. Appendix~B reports all scores and input conditions.
 
 \balance
 \subsection{Facilitator Usability and Educational Usefulness}
@@ -350,13 +344,26 @@ Footnotes resolve only if the PMID appears in the retrieval record (provenance w
 
 \textbf{Additional replay and rating details.} The two guard-on replies with no frames occur in VIS-ZERO-03 (the reply states the slide is visible) and VIS-ZERO-21 (the reply says the slide did not mention buprenorphine). In the answer packet, evidence usefulness averaged 3.78/5 and at least one rater flagged 9/13 answers. The staff form recorded non-disruption at 3.25/5 and voice-wake at 3.33/5 ($n{=}3$). Citation clarity had one rating. All four staff marked concept explanation unable to judge.
 
-\textbf{Generator comparison.} On 13 standalone questions, the Qwen2.5-1.5B judge scored archived ECHO-AI at 3.49/5, Qwen2.5-1.5B at 3.82, SmolLM2-1.7B at 4.12, Gemma-2-2B-IT (Q4 GGUF) at 3.72, and Gemini-3.1-Flash-Lite at 4.86 (12 items at 5/5). Standalone generators received question text. Archived answers came from the deployed system. API credit limits left GPT and Claude unscored.
+\textbf{Generator comparison.} Table~\ref{tab:generators} contains automated scores for 13 questions per row. Standalone models received the question text without meeting context or retrieved evidence. Archived answers came from the deployed ECHO-AI workflow. All scores use a Qwen2.5-1.5B-Instruct judge. The Llama-3.2 run used Q4\_K\_M GGUF builds of both generator and judge and changed how the scoring instructions were passed to the judge. The judge saw the question and up to 1,800 characters of each answer. The changes in input context and judge setup limit comparisons across rows. MedTutor's Llama-3.3-70B was outside this experiment. The \href{https://github.com/238Plutonium/openreview/tree/85f3e5969a01605c961e7bc2deb1be49f99965f9/evaluation/frontier_baselines}{evaluation artifacts} include saved generations and item-level scores.
+
+\begin{table}[!ht]\centering\small\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\columnwidth}{@{}Xr@{}}\toprule
+\textbf{Generator} & \textbf{Score (/5)}\\\midrule
+ECHO-AI (archived) & 3.49\\
+Qwen2.5-1.5B-Instruct & 3.82\\
+SmolLM2-1.7B-Instruct & 4.12\\
+Gemma-2-2B-IT (Q4 GGUF) & 3.72\\
+Gemini-3.1-Flash-Lite & 4.86\\
+Llama-3.2-3B-Instruct (Q4 GGUF) & 4.31\\
+\bottomrule\end{tabularx}
+\caption{Exploratory automated scores on the 13-question packet. The last row uses a separate judge configuration.}\label{tab:generators}
+\end{table}
 
 \section{Citation Attribution Protocol and Examples}
 
-\textbf{Protocol.} Discard bibliography lines \texttt{[n]: PMID \ldots}; judge each body assertion--PMID pair against the abstract with attr $\in\{0,0.5,1\}$. Precision averages over pairs; recall is statements with $\geq$1 supporting cite. Table~\ref{tab:cite} reports rates at attr$\geq$0.5. Judge: Qwen3-4B-Instruct-2507 (temp~0; same family as formatter). Package: \nolinkurl{evaluation/citation_faithfulness/}.
+\textbf{Protocol.} Discard bibliography lines \texttt{[n]: PMID \ldots}; judge each body assertion--PMID pair against the abstract with attr $\in\{0,0.5,1\}$. Precision averages over pairs; recall is statements with $\geq$1 supporting cite. Table~\ref{tab:cite} reports rates at both support thresholds. Judge: Qwen3-4B-Instruct-2507 (temp~0; same family as formatter). Package: \nolinkurl{evaluation/citation_faithfulness/}.
 
-\textbf{Strict$=$1.} ``CST has been associated with improved cognitive function \ldots'' $\rightarrow$ \mbox{PMID 30336989}.
+\textbf{Full support (1).} ``CST has been associated with improved cognitive function \ldots'' $\rightarrow$ \mbox{PMID 30336989}.
 
 \textbf{Score 0.} Cholinesterase-inhibitor claim $\rightarrow$ PMID 38636561.
 
