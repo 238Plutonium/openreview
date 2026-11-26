@@ -47,7 +47,7 @@ We demonstrate this workflow and evaluate the decisions that shape it. The repla
 
 \textbf{Meeting understanding.} AMI captures synchronized audio and visual meeting context. QMSum and MeetingBank support analysis of recorded meetings, and MeetBench-XL evaluates real-time meeting agents (Carletta et al., 2006; Zhong et al., 2021; Hu et al., 2023, 2026). Zoom AI Companion can use speech and optional optical character recognition (OCR) of the shared screen. Otter AI Chat can answer questions about captured slides, and Fireflies documents live AskFred for Google Meet via a Chrome extension (Zoom Video Communications, n.d.-a,b; Otter.ai, n.d.; Fireflies.ai, n.d.). Table~1 summarizes documented features.
 
-\textbf{Grounding and reliability.} Prior work on hallucination and citation faithfulness motivates abstention and source checks (Ji et al., 2023; Manakul et al., 2023; Gao et al., 2023). ECHO-AI applies these checks when replying in the meeting. Its controlled comparisons isolate evidence selection and reply policies within a shared answer-generation stack (Table~\ref{tab:routing}).
+\textbf{Grounding and reliability.} Prior work on hallucination and citation faithfulness motivates abstention and source checks (Ji et al., 2023; Manakul et al., 2023; Gao et al., 2023). ECHO-AI applies these checks when replying in the meeting. Its controlled comparisons test reply policies (Table~\ref{tab:routing}) and source selection (Table~\ref{tab:classifiers}).
 
 \section{System Design}
 
@@ -112,7 +112,7 @@ ECHO-AI & Zoom bot & Deskshare + ASR & PubMed + prior ECHO & Chat + voice\\
 
 \bottomrule\end{tabularx}
 
-\caption{Documented features as of November 2026. A dash indicates that the sources reviewed do not document a dedicated feature in that category. Table~\ref{tab:routing} reports the controlled comparisons.}\end{table*}
+\caption{Documented features as of November 2026. A dash indicates that the sources reviewed do not document a dedicated feature in that category. Tables~\ref{tab:routing} and~\ref{tab:classifiers} report the controlled comparisons.}\end{table*}
 
 \textbf{Look up a source.} A request for a PubMed source returns an answer with checked PubMed identifiers. A question about earlier teaching can search the prior-session index. After the call, the facilitator can review the transcript, sampled slides, questions and answers, and summary.
 
@@ -154,25 +154,38 @@ Human answer packet & 4.26/5 equal-rater mean (3 raters, 13 items)\\
 
 \caption{Deployment and evaluation at a glance. The development log, answer packet, and facilitator survey cover different samples.}\label{tab:deployment}\end{table}
 
-\textbf{Choosing the source.} We tested two routing decisions (Table~\ref{tab:routing}). The focus test asks whether the question refers to speech, a slide, or neither (30, 38, and 10 questions). The retrieval test asks which source is needed (eight literature, four prior-session, and 20 no-retrieval questions). Reference labels came from the experiment categories and synthetic probes. Accuracy is the fraction of predictions that match those labels. Qwen3-4B serves as an LLM classifier. Each always-select baseline assigns the same label to every question.
+\textbf{Choosing the source.} We tested two routing decisions (Table~\ref{tab:classifiers}). The focus test asks whether the question refers to speech, a slide, or neither (30, 38, and 10 questions). The retrieval test asks which source is needed (eight literature, four prior-session, and 20 no-retrieval questions). Reference labels came from the experiment categories and synthetic probes. Accuracy is the fraction of predictions that match those labels. Qwen3-4B serves as an LLM classifier. Each always-select baseline assigns the same label to every question.
 
-\begin{table}[t]\centering\small\setlength{\tabcolsep}{2pt}
-
-\begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}p{.26\columnwidth}>{\raggedright\arraybackslash}p{.32\columnwidth}X@{}}\toprule
-
-\textbf{Task} & \textbf{ECHO routing} & \textbf{Competing method}\\\midrule
-
-Speech/slide conflict (30$\times$3) & Withhold frame: spoken 1.00, slide-only 0.00 & Always attach slide: spoken 0.62, slide-only 0.38\\
-
-Zero-frame visual (n=35) & Guard on: abstain 33/35 & Guard off (still draft): 3/35\\
-
-Focus labels (n=78) & Rule acc.\ 0.94; mean 0.028\,ms & Always-visual 0.49; LLM 0.96 / 49.8\,ms (${\sim}$1780$\times$ slower)\\
-
-Retrieval intent (n=32) & Rule acc.\ 0.69; mean 0.221\,ms & Always-none 0.63; LLM intent 0.47 / 68.7\,ms (${\sim}$310$\times$ slower)\\
-
+\begin{table}[t]\centering\small\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}Xr@{}}\toprule
+\textbf{Setting} & \textbf{Result}\\\midrule
+\multicolumn{2}{@{}l@{}}{\textit{Speech recall with a conflicting slide}}\\
+\multicolumn{2}{@{}l@{}}{\textit{Replies mentioning the spoken value}}\\
+Use transcript, withhold slide & 90/90 (100\%)\\
+Use transcript and slide & 56/90 (62.2\%)\\\midrule
+\multicolumn{2}{@{}l@{}}{\textit{Visual questions with no screen image}}\\
+\multicolumn{2}{@{}l@{}}{\textit{Replies that abstain from describing the screen}}\\
+Availability check enabled & 33/35 (94.3\%)\\
+Availability check disabled & 3/35 (8.6\%)\\
 \bottomrule\end{tabularx}
+\caption{Two paired replay tests. Speech recall uses 30 cases repeated three times per setting. The visual test uses 35 questions per setting. Abstention means reporting that screen content is unavailable.}\label{tab:routing}
+\end{table}
 
-\caption{Evidence routing and replay results. Speech and visual availability tests use paired replays. Focus and retrieval tests use category-derived labels and time only the routing decision.}\label{tab:routing}\end{table}
+\begin{table}[t]\centering\small\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}Xrr@{}}\toprule
+\textbf{Method} & \textbf{Correct} & \textbf{Time (ms)}\\\midrule
+\multicolumn{3}{@{}l@{}}{\textit{Choose speech, slide, or general context (78 questions)}}\\
+ECHO-AI rules & 73/78 & 0.028\\
+Qwen3-4B classifier & 75/78 & 49.8\\
+Always choose slide & 38/78 & ---\\\midrule
+\multicolumn{3}{@{}l@{}}{\textit{Choose retrieval source or none (32 questions)}}\\
+ECHO-AI rules & 22/32 & 0.221\\
+Qwen3-4B classifier & 15/32 & 68.7\\
+Always skip retrieval & 20/32 & ---\\
+\bottomrule\end{tabularx}
+\caption{Routing accuracy and speed. Correct is the number of predictions matching the category-derived labels. Time is the mean per routing decision in milliseconds. Lower times mean faster routing. Dashes indicate unreported timing.}\label{tab:classifiers}
+\end{table}
+
 For focus, the rules matched 73 of 78 labels and Qwen3-4B matched 75. Across all 32 retrieval questions, the rules matched 22 labels, Qwen3-4B matched 15, and the always-none baseline matched 20. Among the 12 questions that required retrieval, the rules matched six, Qwen3-4B matched 12, and the always-literature baseline matched eight. The rules took less than 1 ms on average for either decision.
 
 \textbf{When the screen frame is missing.} We sent the same 35 synthetic visual questions through the pipeline with no frames attached. Each question was run with the availability check (guard) on and off. Enabling the guard increased abstentions from 3/35 to 33/35. Thirty-one questions triggered abstention only with the guard and one only without it. Both conditions abstained on the same two questions and answered the same remaining question. The net gain was 85.7 percentage points, $(31-1)/35$ (two-sided exact McNemar $p=1.54\times10^{-8}$).
@@ -342,7 +355,7 @@ The footnote resolves to a PMID in the retrieval record. The audit assigned full
 
 \textbf{Focus rules (sketch).} Slide/``on screen'' $\rightarrow$ attach up to 3 timestamped frames. ``What did \ldots say'' / speech recall $\rightarrow$ withhold frames. Treatment/PubMed/guideline lexemes $\rightarrow$ literature RAG (Humans[Mesh], abstract rerank, top 5). ``Last session''/prior ECHO $\rightarrow$ BM25+embedding over de-identified chunks. Availability gate runs before VL draft.
 
-\textbf{Baselines (Table~\ref{tab:routing}).} Full prediction tables and category-derived gold files are in \nolinkurl{evaluation/routing_comparison/} (\texttt{python3 run\_routing\_baselines.py}; \texttt{-{}-skip-llm} for CPU-only).
+\textbf{Routing baselines (Table~\ref{tab:classifiers}).} Full prediction tables and category-derived gold files are in \nolinkurl{evaluation/routing_comparison/} (\texttt{python3 run\_routing\_baselines.py}; \texttt{-{}-skip-llm} for CPU-only).
 
 \section{Open-Source Release, Demo Access, and Reproducibility}
 
