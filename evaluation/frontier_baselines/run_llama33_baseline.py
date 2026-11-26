@@ -310,7 +310,7 @@ def main() -> None:
                 scores, raw = judge_answer(llm, g["question"], g["answer"])
                 if scores:
                     break
-                log(f"judge parse fail attempt {attempt}: {raw!r[:160]}")
+                log(f"judge parse fail attempt {attempt}: {raw!r:.160}")
             append_jsonl(
                 JUDS,
                 {
