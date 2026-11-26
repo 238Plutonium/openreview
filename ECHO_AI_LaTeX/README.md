@@ -1,7 +1,8 @@
 # ECHO-AI LaTeX source
 
-Open `main.tex` as the main document. This package includes the ACL style file,
-all three figure assets, and the corresponding formatted PDF.
+Open `main.tex` as the main document. This source package includes the ACL style
+file and all three figure assets. The compiled manuscript is
+`ECHO_AI_Demo_Paper_SUBMIT.pdf` at the repository root.
 
 Compile with pdfLaTeX twice:
 

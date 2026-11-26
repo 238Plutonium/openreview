@@ -24,17 +24,19 @@
 
 \begin{abstract}
 
-During Project ECHO (Extension for Community Healthcare Outcomes) case-based tele-education, looking up a slide, a remark, or a paper can interrupt the discussion. We present ECHO-AI, a Zoom Real-Time Media Streams (RTMS) assistant that joins the meeting and, with host approval, answers by public mention, private chat, or voice without uploading meeting materials, together with a PubMed-only web chat for use outside meetings. ECHO-AI grounds vision--language model (VLM)-drafted and LLM-formatted replies in routed evidence: slides, speech, and retrieval-augmented generation (RAG) over PubMed and prior sessions. Delivery controls withhold slides for speech recall, abstain when visual evidence is missing, and restrict cited PMIDs to the retrieval record. On 35 synthetic prompts without frames, the screen guard increased abstentions from 3 to 33. Withholding conflicting slides raised spoken-token recovery from 56/90 to 90/90 on synthetic replay. Four Project ECHO staff rated usability 4.13/5 after a demonstration that included a question about medications for opioid use disorder (MOUD). MIT-licensed code, replay artifacts, and a screencast support inspection.
+A question can change the direction of a live Project ECHO (Extension for Community Healthcare Outcomes) case discussion. The facilitator may need to explain a slide, recall what a speaker said, or find a relevant study while everyone is still in the call. We introduce ECHO-AI, a Zoom assistant that finds the evidence each question calls for. It selects timestamped slides or speech and uses retrieval-augmented generation (RAG) to consult PubMed and prior ECHO sessions. It also checks that cited PubMed identifiers appear in the retrieval record. In paired replay tests on 35 visual questions without usable frames, the screen guard increased abstentions from 3 to 33. A separate replay shows how using the transcript preserves spoken details when a slide displays a different value. Project ECHO staff evaluated usability after a case-based demonstration. We release the code, replay artifacts, and a narrated screencast.
 
 \end{abstract}
 
 \section{Introduction}
 
-Unequal access to specialist expertise remains a barrier for underserved communities. Project ECHO connects hub specialists and frontline clinicians at spoke sites in recurring, case-based videoconferences (Arora et al., 2010, 2011a). In its hepatitis~C program, sustained virologic response rates were comparable across primary-care and specialty sites (Arora et al., 2011b). In September 2026, Penn State Project ECHO staff recreated a case presentation and discussion to show how facilitators could use ECHO-AI during a teaching session. One question asked about medications for opioid use disorder (MOUD). During a teaching session, participants may need to clarify a slide, recall a remark, consult an earlier session, or find biomedical literature before the discussion moves on.
+At a September 2026 demonstration, Penn State Project ECHO staff recreated a case presentation and discussion. One question asked about medications for opioid use disorder (MOUD). A question like this can call for a study, while the next one might be about the slide on screen or a comment made minutes earlier. A facilitator should be able to move between those sources while the group is still discussing the case.
 
-ECHO-AI supports Project ECHO facilitators and spoke clinicians inside the live Zoom call. With host approval, the assistant receives shared-screen frames and audio through Zoom Real-Time Media Streams (RTMS). Participants can ask questions by public mention, private chat, or voice without uploading meeting materials. The system routes questions to timestamped slides, speech, PubMed, or prior ECHO sessions. It withholds slides for speech recall, returns a fixed reply when a visual question lacks a usable frame, and restricts cited PubMed identifiers (PMIDs) to the retrieval record. A minutes module preserves the discussion and Q\&A for later review. See Figure~\ref{fig:architecture}A.
+Project ECHO connects specialists at a hub with frontline clinicians at community sites through recurring, case-based videoconferences (Arora et al., 2010, 2011a). In its hepatitis~C program, sustained virologic response rates were comparable across primary-care and specialty sites (Arora et al., 2011b). ECHO-AI supports the teaching conversation by bringing slide, speech, and literature lookup into the same Zoom call.
 
-We contribute (i)~an MIT-licensed meeting assistant powered by a VLM-LLM pipeline with these evidence and delivery controls; (ii)~an evaluation that checks whether the assistant picks the right evidence, refuses when slides are missing, earns usable human ratings, and cites abstracts that support its claims; and (iii)~public code and replay artifacts,\footnote{\url{https://github.com/238Plutonium/echo-ai-naacl-submission}} a PubMed-only live demo (Figure~\ref{fig:architecture}B),\footnote{\url{https://chive-shrouded-gag.ngrok-free.dev/chat.html}} and a narrated screencast.\footnote{\url{https://www.youtube.com/watch?v=WwFCYDoYzm8}}
+With host approval, ECHO-AI receives audio and shared-screen images through Zoom Real-Time Media Streams (RTMS). Participants can ask by public mention, private chat, or voice. The assistant identifies the source the question calls for, checks that the evidence is available, and replies in the meeting (Figure~\ref{fig:architecture}A). Its public web interface extends literature lookup beyond the call through PubMed.
+
+We demonstrate this workflow and evaluate the decisions that shape it. The replay studies test what changes when ECHO-AI selects different evidence. Answer ratings, citation attribution, and staff feedback examine what reaches the user. MIT-licensed code and replay artifacts,\footnote{\url{https://github.com/238Plutonium/echo-ai-naacl-submission}} a public literature demo,\footnote{\url{https://chive-shrouded-gag.ngrok-free.dev/chat.html}} and a narrated screencast\footnote{\url{https://www.youtube.com/watch?v=WwFCYDoYzm8}} allow reviewers to follow the same sequence.
 
 \section{Related Work}
 
@@ -44,7 +46,7 @@ We contribute (i)~an MIT-licensed meeting assistant powered by a VLM-LLM pipelin
 
 \textbf{Grounding and reliability.} Prior work on hallucination and citation faithfulness motivates abstention and source checks (Ji et al., 2023; Manakul et al., 2023; Gao et al., 2023). ECHO-AI applies these checks when replying in the meeting. Its controlled comparisons isolate evidence selection and reply policies within a shared answer-generation stack (Table~3).
 
-\section{System Architecture}
+\section{System Design}
 
 ECHO-AI combines live multimodal capture, evidence routing, and constrained generation. RTMS supplies timestamped screen and speech context; question focus and retrieval intent determine which sources are used; vision--language drafting and citation filtering produce the meeting reply. Visual availability is checked before drafting. The public web interface exposes the literature path with institutional retrieval disabled.
 
@@ -57,21 +59,17 @@ ECHO-AI combines live multimodal capture, evidence routing, and constrained gene
 
 With host approval, ECHO-AI joins a Zoom meeting and receives shared-screen images and audio via RTMS. Participants interact through public mentions, private chat, or voice. Faster-Whisper runs Whisper large-v3 to transcribe speech (Radford et al., 2023).\footnote{\href{https://github.com/SYSTRAN/faster-whisper}{Faster-Whisper implementation} and \href{https://huggingface.co/openai/whisper-large-v3}{Whisper large-v3 model card}.} Frame deduplication retains distinct visual context. Frames are selected at or before the question timestamp, preserving the temporal relationship between a question and the displayed material.
 
-\subsection{Evidence Routing and Response Generation}
+\subsection{Question Routing and Evidence Retrieval}
 
 A rule-based question-focus stage distinguishes visual, speech, and general requests. It recognizes slide-reading constructions such as ``what does my slide say?'' as visual, while speech-recall requests withhold screen images so that printed text is not substituted for spoken content. Retrieval separately selects biomedical literature, prior-session knowledge, or both. This separation makes the choice of evidence explicit before model generation.
+
+The literature path retrieves PubMed articles (Sayers et al., 2022), filters for human studies, and reranks abstracts. The prior-session path combines lexical search and semantic embeddings (Robertson and Zaragoza, 2009; Chen et al., 2024) over \textbf{3,310 transcript chunks} built from \textbf{98 prior ECHO session recordings} (video$\rightarrow$ASR$\rightarrow$overlapping chunks). The indexed transcripts are de-identified. Query expansion addresses ambiguous medical abbreviations. The human-study filter was introduced in response to a historical veterinary retrieval error (Section~\ref{sec:eval}).
+
+\subsection{Answer Generation and Delivery}
 
 For a visual request with no usable frames, an availability gate returns a fixed unavailable-screen response and bypasses drafting. With frames present, a slide-specific retry addresses drafts that repeat page labels instead of slide content. Qwen2.5-VL (Bai et al., 2025) drafts from the selected context, and Qwen3 (Yang et al., 2025) formats the answer. A post-generation check retains citation identifiers that appear in the retrieval record before source references are rendered. Clinical responses carry an educational-use disclaimer. These controls operate around the component models and directly govern what reaches the meeting.
 
 Voice interaction uses wake-phrase filtering and cooldowns. At session end, a minutes module preserves transcripts, sampled slides, question--answer pairs, and summaries. Appendix~B lists hardware and replay commands.
-
-\subsection{Biomedical Literature and Institutional Knowledge}
-
-The literature path retrieves PubMed articles (Sayers et al., 2022), filters for human studies, and reranks abstracts. The prior-session path combines lexical search and semantic embeddings (Robertson and Zaragoza, 2009; Chen et al., 2024) over \textbf{3,310 transcript chunks} built from \textbf{98 prior ECHO session recordings} (video$\rightarrow$ASR$\rightarrow$overlapping chunks). The indexed transcripts are de-identified. Query expansion addresses ambiguous medical abbreviations. The human-study filter was introduced in response to a historical veterinary retrieval error (Section 5).
-
-\subsection{Example of Evidence Selection}
-
-A synthetic replay illustrates why the distinction between topic and evidence source matters. The slide shows a start time of \texttt{13:30}, while the facilitator says \texttt{08:30}. A question about the start time the facilitator \emph{said} is classified as speech recall. The router withholds the picture and passes the transcript context to the answer pipeline. A question about the time shown on the slide can instead use the timestamped image. If that question arrives before the stream has a usable frame, the availability gate sends the fixed screen-unavailable reply before model generation. The paired experiments in Section~5 vary these controls individually to test responses to contradictory or unavailable evidence under known input conditions.
 
 \subsection{Implementation, Licensing, and Public Access}
 
@@ -82,7 +80,7 @@ Node.js orchestrates the bot; Python/vLLM hosts models on local GPUs. \textbf{Li
 \begin{figure*}[t]\centering
 \includegraphics[width=.485\textwidth]{image5.jpeg}\hfill\includegraphics[width=.485\textwidth]{image6.jpeg}
 
-\caption{(a) ECHO-AI answering a slide question within Zoom (left); (b) the public literature interface displaying responses with PubMed identifiers (right).}\end{figure*}
+\caption{(a) ECHO-AI answering a slide question within Zoom (left); (b) the public literature interface displaying responses with PubMed identifiers (right).}\label{fig:demo}\end{figure*}
 
 \begin{table*}[t]\centering\small\setlength{\tabcolsep}{3pt}
 
@@ -104,19 +102,21 @@ ECHO-AI & Zoom bot & Deskshare + ASR & PubMed + prior ECHO & Chat + voice\\
 
 \caption{Documented features as of November 2026. A dash indicates that the sources reviewed do not document a dedicated feature in that category. Table~3 reports the controlled comparisons.}\end{table*}
 
-\section{System Demonstration}
+\section{System Demonstration}\label{sec:demo}
 
-\textbf{Start here.} Reviewers can (1) ask a question in the public PubMed chat, (2) watch the screencast, or (3) open \nolinkurl{evaluation/recorded_replay/index.html} and select VIS-ZERO-01 to compare guard-on and guard-off replies without model services. The demo follows an ECHO session (Figure~2). A facilitator shares a slide and asks the bot about it. A spoken follow-up queries the transcript. A literature question then requests a PubMed-backed answer, and a prior-session question invokes the institutional index. At the end of the call, the minutes module writes a transcript, sampled slides, Q\&A pairs, and a summary. The screencast shows the meeting workflow and the public web chat. Appendix~A gives worked examples for interpreting these interactions.
+A facilitator shares a slide on opioid use disorder and asks ECHO-AI to explain what is on screen (Figure~\ref{fig:demo}a). The assistant selects a frame from the time of the question. The next question refers to something a speaker said, so the transcript becomes the source. In the synthetic timing replay, the screen displays \texttt{13:30} while the facilitator says \texttt{08:30}. A question about the spoken time calls for \texttt{08:30}. A question about the slide calls for \texttt{13:30}. This single change in the question shows why the system chooses its evidence before drafting a reply.
 
-Reviewers can ask their own literature question through the public website. The repository provides a separate fixture-based Zoom replay with synthetic screen and transcript evidence, plus saved outputs from the paired experiments. The saved outputs can be opened without models. The installable replay can issue new questions with model services and needs no Zoom credentials. The public website has access only to the literature path. The institutional prior-session index remains internal.
+The discussion can then move from the slide to the literature. A request for a PubMed source triggers retrieval and returns an answer with checked PubMed identifiers. A question about earlier teaching can search the institutional archive. At the end of the call, the minutes module preserves the transcript, sampled slides, Q\&A, and a summary for review.
 
-\section{Evaluation}
+\textbf{Try the workflow.} Reviewers can ask their own literature question in the public PubMed chat (Figure~\ref{fig:demo}b), watch the screencast, or open \nolinkurl{evaluation/recorded_replay/index.html} and select VIS-ZERO-01. The replay shows the two saved replies for a visual question asked without a usable screen frame. Appendix~A gives worked examples, and Appendix~B explains how to run the installable replay.
 
-We ask whether replies are useful and well grounded: Do facilitators find the assistant usable in a teaching session? Do raters judge archived answers as appropriate and safe? When a citation appears, does the abstract support the claim? When speech and slides disagree, or when no slide is available, does the system choose the right evidence or refuse? Table~2 summarizes the main scores. Table~3 compares routing and safeguard choices with simple alternatives. Table~\ref{tab:medtutor} follows MedTutor's human vs.\ LLM-as-a-judge layout (Jang et al., 2025), and Table~\ref{tab:cite} reports citation support against PubMed abstracts.
+\section{System Evaluation}\label{sec:eval}
 
-\subsection{Deployment Behavior}
+A useful reply in a case discussion starts with the right source and ends with an answer the participant can use. Following MedTutor's upstream and downstream evaluation (Jang et al., 2025), we first test evidence selection and then assess the answers: Does the router pick the right source? Does the system refuse when a slide is missing? Do raters find the replies appropriate and safe? When a citation appears, does the abstract support the claim? We compare human and model ratings on the same answer packet and report how closely they agree. Demonstration feedback answers a separate question about the experience of using ECHO-AI in Zoom.
 
-The archived log contains 419 answers to project-team-authored development questions across 55 streams (Table~2). Slide questions contain ``slide'' or ``screen''. Frames attach to 86/122 slide asks (70.5\%); fingerprinting yields unique-frame ratio 0.015 (290 kept / 19{,}078 near-duplicates dropped). Of answers with a retrieval record ($n{=}52$), routing is literature 33 / both 14 / prior-session 5. Frame counts 0/1/2/3: 227/129/20/43. The public literature UI is excluded from this log; when GPUs are down, screencast and recorded packages remain offline.
+\subsection{Upstream Evaluation: Evidence Selection}\label{sec:upstream}
+
+\textbf{What reached the assistant.} The development log contains 419 answers across 55 streams. Questions came from the project team. Of 122 slide questions, 86 had an attached frame (70.5\%). Fingerprinting retained 290 frames and removed 19,078 near-duplicates. Among the 52 answers with a retrieval record, 33 used literature, 14 used both sources, and five used prior sessions only. Across all answers, the counts with zero, one, two, and three frames were 227, 129, 20, and 43. The public web interface is outside this log. Table~\ref{tab:deployment} summarizes the quality measures that follow: packet ratings, staff feedback, citation support, and frame coverage.
 
 \begin{table}[t]\centering\small\setlength{\tabcolsep}{3pt}
 
@@ -138,13 +138,9 @@ Frame attachment (coverage) & 86/122 slide questions (70.5\%)\\
 
 \bottomrule\end{tabularx}
 
-\caption{How well answers and citations held up in the archived log and human ratings. PMID provenance means each cited identifier also appears in the retrieval record.}\end{table}
+\caption{How well answers and citations held up. The development log, answer packet, and facilitator survey cover different samples.}\label{tab:deployment}\end{table}
 
-\textbf{Citation provenance.} Twenty-seven answers cite 44 distinct PMIDs; every ID appears in the retrieval record. Eight historical diabetes answers cite veterinary PMID 29314873---motivation for the Humans[Mesh] filter on new retrieval. Twenty-five of 27 include an educational non-advice sentence.
-
-\subsection{Routing versus Competing Methods}
-
-Routing decides which evidence the generator may use. We compare ECHO's rule router and delivery policies with simple alternatives on the same cases (\nolinkurl{evaluation/routing_comparison/}). Focus and intent labels come from the existing experiment sets and synthetic probes.
+\textbf{Choosing the source.} We tested whether the router recognized what a question referred to and whether it selected PubMed or the prior-session index when retrieval was needed. The focus set contains 30 speech, 38 visual, and 10 general questions. The intent set contains eight literature, four prior-session, and 20 no-retrieval questions. The reference labels came from the experiment categories and synthetic probes. Accuracy counts exact label matches.
 
 \begin{table}[t]\centering\small\setlength{\tabcolsep}{2pt}
 
@@ -162,35 +158,35 @@ Retrieval intent (n=32) & Rule accuracy 0.69 & Always-none 0.63; LLM intent 0.47
 
 \bottomrule\end{tabularx}
 
-\caption{Did the router pick the right source? Speech and zero-frame rows score reply content and abstention; focus and retrieval rows score label accuracy against category-derived references.}\end{table}
-The focus set contains 30 speech, 38 visual, and 10 general examples. The retrieval-intent set contains eight literature, four prior-session, and 20 no-retrieval examples. On the focus set, the rule router assigned 73/78 labels correctly and the Qwen3-4B router assigned 75/78 correctly. On retrieval intent, the rule router assigned 22/32 correctly, compared with 20/32 for always-none and 15/32 for Qwen3-4B. On the 12 prompts that require retrieval, exact-label accuracy was 6/12 for the rule router, 12/12 for Qwen3-4B, 8/12 for always-literature, and 0/12 for always-none (Table~3).
+\caption{Did the router pick the right source? Speech and zero-frame rows score reply content and abstention; focus and retrieval rows score label accuracy.}\end{table}
+On the focus task, the rule router matched 73 of 78 labels and Qwen3-4B matched 75. On the full retrieval-intent set, they matched 22 and 15 of 32 labels, respectively. An always-none baseline matched 20. On the 12 questions that required retrieval, the rule router matched six, Qwen3-4B matched all 12, and an always-literature baseline matched eight (Table~3). The two views distinguish overall routing accuracy from performance on questions that need a source.
 
-Accuracy is the share of prompts whose predicted label matches the reference, counted separately for each task. Always-visual and always-none show what happens if the system always picks the most common label; the two tasks have different label mixes, so we read each task on its own.
+\textbf{When the screen frame is missing.} We sent the same 35 synthetic visual questions through the pipeline with the guard on and off. Enabling the guard increased abstentions from 3/35 to 33/35. Thirty-one questions triggered abstention only with the guard and one only without it. Both runs abstained on two questions and answered one. The net gain was 85.7 percentage points, $(31-1)/35$ (two-sided exact McNemar $p=1.54\times10^{-8}$). When the guard fires, it returns a screen-unavailable reply instead of inventing slide content. Appendix~B describes the two guard-on replies that continued to generation.
 
-\subsection{Safeguard Checks and Archived Answers}
+\textbf{When the slide and speaker disagree.} In 30 synthetic timing scenarios, we asked for the spoken value and ran each scenario three times per condition. Withholding the slide raised spoken-token recovery from 56/90 to 90/90. The share of replies containing only the slide token went from 37.8\% to 0\%. The case-mean changes were $+0.38$ and $-0.38$, respectively. Appendix~A traces a question about \texttt{08:30} when the slide displays \texttt{13:30}. The metric checks which value appears in the reply across 30 cases, with three replies per case.
 
-The paired probes ask two practical questions: Will the system invent a slide when none is available? Will it prefer a spoken detail when the slide shows something else? We also check a retrieval filter and rate archived answers. Table~3 summarizes the same contrasts against competing policies.
+\textbf{Checking retrieved literature.} MedTutor evaluates search queries and paper relevance before generation. Our upstream retrieval check has a narrower scope. A title query for one guideline tested whether the Humans[Mesh] filter excludes veterinary PMID 29314873. The filter excluded it from new retrieval. The downstream citation audit asks a separate question about how the retrieved papers support generated claims (Appendix~C).
 
-\textbf{Paired no-frame ablation.} We ran the same 35 synthetic visual questions with no frames, once with the screen guard on and once with it off. With the guard, the system abstained on 33/35 prompts instead of 3/35: 31 refusals only when guarded, one only when unguarded, two in both conditions, and one in neither. The paired change was 85.7 percentage points, and 31 of the 32 discordant cases favored the guard (two-sided exact McNemar $p=1.54\times10^{-8}$). When the guard fires, it skips answer generation so the system does not invent slide content. Two zero-frame prompts still produced replies with the guard on. In VIS-ZERO-03, the reply said the slide was visible. In VIS-ZERO-21, it said the slide did not mention buprenorphine.
+\subsection{Downstream Evaluation: Answer Quality}\label{sec:downstream}
 
-The net change is $(31-1)/35\approx0.857$. The exact McNemar test uses the 32 discordant prompts.
+\textbf{Rating the same answers.} The packet contains 13 archived answers about opioid use disorder (OUD), MOUD, and related topics. The questions cover four summaries, three literature requests, three slide requests, one prior-session request, and two other requests. This mix gives graders examples from several parts of the meeting workflow. Three human graders rated factual appropriateness, contextual grounding, evidence usefulness, safety, and usability. One grader used a 1--3 scale, which we mapped onto 1--5. The human score gives each grader equal weight. Individual means were 5.00, 4.87, and 2.92. A Qwen3-4B judge scored the same answers. Appendix~B gives the rubric and additional details.
 
-\textbf{Speech-recall frame withholding.} On 30 synthetic scheduling asks where the transcript and slide disagree (3 reps; 180 calls), withholding the conflicting frame yields spoken-token 90/90 and slide-only 0/90; with the frame included, spoken falls to 62.2\% and slide-only rises to 37.8\% (case-mean $\Delta{+}0.38$/$-0.38$). In short, keeping the conflicting slide out of the prompt helped the assistant stick to what was said.
-
-The speech-recall test checks the value in the reply against two cues from the same scenario, one spoken and one shown on screen. For example, Appendix~A traces a case with a spoken time of 08:30 and a displayed time of 13:30. The spoken-token rate records whether the reply contains the spoken value, while the slide-only rate records whether it contains the displayed value alone. Three runs for each scenario capture variation in the generated reply. The 90 replies per arm therefore represent 30 distinct question scenarios.
-
-\textbf{Retrieval check.} A Humans[Mesh] filter excludes veterinary PMID 29314873 in a title-query check for that single guideline. Historical diabetes answers in the archived log still cite that PMID; the filter is for new retrieval.
-
-\textbf{Archived-answer quality.} Three raters scored a fixed 13-question packet on opioid use disorder (OUD), MOUD, and related topics (separate from the facilitator usability form). After mapping one 1--3 sheet to 1--5, the equal-weight mean is \textbf{4.26/5} (per-rater 5.00, 4.87, 2.92). Evidence usefulness is the weakest dimension (3.78); at least one rater flagged 9/13 answers. Table~\ref{tab:medtutor} places human means next to an LLM judge, following MedTutor (Jang et al., 2025); item-level Spearman $\rho{\approx}0.34$. Rubric details are in \nolinkurl{evaluation/RUBRIC.md}.
-
-\begin{table}[t]\centering\small\setlength{\tabcolsep}{2pt}
+\begin{table}[t]\centering\small\setlength{\tabcolsep}{5pt}
 \begin{tabular}{@{}lrr@{}}\toprule
-\textbf{Rating (1--5)} & \textbf{Human} & \textbf{LLM}\\\midrule
-Fact / grounding / evidence & 4.19/5.00/3.78 & 4.15/3.62/3.64 \\
-Safety / usability / mean & 4.51/4.12/4.26 & 5.00/4.85/4.26 \\
+\textbf{Dimension (1--5)} & \textbf{Human} & \textbf{Model}\\\midrule
+Factual appropriateness & 4.19 & 4.15 \\
+Contextual grounding & 5.00 & 3.62 \\
+Evidence usefulness & 3.78 & 3.64 \\
+Safety and hedging & 4.51 & 5.00 \\
+Usability & 4.12 & 4.85 \\
+\textbf{Overall} & \textbf{4.26} & \textbf{4.26} \\
 \bottomrule\end{tabular}
-\caption{MedTutor-style $M{=}13$ packet means. Human: three-rater equal weight. LLM: Qwen3-4B judge (same family as formatter).}\label{tab:medtutor}
+\caption{Human and Qwen3-4B ratings of the same 13 answers. The model judge shares the deployed formatter's Qwen3 family.}\label{tab:medtutor}
 \end{table}
+
+\textbf{What the ratings assess.} For a meeting answer, contextual grounding asks whether the reply uses the right slide or speech context. Evidence usefulness concerns whether the returned material helps answer the question. The rubric scores these separately so that a clear reply can be distinguished from one with useful supporting evidence (Table~\ref{tab:medtutor}). Graders can mark grounding unjudgeable when the context they need is unavailable. They also classify material claims as supported, unsupported, contradicted, or unjudgeable. An answer that asserts screen content when no frame is available is a specific error under this rubric. These checks connect the replay behavior to the criteria used for archived answers.
+
+\textbf{Citation provenance.} Twenty-seven answers cite 44 distinct PMIDs; every ID appears in the retrieval record. Twenty-five of the 27 answers include an educational-use sentence. Appendix~C records the audit examples.
 
 \textbf{Claim support.} An ALCE-style audit (Gao et al., 2023; \nolinkurl{evaluation/citation_faithfulness/}) uses a same-family Qwen3-4B judge to score 114 claim--citation pairs from 86 statements in 28 answers against PubMed abstracts. Scores are 0 (unsupported), 0.5 (partial), or 1 (full support). At threshold $\tau$, let $C_\tau$ count pairs scoring at least $\tau$ and $S_\tau$ count statements with at least one such citation.
 \[
@@ -213,23 +209,24 @@ Citation recall (attr$\geq$0.5) & 0.73\\
 
 \caption{Automatic citation attribution vs.\ PubMed abstracts (Qwen3-4B judge; same family as the formatter).}\label{tab:cite}\end{table}
 
-\subsection{Public Literature Probes}
+\subsection{Human--Model Agreement}\label{sec:agreement}
 
-A rural tele-mentoring query returned papers on physician and physician assistant training (PMIDs 11131773 and 37467205). A query about PMID 21631316 elicited a claim about reduced readmissions. The study instead measured sustained virologic response (Arora et al., 2011b).
+The human and model averages both round to 4.26/5 (Table~\ref{tab:medtutor}). To see how they score individual replies, we compare the published human mean and model score on each of the 13 items. As a measure of score proximity, 12 of the 13 items were within one point and the mean absolute difference was 0.43 points. Item-level Spearman rank correlation was $\rho{\approx}0.34$. These measures describe proximity and ranking between the pooled human scores and one model judge. Inter-rater statistics between individual human graders require their item-level ratings. The \href{https://github.com/238Plutonium/openreview/blob/main/evaluation/packet_scores.csv}{released packet scores} contain pooled human item means. The table also helps explain why both views matter. Human and automated factual ratings are 4.19 and 4.15, while the grounding ratings are 5.00 and 3.62. The latter comparison identifies a dimension for closer review with the underlying meeting context.
 
-\subsection{Facilitator Usability}
+A separate text-only generator comparison uses the 13 standalone questions and a Qwen2.5-1.5B judge. Appendix~B reports the models, scores, and input conditions. The \href{https://github.com/238Plutonium/openreview/tree/main/evaluation/frontier_baselines}{released results} include generations and judgments.
 
-Four Project ECHO staff completed the form after the September 10, 2026 demonstration. Three watched and one submitted chat questions. The mean was 4.13/5 across 15 general items (53 scored and 7 unable to judge; Table~2). Appeal, ease, and question clarity each averaged 4.50. Non-disruption averaged 3.25 and voice-wake 3.33 ($n{=}3$). Citation clarity had one rating. All four staff marked concept explanation unable to judge. Staff requested quieter replies and facilitator-only invocation. The release includes these controls.
+\balance
+\subsection{Facilitator Usability and Educational Usefulness}
 
-\subsection{Generator Comparison and Educational Usefulness}
+Four Project ECHO staff completed the form after the September 10, 2026 demonstration. Three watched and one submitted chat questions. They rated usability 4.13/5 across 15 general items (53 scored and 7 unable to judge; Table~\ref{tab:deployment}). Appeal, ease of use, and question clarity each averaged 4.50/5. Staff also requested quieter replies and facilitator-only invocation. The release includes both controls. In a session led by a facilitator, the invocation setting lets that person decide when to bring the assistant into the discussion. The reply setting gives facilitators a way to adjust how the assistant participates in chat. Appendix~B reports the remaining item-level details.
 
-We compared generators on the same five rating axes used for the human packet: factual appropriateness, grounding, evidence usefulness, safety/hedging, and usability. A Qwen2.5-1.5B judge scored answers to 13 standalone questions. Archived ECHO-AI answers scored 3.49/5. Qwen2.5-1.5B, SmolLM2-1.7B, Gemma-2-2B-IT (Q4 GGUF), and Gemini-3.1-Flash-Lite scored 3.82, 4.12, 3.72, and 4.86. The standalone generators saw only the question text; archived answers came from the deployed system. The judge gave Gemini 5/5 on 12 items. GPT and Claude have no scores because of API credit limits. Generations and judgments are in the \href{https://github.com/238Plutonium/openreview/tree/main/evaluation/frontier_baselines}{released results}.
-
-Staff rated educational usefulness at 4.00/5 ($n{=}4$). The release includes a \href{https://github.com/238Plutonium/openreview/tree/main/evaluation/education_outcomes}{pre/post instrument}.
+Educational usefulness averaged 4.00/5 ($n{=}4$). Staff judged the interaction from their demonstration experience. The staff survey and answer packet therefore speak to two parts of a live session: how the assistant fits the conversation and what its replies contain. The released \href{https://github.com/238Plutonium/openreview/tree/main/evaluation/education_outcomes}{pre/post instrument} supports a future assessment of what learners retain.
 
 \section{Conclusion}
 
-ECHO-AI routes slide, speech, literature, and prior-session questions inside a Project ECHO call. We judge the system by whether it chooses the right evidence, refuses when a slide is missing, earns usable human ratings, and cites abstracts that support its claims. The paired experiments show how frame handling changes what the assistant says when slides conflict with speech or are unavailable.
+A single case discussion can move from a slide to a remark to a question about the literature. ECHO-AI keeps those questions in the Zoom call and selects the evidence each one needs. We judge that choice by what the assistant says: whether it recovers the spoken value when a slide conflicts, refuses when no frame is available, earns usable human ratings, and cites abstracts that support its claims.
+
+The live assistant, public literature interface, and offline replay let reviewers follow the same workflow at their own pace. Staff feedback identifies what participants valued in the demonstration, and the answer packet provides a starting point for independent clinical review and further study of learning outcomes.
 
 \section*{Limitations}
 
@@ -240,6 +237,7 @@ We rely on project-team queries, four staff ratings from one demo, three packet 
 We thank Rui Zhang for manuscript feedback and Laura Felix, Jennifer Kraschnewski, Ashmita Grewal, Jessica Beiler, Ellie Hogentogler, Caitlin Kline, Melissa Huffman, Sesi Whaley, and Guido Cervone for supporting the demonstration. Cursor was used to proofread source code.
 
 \clearpage
+\nobalance
 \section*{Ethics Statement}
 
 ECHO-AI is an educational aid for MOUD and related Project ECHO tele-mentoring. It is not intended to diagnose, prescribe, or create medical records. The system appends the following disclaimer to clinical questions or questions with retrieval records: ``Educational summary for ECHO discussion; not clinical advice or a medical record.'' The host controls admission. PubMed queries use sanitized medical concepts and do not forward raw meeting audio or slide images. Meeting audio and institutional indexes remain subject to the project's institutional retention rules; the public interface queries PubMed only.
@@ -344,7 +342,11 @@ Footnotes resolve only if the PMID appears in the retrieval record (provenance w
 
 \textbf{Human packet rubric (1--5).} Factual appropriateness; contextual grounding; evidence usefulness; safety/hedging; usability. Facilitator form: 15 usability items (appeal, ease, non-disruption, voice-wake, \ldots). Sheets and \nolinkurl{evaluation/RUBRIC.md} are in the release; filled individual facilitator sheets stay private. MedTutor-style aggregates: \nolinkurl{evaluation/frontier\_baselines/}. Education-outcome instrument: \nolinkurl{evaluation/education\_outcomes/}.
 
-\newpage\textbf{Inspecting individual cases.} Open \nolinkurl{evaluation/recorded_replay/index.html} for the paired zero-frame outputs and labels. The two runs share the case ID and question and differ in the guard setting. The underlying JSONL records output text and attached-frame count (and may include timing fields for debugging). The reported comparisons look at whether the system abstained and what values appeared in the reply. For speech conflicts, inspect the included and withheld arms in \nolinkurl{evaluation/speech_recall_ablation/}; group the three repetitions by case before comparing token-mention rates. Replaying the inputs and verifying the archived outputs are separate checks: the former executes current models, while the latter checks the artifact underlying Table~3.
+\newpage\textbf{Inspecting individual cases.} Open \nolinkurl{evaluation/recorded_replay/index.html} for the paired zero-frame outputs and labels. The two runs share the case ID and question and differ in the guard setting. The underlying JSONL records output text and attached-frame count. The reported comparisons look at whether the system abstained and what values appeared in the reply. For speech conflicts, inspect the included and withheld arms in \nolinkurl{evaluation/speech_recall_ablation/}; group the three repetitions by case before comparing token-mention rates. Replaying the inputs and verifying the archived outputs are separate checks: the former executes current models, while the latter checks the artifact underlying Table~3.
+
+\textbf{Additional replay and rating details.} The two guard-on replies with no frames occur in VIS-ZERO-03 (the reply states the slide is visible) and VIS-ZERO-21 (the reply says the slide did not mention buprenorphine). In the answer packet, evidence usefulness averaged 3.78/5 and at least one rater flagged 9/13 answers. The staff form recorded non-disruption at 3.25/5 and voice-wake at 3.33/5 ($n{=}3$). Citation clarity had one rating. All four staff marked concept explanation unable to judge.
+
+\textbf{Generator comparison.} On 13 standalone questions, the Qwen2.5-1.5B judge scored archived ECHO-AI at 3.49/5, Qwen2.5-1.5B at 3.82, SmolLM2-1.7B at 4.12, Gemma-2-2B-IT (Q4 GGUF) at 3.72, and Gemini-3.1-Flash-Lite at 4.86 (12 items at 5/5). Standalone generators received question text. Archived answers came from the deployed system. API credit limits left GPT and Claude unscored.
 
 \section{Citation Attribution Protocol and Examples}
 
@@ -354,9 +356,11 @@ Footnotes resolve only if the PMID appears in the retrieval record (provenance w
 
 \textbf{Score 0.} Cholinesterase-inhibitor claim $\rightarrow$ PMID 38636561.
 
-\textbf{Partial$=$0.5.} Sleep-hygiene claim $\rightarrow$ PMID 33683929 (human insomnia review). 60/114 instances are 0.5, which widens the attr$\geq$0.5 vs.\ attr$=$1 gap in Table~\ref{tab:cite}.
+\textbf{Partial$=$0.5.} Sleep-hygiene claim $\rightarrow$ PMID 33683929 (human insomnia review). 60/114 instances score 0.5. Table~\ref{tab:cite} includes these scores at attr$\geq$0.5.
 
-\textbf{Veterinary PMID 29314873.} Historical diabetes answers cite an AAHA dogs/cats guideline. The automatic judge gave this veterinary source full credit (attr$=$1) for three claims about humans. Excluding the PMID barely changes Table~\ref{tab:cite} rates.
+\textbf{Veterinary PMID 29314873.} Eight historical diabetes answers cite an AAHA dogs/cats guideline. The automatic judge gave this veterinary source full credit (attr$=$1) for three claims about humans. Excluding the PMID barely changes Table~\ref{tab:cite} rates.
+
+\textbf{Public literature probes.} A rural tele-mentoring query returned articles on physician and physician assistant training (PMIDs 11131773 and 37467205). A query about PMID 21631316 elicited a claim about reduced readmissions. The study measured sustained virologic response (Arora et al., 2011b).
 
 \textbf{Lexical screen.} The separate lexical audit (\nolinkurl{evaluation/claim_level_audit/}) finds 14/132 supported pairs and aligns more closely with the attr$=$1 rates than with attr$\geq$0.5 precision 0.72.
 
