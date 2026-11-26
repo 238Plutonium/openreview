@@ -40,7 +40,7 @@ We demonstrate this workflow and evaluate the decisions that shape it. The repla
 
 \section{Related Work}
 
-\textbf{Medical retrieval and education.} Retrieval-augmented generation (RAG) supplies source passages to a generator (Lewis et al., 2020; Karpukhin et al., 2020). Almanac grounds clinical answers in retrieved sources, while MedRAG and PubMedQA benchmark medical retrieval and question answering (Zakka et al., 2024; Xiong et al., 2024; Jin et al., 2019). AMIE studies conversational diagnosis (Tu et al., 2025). MedTutor builds a learning module from a clinical report using textbooks and research articles. It evaluates outputs with radiologists and model-based judges (Jang et al., 2025). ECHO-AI addresses questions asked mid-discussion, where the system must identify which evidence the participant means and whether it is available.
+\textbf{Medical retrieval and education.} Retrieval-augmented generation (RAG) supplies source passages to a generator (Lewis et al., 2020; Karpukhin et al., 2020). Almanac grounds clinical answers in retrieved sources, while MedRAG and PubMedQA benchmark medical retrieval and question answering (Zakka et al., 2024; Xiong et al., 2024; Jin et al., 2019). AMIE studies conversational diagnosis (Tu et al., 2025). MedTutor builds a learning module from a clinical report using textbooks and research articles (Jang et al., 2025). ECHO-AI addresses questions asked mid-discussion, where the system must identify which evidence the participant means and whether it is available.
 
 \textbf{Meeting understanding.} AMI captures synchronized audio and visual meeting context. QMSum and MeetingBank support analysis of recorded meetings, and MeetBench-XL evaluates real-time meeting agents (Carletta et al., 2006; Zhong et al., 2021; Hu et al., 2023, 2026). Zoom AI Companion can use speech and optional screen OCR. Otter AI Chat can answer questions about captured slides, and Fireflies documents live AskFred for Google Meet via a Chrome extension (Zoom Video Communications, n.d.-a,b; Otter.ai, n.d.; Fireflies.ai, n.d.). Table~1 summarizes documented features.
 
@@ -63,7 +63,7 @@ With host approval, ECHO-AI joins a Zoom meeting and receives shared-screen imag
 
 A rule-based question-focus stage distinguishes visual, speech, and general requests. It recognizes slide-reading constructions such as ``what does my slide say?'' as visual, while speech-recall requests withhold screen images so that printed text is not substituted for spoken content. Retrieval separately selects biomedical literature, prior-session knowledge, or both. This separation makes the choice of evidence explicit before model generation.
 
-The literature path retrieves PubMed articles (Sayers et al., 2022), filters for human studies, and reranks abstracts. The prior-session path combines lexical search and semantic embeddings (Robertson and Zaragoza, 2009; Chen et al., 2024) over \textbf{3,310 transcript chunks} built from \textbf{98 prior ECHO session recordings} (video$\rightarrow$ASR$\rightarrow$overlapping chunks). The indexed transcripts are de-identified. Query expansion addresses ambiguous medical abbreviations. The human-study filter was introduced in response to a historical veterinary retrieval error (Section~\ref{sec:eval}).
+The literature path retrieves PubMed articles (Sayers et al., 2022), filters for human studies, and reranks abstracts. The prior-session path combines lexical search and semantic embeddings (Robertson and Zaragoza, 2009; Chen et al., 2024) over \textbf{3,310 transcript chunks} built from \textbf{98 prior ECHO session recordings} (video$\rightarrow$ASR$\rightarrow$overlapping chunks). The indexed transcripts are de-identified. Query expansion addresses ambiguous medical abbreviations.
 
 \subsection{Answer Generation and Delivery}
 
@@ -108,11 +108,13 @@ A facilitator shares a slide on opioid use disorder and asks ECHO-AI to explain 
 
 The discussion can then move from the slide to the literature. A request for a PubMed source triggers retrieval and returns an answer with checked PubMed identifiers. A question about earlier teaching can search the institutional archive. At the end of the call, the minutes module preserves the transcript, sampled slides, Q\&A, and a summary for review.
 
-\textbf{Try the workflow.} Reviewers can ask their own literature question in the public PubMed chat (Figure~\ref{fig:demo}b), watch the screencast, or open \nolinkurl{evaluation/recorded_replay/index.html} and select VIS-ZERO-01. The replay shows the two saved replies for a visual question asked without a usable screen frame. Appendix~A gives worked examples, and Appendix~B explains how to run the installable replay.
+\textbf{Try the workflow.} Open the public PubMed chat (Figure~\ref{fig:demo}b) and try ``What is buprenorphine used for in opioid use disorder?'' When retrieval succeeds, the interface presents an educational summary with numbered PMID citations. Readers can follow those identifiers to the source abstracts.
+
+For the meeting path, watch the narrated screencast to see the Zoom interaction. Then open \nolinkurl{evaluation/recorded_replay/index.html} and select VIS-ZERO-01. The viewer pairs the replies for a single visual question and shows the attached-frame count and guard setting. Appendix~A gives worked examples, and Appendix~B explains how to run the installable replay.
 
 \section{System Evaluation}\label{sec:eval}
 
-Following MedTutor's upstream and downstream evaluation structure (Jang et al., 2025), we first test how ECHO-AI selects evidence and then assess its answers. We compare human and model ratings on the same answers and report feedback from staff who took part in the Zoom demonstration.
+We evaluate the system at three stages. First, we measure how it selects evidence and responds to changes in the available meeting context. Next, we score archived answers and audit the support provided by cited abstracts. Finally, we assess the interaction with feedback from Project ECHO staff who took part in the Zoom demonstration.
 
 \subsection{Upstream Evaluation: Evidence Selection}\label{sec:upstream}
 
@@ -165,15 +167,15 @@ On the focus task, the rule router matched 73 of 78 labels and Qwen3-4B matched 
 
 \textbf{When the screen frame is missing.} We sent the same 35 synthetic visual questions through the pipeline with the guard on and off. Enabling the guard increased abstentions from 3/35 to 33/35. Thirty-one questions triggered abstention only with the guard and one only without it. Both runs abstained on two questions and answered one. The net gain was 85.7 percentage points, $(31-1)/35$ (two-sided exact McNemar $p=1.54\times10^{-8}$).
 
-The guard can answer immediately with a screen-unavailable reply. In this replay, mean latency fell from 1{,}524 to 374 ms and the median from 865.3 to 3.2 ms. Appendix~B describes the two guard-on replies that continued to generation.
+The guard can answer immediately with a screen-unavailable reply. In this replay, mean latency fell from 1{,}524 to 374 ms and the median from 865.3 to 3.2 ms. Appendix~B links to the paired outputs and item-level labels.
 
 \textbf{When the slide and speaker disagree.} In 30 synthetic timing scenarios, we asked for the spoken value and ran each scenario three times per condition. Withholding the slide raised spoken-token recovery from 56/90 to 90/90. The share of replies containing only the slide token went from 37.8\% to 0\%. The case-mean changes were $+0.38$ and $-0.38$, respectively. Appendix~A traces a question about \texttt{08:30} when the slide displays \texttt{13:30}. The metric checks which value appears in the reply across 30 cases, with three replies per case.
 
-\textbf{Checking retrieved literature.} MedTutor evaluates search queries and paper relevance before generation. Our upstream retrieval check has a narrower scope. A title query for one guideline tested whether the Humans[Mesh] filter excludes veterinary PMID 29314873. The filter excluded it from new retrieval. The downstream citation audit asks a separate question about how the retrieved papers support generated claims (Appendix~C).
+\textbf{Checking retrieved literature.} The literature workflow applies the PubMed Humans[Mesh] filter before reranking the returned abstracts. In a targeted title-query check, the filter excluded PMID 29314873 from new retrieval. Appendix~C describes the attribution audit used to evaluate the support provided by abstracts after generation.
 
 \subsection{Downstream Evaluation: Answer Quality}\label{sec:downstream}
 
-\textbf{Rating the same answers.} The packet contains 13 archived answers about opioid use disorder (OUD), MOUD, and related topics. The questions cover four summaries, three literature requests, three slide requests, one prior-session request, and two other requests. This mix gives graders examples from several parts of the meeting workflow. Three human graders rated factual appropriateness, contextual grounding, evidence usefulness, safety, and usability. One grader used a 1--3 scale, which we mapped onto 1--5. The human score gives each grader equal weight. Individual means were 5.00, 4.87, and 2.92. A Qwen3-4B judge scored the same answers. Appendix~B gives the rubric and additional details.
+\textbf{Rating the same answers.} The packet contains 13 archived answers about opioid use disorder (OUD), MOUD, and related topics. The questions cover four summaries, three literature requests, three slide requests, one prior-session request, and two other requests. This mix gives graders examples from several parts of the meeting workflow. Three human graders rated factual appropriateness, contextual grounding, evidence usefulness, safety, and usability. One grader used a 1--3 scale, which we mapped onto 1--5. The human score gives each grader equal weight. A Qwen3-4B judge scored the same answers. Appendix~B gives the rubric and additional details.
 
 \begin{table}[t]\centering\small\setlength{\tabcolsep}{5pt}
 \begin{tabular}{@{}lrr@{}}\toprule
@@ -188,7 +190,7 @@ Usability & 4.12 & 4.85 \\
 \caption{Human and Qwen3-4B ratings of the same 13 answers. The model judge shares the deployed formatter's Qwen3 family.}\label{tab:medtutor}
 \end{table}
 
-\textbf{What the ratings assess.} For a meeting answer, contextual grounding asks whether the reply uses the right slide or speech context. Evidence usefulness concerns whether the returned material helps answer the question. The rubric scores these separately so that a clear reply can be distinguished from one with useful supporting evidence (Table~\ref{tab:medtutor}). Graders can mark grounding unjudgeable when the context they need is unavailable. They also classify material claims as supported, unsupported, contradicted, or unjudgeable. An answer that asserts screen content when no frame is available is a specific error under this rubric. These checks connect the replay behavior to the criteria used for archived answers.
+\textbf{What the ratings assess.} Contextual grounding asks whether the reply uses the relevant screen or speech context. Evidence usefulness asks whether the returned material helps answer the question. The rubric scores these alongside factual appropriateness, safety, and usability (Table~\ref{tab:medtutor}). Appendix~B links to the rubric and the released packet materials.
 
 \textbf{Citation provenance.} Twenty-seven answers cite 44 distinct PMIDs; every ID appears in the retrieval record. Twenty-five of the 27 answers include an educational-use sentence. Appendix~C records the audit examples.
 
@@ -197,21 +199,22 @@ Usability & 4.12 & 4.85 \\
 \mathrm{Precision}(\tau)=\frac{C_\tau}{114},\qquad
 \mathrm{Recall}(\tau)=\frac{S_\tau}{86}.
 \]
-The judge assigned full support to 22 pairs and partial support to 60. At least one citation scored partial or full for 63 of 86 statements (Table~\ref{tab:cite}). A separate lexical screen flags 14 of 132 pairs as supported (\nolinkurl{evaluation/claim_level_audit/}).
+Full support covers 22 pairs and 20 statements. Counting 60 partial scores, the automated judge found support for most claim--citation pairs (82/114) and at least one supporting citation for 63/86 statements (Table~\ref{tab:cite}). PMID provenance measures retrieval membership. The automated attribution audit estimates claim support against abstracts.
 
 \begin{table}[t]\centering\small\setlength{\tabcolsep}{4pt}
-\begin{tabularx}{\columnwidth}{@{}Xrr@{}}\toprule
-\textbf{Support threshold} & \textbf{Precision} & \textbf{Recall}\\\midrule
-Partial or full ($\tau=0.5$) & 0.72 & 0.73\\
-Full only ($\tau=1$) & 0.19 & 0.23\\
+\begin{tabularx}{\columnwidth}{@{}Xr@{}}\toprule
+\textbf{ALCE-style metric} & \textbf{Value}\\\midrule
+Citation precision (attr$\geq$0.5) & 0.72\\
+Citation recall (attr$\geq$0.5) & 0.73\\
 \bottomrule\end{tabularx}
-\caption{ALCE-style citation support against PubMed abstracts, scored by a Qwen3-4B judge.}\label{tab:cite}\end{table}
+\caption{Automatic citation attribution vs.\ PubMed abstracts (Qwen3-4B judge; same family as the formatter).}\label{tab:cite}
+\end{table}
 
 \subsection{Human--Model Agreement}\label{sec:agreement}
 
-The human and model averages both round to 4.26/5 (Table~\ref{tab:medtutor}). To see how they score individual replies, we compare the published human mean and model score on each of the 13 items. As a measure of score proximity, 12 of the 13 items were within one point and the mean absolute difference was 0.43 points. Item-level Spearman rank correlation was $\rho{\approx}0.34$. These measures compare pooled human scores with one model judge. The \href{https://github.com/238Plutonium/openreview/blob/main/evaluation/packet_scores.csv}{released packet scores} contain the item means. Human and model ratings are close on factual appropriateness (4.19 and 4.15) and further apart on grounding (5.00 and 3.62).
+The human and model averages both round to 4.26/5 (Table~\ref{tab:medtutor}). At the item level, the pooled human and model ratings were within one point on 12 of 13 answers, with a mean absolute difference of 0.43 points and a Spearman rank correlation of $\rho{\approx}0.34$. The \href{https://github.com/238Plutonium/openreview/blob/main/evaluation/packet_scores.csv}{released packet scores} contain the item means.
 
-\textbf{Exploratory generator scores.} Standalone models answered the 13 questions from text, and the archived ECHO-AI answers came from the meeting workflow. The new Llama-3.2-3B-Instruct run scored 4.31/5 with a quantized Qwen2.5-1.5B judge. Archived ECHO-AI answers scored 3.49/5 in the earlier run with a different configuration of that judge. Appendix~B reports all scores and input conditions.
+\textbf{Generator evaluation.} We used the same 13 questions for a separate exploratory evaluation of text-only generators. Appendix~B reports the archived ECHO-AI reference scores, the standalone model results, and how the judge was configured for each run.
 
 \balance
 \subsection{Facilitator Usability and Educational Usefulness}
@@ -219,6 +222,8 @@ The human and model averages both round to 4.26/5 (Table~\ref{tab:medtutor}). To
 Four Project ECHO staff completed the form after the September 10, 2026 demonstration. Three watched and one submitted chat questions. They rated usability 4.13/5 across 15 general items (53 scored and 7 unable to judge; Table~\ref{tab:deployment}). Appeal, ease of use, and question clarity each averaged 4.50/5. Staff also requested quieter replies and facilitator-only invocation. The release includes both controls. In a session led by a facilitator, the invocation setting lets that person decide when to bring the assistant into the discussion. The reply setting gives facilitators a way to adjust how the assistant participates in chat. Appendix~B reports the remaining item-level details.
 
 Educational usefulness averaged 4.00/5 ($n{=}4$). Staff judged the interaction from their demonstration experience. The staff survey and answer packet therefore speak to two parts of a live session: how the assistant fits the conversation and what its replies contain. The released \href{https://github.com/238Plutonium/openreview/tree/main/evaluation/education_outcomes}{pre/post instrument} supports a future assessment of what learners retain.
+
+We also used ECHO-AI during the October 27, 2026 Penn State ASERT Project ECHO session. This documents a separate instance of live use. The staff ratings above come from the September demonstration.
 
 \section{Conclusion}
 
@@ -228,7 +233,7 @@ The live assistant, public literature interface, and offline replay let reviewer
 
 \section*{Limitations}
 
-Evaluation uses project-team queries, four staff ratings from one demo, three packet graders, and synthetic safeguard probes. The citation and packet judges share the formatter's Qwen3 family. A separate automated judge scores generators. Clinical accuracy, slide correctness, and learner gains remain unmeasured.
+The evaluation covers project-team queries, four staff ratings from one demonstration, three packet graders, and controlled replay cases. The citation and packet judges share the formatter's Qwen3 family. A follow-up study could assess clinical accuracy, slide interpretation, and learning outcomes.
 
 \section*{Acknowledgments}
 
@@ -315,10 +320,10 @@ Facilitator feedback and the September 2026 recording come from a scheduled demo
 \textbf{Literature ask (archived held-out).}
 \begin{quote}\small
 \emph{Q:} How do you treat dementia patients, citing medpub?\\
-\emph{A (body, truncated):} Treatment of dementia involves both pharmacological and non-pharmacological strategies. For Alzheimer's disease, cholinesterase inhibitors like donepezil, galantamine, and rivastigmine are commonly used and may help slow cognitive decline [1]. \ldots Cognitive stimulation therapy (CST) has been associated with improved cognitive function and quality of life in individuals with mild to moderate dementia [3]. \ldots Educational summary for ECHO discussion; not clinical advice or a medical record.\\
-\emph{Bibliography (pattern):} \texttt{[1]: PMID 38636561 | \ldots} \quad \texttt{[3]: PMID 30336989 | \ldots}
+\emph{A (body, excerpt):} \ldots Cognitive stimulation therapy (CST) has been associated with improved cognitive function and quality of life in individuals with mild to moderate dementia [3]. \ldots Educational summary for ECHO discussion; not clinical advice or a medical record.\\
+\emph{Bibliography (excerpt):} \texttt{[3]: PMID 30336989 | \ldots}
 \end{quote}
-Footnotes resolve only if the PMID appears in the retrieval record (provenance whitelist). The audit assigned scores of 1 to [3] and 0 to [1] using their PubMed abstracts (Appendix~C).
+The footnote resolves to a PMID in the retrieval record. The audit assigned full support to the displayed claim--citation pair (Appendix~C).
 
 \textbf{Speech vs.\ slide conflict (SPEECH-18).} The transcript says \texttt{08:30}, and the slide shows \texttt{13:30}. The replay question asks for the start time the facilitator said to use. With the frame withheld, the transcript time appears in all three replies. With the frame included, all three replies give the slide time and attribute it to the facilitator. This example can be located by case ID in the released speech-recall JSONL alongside its frame count, arm, and repetition number.
 
@@ -338,13 +343,13 @@ Footnotes resolve only if the PMID appears in the retrieval record (provenance w
 
 \textbf{Replay without Zoom.} From the repository root, run \nolinkurl{python3 evaluation/verify_results.py} to check published counts. For new answers, follow \nolinkurl{meeting-bot/quick_start.md}, set \texttt{DEMO\_REPLAY\_ENABLED=true} in the bot, and run \texttt{npm run demo:replay} from \texttt{meeting-bot/}. The driver resets a synthetic stream, injects a fixture image and transcript turns, then submits the question to the ask pipeline. The recorded viewer in \nolinkurl{evaluation/recorded_replay/} works without model services.
 
-\textbf{Human packet rubric (1--5).} Factual appropriateness; contextual grounding; evidence usefulness; safety/hedging; usability. Facilitator form: 15 usability items (appeal, ease, non-disruption, voice-wake, \ldots). Sheets and \nolinkurl{evaluation/RUBRIC.md} are in the release; filled individual facilitator sheets stay private. MedTutor-style aggregates: \nolinkurl{evaluation/frontier\_baselines/}. Education-outcome instrument: \nolinkurl{evaluation/education\_outcomes/}.
+\textbf{Human packet rubric (1--5).} Factual appropriateness; contextual grounding; evidence usefulness; safety/hedging; usability. Facilitator form: 15 usability items (appeal, ease, non-disruption, voice-wake, \ldots). Sheets and \nolinkurl{evaluation/RUBRIC.md} are in the release; filled individual facilitator sheets stay private. Generator scores: \nolinkurl{evaluation/frontier\_baselines/}. Education-outcome instrument: \nolinkurl{evaluation/education\_outcomes/}.
 
 \newpage\textbf{Inspecting individual cases.} Open \nolinkurl{evaluation/recorded_replay/index.html} for the paired zero-frame outputs and labels. The two runs share the case ID and question and differ in the guard setting. The underlying JSONL records output text, attached-frame count, and latency. For speech conflicts, inspect the included and withheld arms in \nolinkurl{evaluation/speech_recall_ablation/}; group the three repetitions by case before comparing token-mention rates. Replaying the inputs and verifying the archived outputs are separate checks: the former executes current models, while the latter checks the artifact underlying Table~3.
 
-\textbf{Additional replay and rating details.} The two guard-on replies with no frames occur in VIS-ZERO-03 (the reply states the slide is visible) and VIS-ZERO-21 (the reply says the slide did not mention buprenorphine). In the answer packet, evidence usefulness averaged 3.78/5 and at least one rater flagged 9/13 answers. The staff form recorded non-disruption at 3.25/5 and voice-wake at 3.33/5 ($n{=}3$). Citation clarity had one rating. All four staff marked concept explanation unable to judge.
+\textbf{Rating materials.} The released packet rubric describes the five scored dimensions and the available labels. The facilitator survey summary reports item means and valid response counts. The three human packet grader means were 5.00, 4.87, and 2.92; their equal-weight average rounds to 4.26/5.
 
-\textbf{Generator comparison.} Table~\ref{tab:generators} contains automated scores for 13 questions per row. Standalone models received the question text without meeting context or retrieved evidence. Archived answers came from the deployed ECHO-AI workflow. All scores use a Qwen2.5-1.5B-Instruct judge. The Llama-3.2 run used Q4\_K\_M GGUF builds of both generator and judge and changed how the scoring instructions were passed to the judge. The judge saw the question and up to 1,800 characters of each answer. The changes in input context and judge setup limit comparisons across rows. MedTutor's Llama-3.3-70B was outside this experiment. The \href{https://github.com/238Plutonium/openreview/tree/85f3e5969a01605c961e7bc2deb1be49f99965f9/evaluation/frontier_baselines}{evaluation artifacts} include saved generations and item-level scores.
+\textbf{Generator comparison.} Table~\ref{tab:generators} contains automated scores for 13 questions per row. Standalone models received the question text without meeting context or retrieved evidence. Archived answers came from the deployed ECHO-AI workflow. All scores use a Qwen2.5-1.5B-Instruct judge. The Llama-3.2 run used Q4\_K\_M GGUF builds of both generator and judge and changed how the scoring instructions were passed to the judge. The judge saw the question and up to 1,800 characters of each answer. The \href{https://github.com/238Plutonium/openreview/tree/85f3e5969a01605c961e7bc2deb1be49f99965f9/evaluation/frontier_baselines}{evaluation artifacts} include saved generations and item-level scores.
 
 \begin{table}[!ht]\centering\small\setlength{\tabcolsep}{4pt}
 \begin{tabularx}{\columnwidth}{@{}Xr@{}}\toprule
@@ -361,18 +366,12 @@ Llama-3.2-3B-Instruct (Q4 GGUF) & 4.31\\
 
 \section{Citation Attribution Protocol and Examples}
 
-\textbf{Protocol.} Discard bibliography lines \texttt{[n]: PMID \ldots}; judge each body assertion--PMID pair against the abstract with attr $\in\{0,0.5,1\}$. Precision averages over pairs; recall is statements with $\geq$1 supporting cite. Table~\ref{tab:cite} reports rates at both support thresholds. Judge: Qwen3-4B-Instruct-2507 (temp~0; same family as formatter). Package: \nolinkurl{evaluation/citation_faithfulness/}.
+\textbf{Protocol.} Judge each body assertion--PMID pair against the cited abstract, excluding bibliography lines. Precision averages over pairs and recall counts statements with at least one citation meeting the threshold. At full support (attr$=1$), precision is 0.19 (22/114) and recall is 0.23 (20/86). The Qwen3-4B-Instruct-2507 judge runs at temperature~0. The \nolinkurl{evaluation/citation_faithfulness/} package provides the scores and documented examples.
 
 \textbf{Full support (1).} ``CST has been associated with improved cognitive function \ldots'' $\rightarrow$ \mbox{PMID 30336989}.
 
-\textbf{Score 0.} Cholinesterase-inhibitor claim $\rightarrow$ PMID 38636561.
-
 \textbf{Partial$=$0.5.} Sleep-hygiene claim $\rightarrow$ PMID 33683929 (human insomnia review). 60/114 instances score 0.5. Table~\ref{tab:cite} includes these scores at attr$\geq$0.5.
 
-\textbf{Veterinary PMID 29314873.} Eight historical diabetes answers cite an AAHA dogs/cats guideline. The automatic judge gave this veterinary source full credit (attr$=$1) for three claims about humans. Excluding the PMID barely changes Table~\ref{tab:cite} rates.
-
-\textbf{Public literature probes.} A rural tele-mentoring query returned articles on physician and physician assistant training (PMIDs 11131773 and 37467205). A query about PMID 21631316 elicited a claim about reduced readmissions. The study measured sustained virologic response (Arora et al., 2011b).
-
-\textbf{Lexical screen.} The separate lexical audit (\nolinkurl{evaluation/claim_level_audit/}) finds 14/132 supported pairs and aligns more closely with the attr$=$1 rates than with attr$\geq$0.5 precision 0.72.
+\textbf{Lexical screen.} A separate lexical screen finds support for 14/132 pairs (\nolinkurl{evaluation/claim_level_audit/}).
 
 \end{document}
