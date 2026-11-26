@@ -85,7 +85,10 @@ python evaluation/frontier_baselines/run_grounding_integrity_test.py
 |---|---:|---:|---:|---:|---:|
 | **ECHO-AI_archived** | **0.85** | **3** | 3 | **0** | 6 |
 | Gemini-3.1-Flash-Lite | 0.75 | 1 | 5 | 0 | 6 |
-| SmolLM2 / Qwen2.5-1.5B / Gemma / Llama-3.2 | 0.70 | 0 | 6 | 0 | 6 |
+| SmolLM2-1.7B-Instruct | 0.70 | 0 | 6 | 0 | 6 |
+| Qwen2.5-1.5B-Instruct | 0.70 | 0 | 6 | 0 | 6 |
+| Gemma-2-2B-IT GGUF | 0.70 | 0 | 6 | 0 | 6 |
+| Llama-3.2-3B-Instruct GGUF | 0.70 | 0 | 6 | 0 | 6 |
 
 Artifacts: `grounding_integrity_labels.jsonl`, `grounding_integrity_summary.json`, `grounding_integrity_scores.csv`.
 
