@@ -17,20 +17,30 @@ Same M=13 questions; text-only generation (no slide images). Local judge: Qwen2.
 
 Artifacts: `open_model_generations.jsonl`, `open_model_judgments.jsonl`, `open_baseline_summary.json`, `run_open_baselines.py`, `run_gemma_gguf.py`.
 
-## MedTutor-aligned Llama-3.3-70B (blocked on API key)
-Same M=13 packet and open-bake-off rubric. Runner: `run_llama33_baseline.py` (appends to `open_model_generations.jsonl` / `open_model_judgments.jsonl`, refreshes `open_baseline_summary.json` + `generator_baseline_scores.csv`). Judge: local Qwen2.5-1.5B GGUF (`Qwen/Qwen2.5-1.5B-Instruct-GGUF` / `qwen2.5-1.5b-instruct-q4_k_m.gguf`).
+## MedTutor-aligned Llama-3.3-70B (API still required)
+Same M=13 packet and open-bake-off rubric. Runner: `run_llama33_baseline.py`. Judge: local Qwen2.5-1.5B GGUF.
 
-**Blocker:** no generation API key in this environment. Add **one** secret — prefer **`GROQ_API_KEY`** (model `llama-3.3-70b-versatile`). Then:
+Groq free/dev no longer serves `llama-3.3-70b-versatile` (retired 2026-08-16). OVHcloud anonymous was tried (`LLAMA33_USE_OVH_ANON=1`) but this Cloud Agent IP hit a **1-request/year** anonymous cap (`Retry-After` ~36 days) after a single call — not usable for M=13.
 
-```bash
-python evaluation/frontier_baselines/run_llama33_baseline.py
-```
-
-Alternatives (first match wins): `TOGETHER_API_KEY`, `FIREWORKS_API_KEY`, `OPENROUTER_API_KEY`, `HF_TOKEN`, or `LLAMA33_API_KEY` + `LLAMA33_BASE_URL`.
+Paid keys (first match wins): `GROQ_API_KEY` (Enterprise Llama-3.3 only), `TOGETHER_API_KEY`, `FIREWORKS_API_KEY`, `OPENROUTER_API_KEY`, `HF_TOKEN`, or `LLAMA33_API_KEY` + `LLAMA33_BASE_URL`.
 
 | Generator | Overall | n | Status |
 |---|---:|---:|---|
-| meta-llama/Llama-3.3-70B-Instruct | — | 0 | **needs `GROQ_API_KEY`** (or another key above) |
+| meta-llama/Llama-3.3-70B-Instruct | — | 0 | **needs paid Llama-3.3 API** |
+| ECHO-AI_archived (same judge) | 3.49 | 13 | already in open bake-off |
+
+## Other Llama (local fallback): Llama-3.2-3B-Instruct GGUF
+When Llama-3.3-70B API access is unavailable, run the same M=13 packet locally:
+
+```bash
+python evaluation/frontier_baselines/run_llama32_gguf.py
+```
+
+**Not** MedTutor’s Llama-3.3-70B comparator — labeled separately in summary/CSV.
+
+| Generator | Overall | n | Status |
+|---|---:|---:|---|
+| Llama-3.2-3B-Instruct (Q4_K_M GGUF) | **4.31** | 13 | local CPU bake-off complete |
 | ECHO-AI_archived (same judge) | 3.49 | 13 | already in open bake-off |
 
 This is a **same-packet automatic bake-off**, not a copy of MedTutor Table 2 human scores (3.44 / 3.65). Do not invent human scores or paste those Table 2 numbers into ECHO results.
