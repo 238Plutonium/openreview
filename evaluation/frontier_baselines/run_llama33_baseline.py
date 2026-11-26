@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """MedTutor-aligned Llama-3.3-70B-Instruct bake-off on M=13 (same packet + judge rubric).
 
-Generation via OpenAI-compatible API (Groq / Together / Fireworks / OpenRouter / HF router).
+Generation via OpenAI-compatible API (Groq / Together / Fireworks / OpenRouter / HF router /
+OVHcloud AI Endpoints anonymous).
 Judging via local Qwen2.5-1.5B-Instruct GGUF (same rubric as open CPU bake-off).
 
 Env (first match wins for generation):
   GROQ_API_KEY | TOGETHER_API_KEY | FIREWORKS_API_KEY | OPENROUTER_API_KEY | HF_TOKEN
 Optional overrides:
   LLAMA33_BASE_URL, LLAMA33_MODEL, LLAMA33_API_KEY
+  LLAMA33_ANONYMOUS=1  — use LLAMA33_BASE_URL with no Authorization header
+                         (OVHcloud anonymous: ~2 req/min/IP; set LLAMA33_MIN_INTERVAL_S=35)
 """
 from __future__ import annotations
 
@@ -36,6 +39,8 @@ GEN_ID = "meta-llama/Llama-3.3-70B-Instruct"
 JUDGE_ID = "Qwen/Qwen2.5-1.5B-Instruct (Q4_K_M GGUF)"
 JUDGE_REPO = "Qwen/Qwen2.5-1.5B-Instruct-GGUF"
 JUDGE_FILE = "qwen2.5-1.5b-instruct-q4_k_m.gguf"
+OVH_ANON_BASE = "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1"
+OVH_ANON_MODEL = "Meta-Llama-3_3-70B-Instruct"
 
 SYS = (
     "You are an educational assistant for a Project ECHO MOUD tele-mentoring session. "
@@ -67,13 +72,17 @@ def load_packet() -> list[dict]:
 
 
 def resolve_endpoint() -> tuple[str, str, str]:
-    """Return (base_url, api_key, model)."""
-    if os.environ.get("LLAMA33_API_KEY") and os.environ.get("LLAMA33_BASE_URL"):
-        return (
-            os.environ["LLAMA33_BASE_URL"].rstrip("/"),
-            os.environ["LLAMA33_API_KEY"],
-            os.environ.get("LLAMA33_MODEL", GEN_ID),
-        )
+    """Return (base_url, api_key, model). Empty api_key means anonymous (no Authorization)."""
+    if os.environ.get("LLAMA33_BASE_URL") and (
+        os.environ.get("LLAMA33_API_KEY")
+        or os.environ.get("LLAMA33_ANONYMOUS", "").strip() in {"1", "true", "yes"}
+    ):
+        key = os.environ.get("LLAMA33_API_KEY", "") if os.environ.get("LLAMA33_API_KEY") else ""
+        if os.environ.get("LLAMA33_ANONYMOUS", "").strip() in {"1", "true", "yes"}:
+            key = ""
+        model = os.environ.get("LLAMA33_MODEL", GEN_ID)
+        log(f"using endpoint env=LLAMA33_BASE_URL anonymous={not bool(key)} model={model}")
+        return os.environ["LLAMA33_BASE_URL"].rstrip("/"), key, model
     candidates = [
         (
             "GROQ_API_KEY",
@@ -109,9 +118,14 @@ def resolve_endpoint() -> tuple[str, str, str]:
         if key:
             log(f"using endpoint env={env} model={model}")
             return base, key, model
+    if os.environ.get("LLAMA33_USE_OVH_ANON", "").strip() in {"1", "true", "yes"}:
+        model = os.environ.get("LLAMA33_MODEL", OVH_ANON_MODEL)
+        log(f"using endpoint env=OVH_ANON model={model}")
+        return OVH_ANON_BASE, "", model
     raise SystemExit(
         "No Llama-3.3 API key. Set one of GROQ_API_KEY, TOGETHER_API_KEY, "
-        "FIREWORKS_API_KEY, OPENROUTER_API_KEY, HF_TOKEN (or LLAMA33_API_KEY + LLAMA33_BASE_URL)."
+        "FIREWORKS_API_KEY, OPENROUTER_API_KEY, HF_TOKEN (or LLAMA33_API_KEY + LLAMA33_BASE_URL), "
+        "or LLAMA33_USE_OVH_ANON=1 for OVHcloud anonymous (often year-capped per IP)."
     )
 
 
@@ -119,7 +133,7 @@ def http_json(url: str, headers: dict, body: dict, timeout: int = 180) -> dict:
     req = urllib.request.Request(
         url,
         data=json.dumps(body).encode(),
-        headers={**headers, "Content-Type": "application/json"},
+        headers={**headers, "Content-Type": "application/json", "User-Agent": "Mozilla/5.0"},
         method="POST",
     )
     with urllib.request.urlopen(req, timeout=timeout) as resp:
@@ -127,9 +141,12 @@ def http_json(url: str, headers: dict, body: dict, timeout: int = 180) -> dict:
 
 
 def generate_llama(base: str, key: str, model: str, question: str) -> str:
+    headers: dict[str, str] = {}
+    if key:
+        headers["Authorization"] = f"Bearer {key}"
     data = http_json(
         f"{base}/chat/completions",
-        {"Authorization": f"Bearer {key}"},
+        headers,
         {
             "model": model,
             "temperature": 0,
@@ -259,28 +276,62 @@ def rewrite_summary() -> None:
 def main() -> None:
     items = load_packet()
     base, key, model = resolve_endpoint()
+    anonymous = not bool(key)
+    # OVH anonymous is ~2 req/min/IP; default spacing keeps M=13 under that ceiling.
+    min_interval = float(
+        os.environ.get(
+            "LLAMA33_MIN_INTERVAL_S",
+            "35" if anonymous else "0",
+        )
+    )
     have_gen = {(g["generator"], g["qa_id"]) for g in load_jsonl(GENS)}
     missing = [it for it in items if (GEN_ID, it["qa_id"]) not in have_gen]
-    log(f"llama33 missing_gens={len(missing)} model={model}")
+    log(
+        f"llama33 missing_gens={len(missing)} model={model} "
+        f"anonymous={anonymous} min_interval_s={min_interval}"
+    )
 
+    last_call = 0.0
     for i, it in enumerate(missing, 1):
+        if min_interval > 0 and last_call:
+            wait = min_interval - (time.time() - last_call)
+            if wait > 0:
+                log(f"rate_limit sleep_s={wait:.1f}")
+                time.sleep(wait)
         log(f"generate Llama-3.3 {i}/{len(missing)} qa_id={it['qa_id']}")
         t0 = time.time()
         ans = None
-        for attempt in range(1, 6):
+        for attempt in range(1, 8):
             try:
+                last_call = time.time()
                 ans = generate_llama(base, key, model, it["question"])
                 break
             except urllib.error.HTTPError as e:
                 body = e.read().decode(errors="replace")[:400]
                 log(f"HTTP {e.code} attempt {attempt}: {body}")
-                if e.code in {429, 503} and attempt < 5:
-                    time.sleep(8 * attempt)
+                if e.code in {429, 503} and attempt < 7:
+                    # Honor Retry-After when present; fail fast on multi-day/year caps.
+                    retry_after = e.headers.get("Retry-After") or e.headers.get("retry-after")
+                    wait = None
+                    if retry_after:
+                        try:
+                            wait = float(retry_after)
+                        except ValueError:
+                            wait = None
+                    if wait is not None and wait > 600:
+                        raise SystemExit(
+                            f"Provider rate limit Retry-After={wait:.0f}s "
+                            f"(>10min) — aborting rather than waiting. body={body}"
+                        )
+                    if wait is None:
+                        wait = max(35, 15 * attempt) if anonymous else 8 * attempt
+                    log(f"backoff_s={wait:.1f} from_retry_after={retry_after is not None}")
+                    time.sleep(wait)
                     continue
                 raise
             except (urllib.error.URLError, TimeoutError) as e:
                 log(f"net {type(e).__name__} attempt {attempt}")
-                if attempt < 5:
+                if attempt < 7:
                     time.sleep(8 * attempt)
                     continue
                 raise
