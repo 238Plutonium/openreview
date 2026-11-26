@@ -17,14 +17,23 @@ Same M=13 questions; text-only generation (no slide images). Local judge: Qwen2.
 
 Artifacts: `open_model_generations.jsonl`, `open_model_judgments.jsonl`, `open_baseline_summary.json`, `run_open_baselines.py`, `run_gemma_gguf.py`.
 
-## MedTutor-aligned Llama-3.3-70B (in progress / API)
-Same M=13 packet and open-bake-off rubric. Generator: `meta-llama/Llama-3.3-70B-Instruct` via Groq/Together/Fireworks/OpenRouter/HF (`run_llama33_baseline.py`). Judge: local Qwen2.5-1.5B GGUF.
+## MedTutor-aligned Llama-3.3-70B (blocked on API key)
+Same M=13 packet and open-bake-off rubric. Runner: `run_llama33_baseline.py` (appends to `open_model_generations.jsonl` / `open_model_judgments.jsonl`, refreshes `open_baseline_summary.json` + `generator_baseline_scores.csv`). Judge: local Qwen2.5-1.5B GGUF (`Qwen/Qwen2.5-1.5B-Instruct-GGUF` / `qwen2.5-1.5b-instruct-q4_k_m.gguf`).
+
+**Blocker:** no generation API key in this environment. Add **one** secret — prefer **`GROQ_API_KEY`** (model `llama-3.3-70b-versatile`). Then:
+
+```bash
+python evaluation/frontier_baselines/run_llama33_baseline.py
+```
+
+Alternatives (first match wins): `TOGETHER_API_KEY`, `FIREWORKS_API_KEY`, `OPENROUTER_API_KEY`, `HF_TOKEN`, or `LLAMA33_API_KEY` + `LLAMA33_BASE_URL`.
 
 | Generator | Overall | n | Status |
 |---|---:|---:|---|
-| meta-llama/Llama-3.3-70B-Instruct | — | 0 | needs one of `GROQ_API_KEY` / `TOGETHER_API_KEY` / `FIREWORKS_API_KEY` / `OPENROUTER_API_KEY` / `HF_TOKEN` |
+| meta-llama/Llama-3.3-70B-Instruct | — | 0 | **needs `GROQ_API_KEY`** (or another key above) |
+| ECHO-AI_archived (same judge) | 3.49 | 13 | already in open bake-off |
 
-This is a **same-packet automatic bake-off**, not a copy of MedTutor Table 2 human scores (3.44 / 3.65).
+This is a **same-packet automatic bake-off**, not a copy of MedTutor Table 2 human scores (3.44 / 3.65). Do not invent human scores or paste those Table 2 numbers into ECHO results.
 
 ## API bake-off (proprietary = Gemini only for now)
 `run_api_baselines.py` reads `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, and `GOOGLE_API_KEY`.
