@@ -17,14 +17,23 @@ Same M=13 questions; text-only generation (no slide images). Local judge: Qwen2.
 
 Artifacts: `open_model_generations.jsonl`, `open_model_judgments.jsonl`, `open_baseline_summary.json`, `run_open_baselines.py`, `run_gemma_gguf.py`.
 
-## API bake-off
+## MedTutor-aligned Llama-3.3-70B (in progress / API)
+Same M=13 packet and open-bake-off rubric. Generator: `meta-llama/Llama-3.3-70B-Instruct` via Groq/Together/Fireworks/OpenRouter/HF (`run_llama33_baseline.py`). Judge: local Qwen2.5-1.5B GGUF.
+
+| Generator | Overall | n | Status |
+|---|---:|---:|---|
+| meta-llama/Llama-3.3-70B-Instruct | — | 0 | needs one of `GROQ_API_KEY` / `TOGETHER_API_KEY` / `FIREWORKS_API_KEY` / `OPENROUTER_API_KEY` / `HF_TOKEN` |
+
+This is a **same-packet automatic bake-off**, not a copy of MedTutor Table 2 human scores (3.44 / 3.65).
+
+## API bake-off (proprietary = Gemini only for now)
 `run_api_baselines.py` reads `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, and `GOOGLE_API_KEY`.
 
 | Generator | Overall | n | Status |
 |---|---:|---:|---|
 | Gemini-3.1-Flash-Lite | 4.86 | 13 | generated and judged by Qwen2.5-1.5B-Instruct |
-| GPT | — | 0 | key present; API returned insufficient quota |
-| Claude | — | 0 | key present; API returned insufficient credit |
+| GPT | — | 0 | skipped for now (quota) |
+| Claude | — | 0 | skipped for now (credit) |
 
 Artifacts: `api_model_generations.jsonl`, `api_model_judgments.jsonl`. The Gemini default is `gemini-3.1-flash-lite` because `gemini-2.0-flash` and `gemini-2.5-flash` are closed to this key and `gemini-3.8-flash` returned repeated 503s. This judge is the open-bake-off judge, not the paper's Qwen3-4B Table 4 judge. HF gated official Gemma weights still need `HF_TOKEN` (the GGUF path already covers Gemma without it).
 
