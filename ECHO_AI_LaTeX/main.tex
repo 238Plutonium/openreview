@@ -128,9 +128,9 @@ We evaluate evidence selection, answer quality, and the experience of using ECHO
 
 \textbf{Meeting log.} We analyzed 419 answers (289 distinct answer strings) to project-team questions across 55 Zoom streams. Of 122 slide questions, 86 had an attached frame (70.5\%). Frame fingerprinting compares image signatures to remove repeated screen content. It kept 290 images and removed 19,078 near-duplicates. Across all answers, 227 had no frames, 129 had one, 20 had two, and 43 had three.
 
-Of the 52 answers with a retrieval record, 33 used PubMed, 14 used PubMed and prior sessions, and five used prior sessions alone. The log covers the meeting workflow. Table~\ref{tab:deployment} summarizes the measurements.
+Of the 52 answers with a retrieval record, 33 used PubMed, 14 used PubMed and prior sessions, and five used prior sessions alone. The log covers the meeting workflow. Table~\ref{tab:deployment} summarizes the measurements. The log shows the assistant using visual context and both retrieval sources within the meeting workflow.
 
-\textbf{Response time.} The log includes end-to-end timing for 213 of the 419 answers. The average was 6.0 seconds and the median was 4.1 seconds. In a separate sample of 58 interactions, the time from voice activation to question submission averaged 7.8 seconds.
+\textbf{Response time.} The log includes end-to-end timing for 213 of the 419 answers. The average was 6.0 seconds and the median was 4.1 seconds. In a separate sample of 58 interactions, the time from voice activation to question submission averaged 7.8 seconds. These timings suggest that answers can arrive while the case discussion is still in progress.
 
 \begin{table}[t]\centering\small\setlength{\tabcolsep}{3pt}
 
@@ -186,15 +186,15 @@ Always skip retrieval & 20/32 & ---\\
 \caption{Routing accuracy and speed. Correct is the number of predictions matching the category-derived labels. Time is the mean per routing decision in milliseconds. Lower times mean faster routing. Dashes indicate unreported timing.}\label{tab:classifiers}
 \end{table}
 
-For focus, the rules matched 73 of 78 labels and Qwen3-4B matched 75. Across all 32 retrieval questions, the rules matched 22 labels, Qwen3-4B matched 15, and the always-none baseline matched 20. Among the 12 questions that required retrieval, the rules matched six, Qwen3-4B matched 12, and the always-literature baseline matched eight. The rules took less than 1 ms on average for either decision.
+For focus, the rules matched 73 of 78 labels and Qwen3-4B matched 75. Across all 32 retrieval questions, the rules matched 22 labels, Qwen3-4B matched 15, and the always-none baseline matched 20. Among the 12 questions that required retrieval, the rules matched six, Qwen3-4B matched 12, and the always-literature baseline matched eight. The rules took less than 1 ms on average for either decision. The focus results support efficient context selection. Across the tested question mix, rule-based retrieval routing also matched more reference labels than the LLM classifier.
 
-\textbf{When the screen frame is missing.} We sent the same 35 synthetic visual questions through the pipeline with no frames attached. Each question was run with the availability check (guard) on and off. Enabling the guard increased abstentions from 3/35 to 33/35. Thirty-one questions triggered abstention only with the guard and one only without it. Both conditions abstained on the same two questions and answered the same remaining question. The net gain was 85.7 percentage points, $(31-1)/35$ (two-sided exact McNemar $p=1.54\times10^{-8}$).
+\textbf{When the screen frame is missing.} We sent the same 35 synthetic visual questions through the pipeline with no frames attached. Each question was run with the availability check (guard) on and off. Enabling the guard increased abstentions from 3/35 to 33/35. Thirty-one questions triggered abstention only with the guard and one only without it. The net gain was 85.7 percentage points, $(31-1)/35$ (two-sided exact McNemar $p=1.54\times10^{-8}$).
 
-The guard can answer immediately with a screen-unavailable reply. In this replay, mean latency fell from 1{,}524 to 374 ms and the median from 865.3 to 3.2 ms. Appendix~B links to the paired outputs and item-level labels.
+The guard can answer immediately with a screen-unavailable reply. In this replay, mean latency fell from 1{,}524 to 374 ms and the median from 865.3 to 3.2 ms. Appendix~B links to the paired outputs and item-level labels. Together, these results show that checking visual availability helps the assistant communicate when it lacks screen evidence and respond promptly.
 
-\textbf{Recalling a spoken detail.} In 30 synthetic cases, the speaker said one value and the slide displayed another. We asked for the spoken value three times per case in each condition. When the slide was withheld, replies contained the spoken value in 90 of 90 runs, compared with 56 of 90 when the slide was attached. The spoken-value metric counts replies that mention the transcript value. The slide-only metric counts replies that mention the slide value and omit the spoken value. Slide-only replies went from 37.8\% to 0\%. The case-mean changes for the spoken and slide-only values were $+0.38$ and $-0.38$, respectively. Appendix~A shows a worked example.
+\textbf{Recalling a spoken detail.} In 30 synthetic cases, the speaker said one value and the slide displayed another. We asked for the spoken value three times per case in each condition. When the slide was withheld, replies contained the spoken value in 90 of 90 runs, compared with 56 of 90 when the slide was attached. The metrics count mentions of the spoken value and mentions of the slide value alone. Slide-only replies went from 37.8\% to 0\%. The case-mean changes for the spoken and slide-only values were $+0.38$ and $-0.38$, respectively. Appendix~A shows a worked example. The paired comparison supports selecting context according to the question to preserve spoken details when a slide conflicts with speech.
 
-\textbf{Checking retrieved literature.} The literature workflow applies the PubMed Humans[Mesh] filter before reranking the returned abstracts. In a targeted title-query check, the filter excluded the veterinary guideline PMID 29314873 from new retrieval. Appendix~C describes the attribution audit used to evaluate the support provided by abstracts after generation.
+\textbf{Checking retrieved literature.} The literature workflow applies the PubMed Humans[Mesh] filter before reranking the returned abstracts. In a targeted title-query check, the filter excluded the veterinary guideline PMID 29314873 from new retrieval. This check demonstrates the intended filtering behavior for that source. Appendix~C describes the attribution audit used to evaluate the support provided by abstracts after generation.
 
 \subsection{Downstream Evaluation: Answer Quality}\label{sec:downstream}
 
@@ -213,16 +213,16 @@ Usability & 4.12 & 4.85 \\
 \caption{Human and Qwen3-4B ratings of the same 13 answers. The model judge shares the deployed formatter's Qwen3 family.}\label{tab:medtutor}
 \end{table}
 
-Contextual grounding measures whether the answer uses the relevant slide or speech. Evidence usefulness measures whether the material helps answer the question. Table~\ref{tab:medtutor} reports each dimension, and Appendix~B links to the rubric.
+Contextual grounding measures whether the answer uses the relevant slide or speech. Evidence usefulness measures whether the material helps answer the question. Table~\ref{tab:medtutor} reports each dimension, and Appendix~B links to the rubric. The human score suggests usefulness for the sampled teaching tasks.
 
-\textbf{Citation provenance.} Twenty-seven answers cite 44 distinct PMIDs; every ID appears in the retrieval record. Twenty-five of the 27 answers include an educational-use sentence. Appendix~C records the audit examples.
+\textbf{Citation provenance.} Twenty-seven answers cite 44 distinct PMIDs; every ID appears in the retrieval record. Twenty-five of the 27 answers include an educational-use sentence. Appendix~C records the audit examples. This result makes the displayed identifiers traceable to the material returned by retrieval.
 
 \textbf{Claim support.} An ALCE-style audit (Gao et al., 2023; \nolinkurl{evaluation/citation_faithfulness/}) uses a same-family Qwen3-4B judge to score 114 claim--citation pairs from 86 statements in 28 answers against PubMed abstracts. Scores are 0 (unsupported), 0.5 (partial), or 1 (full support). At threshold $\tau$, let $C_\tau$ count pairs scoring at least $\tau$ and $S_\tau$ count statements with at least one such citation.
 \[
 \mathrm{Precision}(\tau)=\frac{C_\tau}{114},\qquad
 \mathrm{Recall}(\tau)=\frac{S_\tau}{86}.
 \]
-Full support covers 22 pairs and 20 statements. Counting 60 partial scores, the automated judge found support for most claim--citation pairs (82/114) and at least one supporting citation for 63/86 statements (Table~\ref{tab:cite}). PMID provenance measures retrieval membership. The automated attribution audit estimates claim support against abstracts.
+Full support covers 22 pairs and 20 statements. Counting 60 partial scores, the automated judge found support for most claim--citation pairs (82/114) and at least one supporting citation for 63/86 statements (Table~\ref{tab:cite}). PMID provenance measures retrieval membership. The automated attribution audit estimates claim support against abstracts. These scores suggest that retrieved abstracts provided supporting evidence for most audited statements at the partial-or-full threshold.
 
 \begin{table}[t]\centering\small\setlength{\tabcolsep}{4pt}
 \begin{tabularx}{\columnwidth}{@{}Xr@{}}\toprule
@@ -235,20 +235,18 @@ Citation recall (attr$\geq$0.5) & 0.73\\
 
 \subsection{Human--Model Agreement}\label{sec:agreement}
 
-Across the five rubric dimensions, the human and model averages both round to 4.26/5 (Table~\ref{tab:medtutor}). At the item level, the pooled human and model ratings were within one point on 12 of 13 answers, with a mean absolute difference of 0.43 points and a Spearman rank correlation of $\rho{\approx}0.34$. The mean absolute difference measures score proximity, while Spearman correlation measures agreement in the ranking of answers. The \href{https://github.com/238Plutonium/openreview/blob/main/evaluation/packet_scores.csv}{released packet scores} contain the item means.
+Across the five rubric dimensions, the human and model averages both round to 4.26/5 (Table~\ref{tab:medtutor}). At the item level, the pooled human and model ratings were within one point on 12 of 13 answers, with a mean absolute difference of 0.43 points and a Spearman rank correlation of $\rho{\approx}0.34$. These metrics measure score proximity and ranking agreement, respectively. The \href{https://github.com/238Plutonium/openreview/blob/main/evaluation/packet_scores.csv}{released packet scores} contain the item means. The score proximity suggests potential for automated scoring to assist routine answer review.
 
-\textbf{Generator evaluation.} We used the same 13 questions for a separate exploratory evaluation of text-only generators. Appendix~B reports the archived ECHO-AI reference scores, the standalone model results, and how the judge was configured for each run.
+\textbf{Generator evaluation.} We used the same 13 questions for a separate exploratory evaluation of text-only generators. Appendix~B reports the archived ECHO-AI reference scores, the standalone model results, and how the judge was configured for each run. These reference scores provide a reproducible basis for examining alternative answer models.
 
-\Needspace{10\baselineskip}
 \subsection{Facilitator Usability and Educational Usefulness}
 
-Four Project ECHO staff completed a survey after the September 10, 2026 demonstration. Three watched the session and one asked questions in chat. Across 15 usability items, they gave an average score of 4.13/5 (53 scored responses and seven marked unable to judge). Appeal, ease of use, and question clarity each averaged 4.50/5. Staff asked for quieter replies and the option to let only the facilitator invoke the assistant. The release includes both controls.
+Four Project ECHO staff completed a survey after the September 10, 2026 demonstration. Three watched the session and one asked questions in chat. Across 15 usability items, they gave an average score of 4.13/5 (53 scored responses and seven marked unable to judge). Appeal, ease of use, and question clarity each averaged 4.50/5. Staff asked for quieter replies and the option to let only the facilitator invoke the assistant. The release includes both controls. The feedback suggests a promising fit with case-based discussion.
 
-Staff rated educational usefulness 4.00/5 ($n{=}4$) based on their experience during the demonstration. The released \href{https://github.com/238Plutonium/openreview/tree/main/evaluation/education_outcomes}{pre/post questionnaire} supports a follow-up study comparing learner responses before and after a session.
+Staff rated educational usefulness 4.00/5 ($n{=}4$) based on their experience during the demonstration. This rating reflects a positive staff impression of the assistant as a teaching aid. The released \href{https://github.com/238Plutonium/openreview/tree/main/evaluation/education_outcomes}{pre/post questionnaire} supports a follow-up study comparing learner responses before and after a session.
 
 We also used ECHO-AI during the October~27, 2026 Penn State ASERT Project ECHO session. The ratings above come from the September demonstration.
 
-\newpage
 \section{Conclusion}
 
 ECHO-AI lets Project ECHO participants ask about a slide, a spoken detail, or a published study during the same Zoom discussion. In the replay tests, selecting the transcript improved recall of spoken details. The availability check helped the assistant tell participants when it could not see the screen.
