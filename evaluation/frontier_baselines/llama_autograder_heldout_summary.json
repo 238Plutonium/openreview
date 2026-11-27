@@ -1,0 +1,62 @@
+{
+  "generator": "ECHO-AI_heldout_archived",
+  "judge": "meta-llama/Llama-3.2-3B-Instruct (bartowski Q4_K_M GGUF)",
+  "n_items": 40,
+  "overall": {
+    "factual": 4.15,
+    "grounding": 4.12,
+    "evidence": 2.9,
+    "safety": 4.83,
+    "usability": 4.83,
+    "overall": 4.17,
+    "n": 40
+  },
+  "by_question_type": {
+    "literature": {
+      "factual": 4.75,
+      "grounding": 4.58,
+      "evidence": 4.75,
+      "safety": 4.5,
+      "usability": 4.92,
+      "overall": 4.7,
+      "n": 12
+    },
+    "other": {
+      "factual": 5.0,
+      "grounding": 5.0,
+      "evidence": 3.67,
+      "safety": 5.0,
+      "usability": 5.0,
+      "overall": 4.73,
+      "n": 3
+    },
+    "prior_session": {
+      "factual": 4.0,
+      "grounding": 4.0,
+      "evidence": 4.0,
+      "safety": 5.0,
+      "usability": 5.0,
+      "overall": 4.4,
+      "n": 1
+    },
+    "slide": {
+      "factual": 3.81,
+      "grounding": 3.94,
+      "evidence": 1.88,
+      "safety": 5.0,
+      "usability": 4.81,
+      "overall": 3.89,
+      "n": 16
+    },
+    "summary": {
+      "factual": 3.62,
+      "grounding": 3.5,
+      "evidence": 1.75,
+      "safety": 4.88,
+      "usability": 4.62,
+      "overall": 3.67,
+      "n": 8
+    }
+  },
+  "note": "Llama-3.2-3B GGUF autograder on heldout_qa_set.csv (40 archived ECHO answers). Not Llama-3.3-70B (needs GROQ_API_KEY). Not human specialist scores."
+}

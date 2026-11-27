@@ -114,3 +114,19 @@ Artifacts: `grounding_integrity_llama_judge_*`.
 
 ## MOUD specialist panel (awaiting humans)
 Template: `specialist_panel_scores.csv`. Rubric: `../RUBRIC.md`. Packet: `../packet_qa.csv`.
+
+## Llama autograder on heldout (40 questions) — completed
+Judge: Llama-3.2-3B-Instruct GGUF (local). Answers: archived ECHO from `evaluation/heldout_qa_set.csv` (n=40).
+
+| Slice | Overall | n |
+|---|---:|---:|
+| All heldout | **4.17** | 40 |
+| literature | 4.70 | 12 |
+| other | 4.73 | 3 |
+| prior_session | 4.40 | 1 |
+| slide | 3.89 | 16 |
+| summary | 3.67 | 8 |
+
+Artifacts: `run_llama_autograder_heldout.py`, `llama_autograder_heldout_judgments.jsonl`, `llama_autograder_heldout_summary.json`, `llama_autograder_heldout_scores.csv`.
+Not Llama-3.3-70B (still needs `GROQ_API_KEY` as a Cloud Agent environment secret).
+
