@@ -2,9 +2,9 @@
 """Heldout-40 multimodel bake-off under a Llama CUDA judge.
 
 Compares archived ECHO-AI answers vs local generators (Gemma / Qwen / SmolLM)
-on evaluation/heldout_qa_set.csv (n=40). Judge: Llama-3.2-3B-Instruct
-(HF/transformers on GPU) — not used as a generator. Criterion: answer quality
-axes, not latency.
+and optional Gemini (GOOGLE_API_KEY) on evaluation/heldout_qa_set.csv (n=40).
+Judge: Llama-3.2-3B-Instruct (HF/transformers on GPU) — not used as a generator.
+Criterion: answer quality axes, not latency.
 
 Uses all visible CUDA devices (set CUDA_VISIBLE_DEVICES before launch).
 Resume-friendly JSONL artifacts under evaluation/frontier_baselines/.
@@ -17,6 +17,8 @@ import json
 import os
 import re
 import time
+import urllib.error
+import urllib.request
 from collections import defaultdict
 from pathlib import Path
 
@@ -38,6 +40,7 @@ GEN_MODELS = [
     ("HuggingFaceTB/SmolLM2-1.7B-Instruct", "HuggingFaceTB/SmolLM2-1.7B-Instruct"),
 ]
 ECHO_ID = "ECHO-AI_heldout_archived"
+GEMINI_GEN_ID = "gemini-3.1-flash-lite"
 JUDGE_REPO = "unsloth/Llama-3.2-3B-Instruct"
 JUDGE_ID = "meta-llama/Llama-3.2-3B-Instruct (unsloth HF, CUDA)"
 DIMS = ["factual", "grounding", "evidence", "safety", "usability"]
@@ -198,6 +201,125 @@ def judge_answer(model, tok, question: str, answer: str):
         return None, text
 
 
+def http_json(url: str, body: dict, timeout: int = 180) -> dict:
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(body).encode(),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return json.loads(resp.read().decode())
+
+
+def generate_gemini(question: str, model: str | None = None) -> tuple[str, str]:
+    key = os.environ["GOOGLE_API_KEY"]
+    # Prefer requested model, then rotate through lite/flash fallbacks on 503.
+    primary = model or os.environ.get("GEMINI_MODEL", GEMINI_GEN_ID)
+    fallbacks = [
+        primary,
+        "gemini-3.1-flash-lite",
+        "gemini-3.1-flash-lite-preview",
+        "gemini-flash-lite-latest",
+        "gemini-3.5-flash-lite",
+        "gemini-3-flash-preview",
+    ]
+    # Preserve order, drop dupes.
+    seen: set[str] = set()
+    models: list[str] = []
+    for m in fallbacks:
+        if m and m not in seen:
+            seen.add(m)
+            models.append(m)
+
+    last_err: Exception | None = None
+    attempt = 0
+    for model_name in models:
+        for _ in range(3):
+            attempt += 1
+            url = (
+                f"https://generativelanguage.googleapis.com/v1beta/models/"
+                f"{model_name}:generateContent?key={key}"
+            )
+            try:
+                log(f"gemini_call model={model_name} attempt={attempt}")
+                data = http_json(
+                    url,
+                    {
+                        "contents": [
+                            {
+                                "role": "user",
+                                "parts": [{"text": f"{SYS}\n\n{question}"}],
+                            }
+                        ],
+                        "generationConfig": {
+                            "temperature": 0,
+                            "maxOutputTokens": 2048,
+                        },
+                    },
+                    timeout=45,
+                )
+                cands = data.get("candidates") or []
+                if not cands:
+                    raise RuntimeError(f"empty candidates: {str(data)[:200]}")
+                parts = (cands[0].get("content") or {}).get("parts") or []
+                text = "".join(p.get("text", "") for p in parts).strip()
+                if not text:
+                    raise RuntimeError(f"empty text finish={cands[0].get('finishReason')}")
+                # Keep a stable generator id in artifacts even if a fallback answered.
+                return GEMINI_GEN_ID, text
+            except urllib.error.HTTPError as e:
+                body = e.read().decode(errors="replace")
+                last_err = e
+                if e.code in (429, 500, 503):
+                    wait = min(12, 1 + attempt)
+                    log(
+                        f"gemini_retry model={model_name} attempt={attempt} "
+                        f"code={e.code} wait={wait}s"
+                    )
+                    time.sleep(wait)
+                    continue
+                log(f"gemini_http model={model_name} code={e.code} body={body[:160]!r}")
+                break
+            except Exception as e:
+                last_err = e
+                wait = min(12, 1 + attempt)
+                log(
+                    f"gemini_retry model={model_name} attempt={attempt} "
+                    f"err={type(e).__name__}:{e} wait={wait}s"
+                )
+                time.sleep(wait)
+    raise RuntimeError(f"gemini failed after retries: {last_err!r}")
+
+
+def ensure_gemini(items: list[dict], existing: list[dict]) -> None:
+    if not os.environ.get("GOOGLE_API_KEY"):
+        log("skip gemini: GOOGLE_API_KEY unset")
+        return
+    have = {(g["generator"], str(g["qa_id"])) for g in existing if g.get("answer")}
+    missing = [it for it in items if (GEMINI_GEN_ID, it["qa_id"]) not in have]
+    log(f"generator={GEMINI_GEN_ID} missing={len(missing)}")
+    for i, it in enumerate(missing, 1):
+        log(f"generate {GEMINI_GEN_ID} {i}/{len(missing)} qa_id={it['qa_id']}")
+        t0 = time.time()
+        try:
+            model, ans = generate_gemini(it["question"])
+        except Exception as e:
+            log(f"generate_fail qa_id={it['qa_id']} err={e!r}")
+            model, ans = GEMINI_GEN_ID, ""
+        append_jsonl(
+            GENS,
+            {
+                "qa_id": it["qa_id"],
+                "question_type": it["question_type"],
+                "generator": model,
+                "question": it["question"],
+                "answer": ans,
+                "latency_s": round(time.time() - t0, 2),
+            },
+        )
+
+
 def ensure_echo(items: list[dict], existing: list[dict]) -> None:
     have = {(g["generator"], str(g["qa_id"])) for g in existing}
     for it in items:
@@ -225,7 +347,12 @@ def means(score_rows: list[dict]) -> dict:
 
 
 def rewrite_summary() -> None:
-    juds = [j for j in load_jsonl(JUDS) if j.get("scores")]
+    # Never report the judge model as a generator baseline.
+    juds = [
+        j
+        for j in load_jsonl(JUDS)
+        if j.get("scores") and "Llama-3.2-3B-Instruct" not in j.get("generator", "")
+    ]
     by_gen: dict[str, list[dict]] = defaultdict(list)
     by_gen_type: dict[str, dict[str, list[dict]]] = defaultdict(lambda: defaultdict(list))
     for j in juds:
@@ -282,6 +409,7 @@ def rewrite_summary() -> None:
             "Heldout-40 multimodel bake-off under Llama-3.2-3B CUDA judge. "
             "ECHO answers are archived from heldout_qa_set.csv; other generators "
             "see question text only (no slide images). Llama is judge-only. "
+            "Gemini included when GOOGLE_API_KEY is set. "
             "Not human specialist scores; not Llama-3.3-70B."
         ),
     }
@@ -302,6 +430,8 @@ def main() -> None:
     existing = load_jsonl(GENS)
     log(f"heldout={len(items)} existing_gens={len(existing)}")
     ensure_echo(items, existing)
+    existing = load_jsonl(GENS)
+    ensure_gemini(items, existing)
     existing = load_jsonl(GENS)
 
     for repo, gen_id in GEN_MODELS:
