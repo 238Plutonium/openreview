@@ -13,6 +13,16 @@
       "n": 40
     },
     {
+      "generator": "ECHO-AI_text_only (Qwen3-4B answer-llm)",
+      "factual": 4.6,
+      "grounding": 3.9,
+      "evidence": 2.8,
+      "safety": 4.3,
+      "usability": 4.67,
+      "overall": 4.05,
+      "n": 40
+    },
+    {
       "generator": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
       "factual": 4.33,
       "grounding": 4.15,
@@ -59,5 +69,5 @@
     "meta-llama/Llama-3.2-3B-Instruct (unsloth HF)"
   ],
   "exclude_note": "Llama-3.2-3B is the judge only; not reported as a generator baseline.",
-  "note": "Heldout-40 multimodel bake-off under Llama-3.2-3B CUDA judge. ECHO answers are archived from heldout_qa_set.csv; other generators see question text only (no slide images). Llama is judge-only. Gemini included when GOOGLE_API_KEY is set. Not human specialist scores; not Llama-3.3-70B."
+  "note": "Heldout-40 multimodel bake-off under Llama-3.2-3B CUDA judge. ECHO-AI_heldout_archived = deployed answers (may have had slides/session). ECHO-AI_text_only = same Qwen3-4B answer-llm with question text only (no slides/transcript/retrieval) for a fair blind-judge comparison. Other generators and the Llama judge also see no slide images. Gemini included when GOOGLE_API_KEY is set. Not human specialist scores."
 }

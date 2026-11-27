@@ -132,9 +132,10 @@ Not Llama-3.3-70B (still needs `GROQ_API_KEY` as a Cloud Agent environment secre
 
 ## Heldout-40 multimodel (Llama CUDA judge)
 Same 40 heldout questions as `heldout_qa_set.csv`. Generators see question text only;
-ECHO answers are archived. Judge: Llama-3.2-3B-Instruct (HF/CUDA).
-**Llama is judge-only** — not listed as a generator (avoids same-model self-grade).
-Gemini (`gemini-3.1-flash-lite`) included via `GOOGLE_API_KEY`.
+no slide images for the blind Llama judge.
+**Llama is judge-only.** `ECHO-AI_heldout_archived` = deployed answers (may have had slides/session).
+`ECHO-AI_text_only` = same Qwen3-4B answer-llm with question text only (fair blind comparator).
+Gemini (`gemini-3.1-flash-lite`) via `GOOGLE_API_KEY` when available.
 
 ```bash
 CUDA_VISIBLE_DEVICES=0,1,2,5,6,7 python evaluation/frontier_baselines/run_heldout_multimodel_llama_judge.py
@@ -143,6 +144,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,5,6,7 python evaluation/frontier_baselines/run_heldou
 | Generator | Overall | n |
 |---|---:|---:|
 | gemini-3.1-flash-lite | **4.48** | 40 |
+| ECHO-AI_text_only (Qwen3-4B answer-llm) | **4.05** | 40 |
 | ECHO-AI_heldout_archived | **4.04** | 40 |
 | HuggingFaceTB/SmolLM2-1.7B-Instruct | **4.03** | 40 |
 | google/gemma-2-2b-it (unsloth HF) | **3.92** | 40 |

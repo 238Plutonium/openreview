@@ -40,14 +40,34 @@ GEN_MODELS = [
     ("HuggingFaceTB/SmolLM2-1.7B-Instruct", "HuggingFaceTB/SmolLM2-1.7B-Instruct"),
 ]
 ECHO_ID = "ECHO-AI_heldout_archived"
+ECHO_TEXT_ONLY_ID = "ECHO-AI_text_only (Qwen3-4B answer-llm)"
 GEMINI_GEN_ID = "gemini-3.1-flash-lite"
 JUDGE_REPO = "unsloth/Llama-3.2-3B-Instruct"
 JUDGE_ID = "meta-llama/Llama-3.2-3B-Instruct (unsloth HF, CUDA)"
 DIMS = ["factual", "grounding", "evidence", "safety", "usability"]
+ANSWER_LLM_URL = os.environ.get(
+    "ECHO_ANSWER_LLM_URL", "http://127.0.0.1:8001/v1/chat/completions"
+)
+ANSWER_LLM_MODEL = os.environ.get(
+    "ECHO_ANSWER_LLM_MODEL", "Qwen/Qwen3-4B-Instruct-2507"
+)
 
 SYS = (
     "You are an educational assistant for a Project ECHO MOUD tele-mentoring session. "
     "Answer briefly for clinicians. Do not give patient-specific clinical advice. "
+    "End with: Educational summary for ECHO discussion; not clinical advice or a medical record."
+)
+
+# Fair comparator: same answer-llm backbone as deployed ECHO, but question text only
+# (no screen-share frames, transcript, or retrieval packet).
+ECHO_TEXT_ONLY_SYS = (
+    "You are the ECHO AI educational assistant for a Project ECHO MOUD tele-mentoring session. "
+    "You are answering in TEXT-ONLY mode: no slide images, no screen share, no live transcript, "
+    "and no retrieval/evidence packet are available. "
+    "If the question asks what is on a slide, screen, or was said in this meeting, clearly say you "
+    "cannot see that context in text-only mode — do not invent slide or meeting content. "
+    "For general clinical/educational questions, answer briefly for clinicians from general knowledge, "
+    "hedge appropriately, and do not give patient-specific clinical advice. "
     "End with: Educational summary for ECHO discussion; not clinical advice or a medical record."
 )
 
@@ -75,6 +95,7 @@ def load_jsonl(path: Path) -> list[dict]:
 def append_jsonl(path: Path, rec: dict) -> None:
     with path.open("a") as f:
         f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+        f.flush()
 
 
 def load_items() -> list[dict]:
@@ -292,6 +313,49 @@ def generate_gemini(question: str, model: str | None = None) -> tuple[str, str]:
     raise RuntimeError(f"gemini failed after retries: {last_err!r}")
 
 
+def generate_echo_text_only(question: str) -> str:
+    data = http_json(
+        ANSWER_LLM_URL,
+        {
+            "model": ANSWER_LLM_MODEL,
+            "temperature": 0,
+            "max_tokens": 400,
+            "messages": [
+                {"role": "system", "content": ECHO_TEXT_ONLY_SYS},
+                {"role": "user", "content": question},
+            ],
+        },
+        timeout=120,
+    )
+    return (data["choices"][0]["message"]["content"] or "").strip()
+
+
+def ensure_echo_text_only(items: list[dict], existing: list[dict]) -> None:
+    have = {(g["generator"], str(g["qa_id"])) for g in existing if g.get("answer")}
+    missing = [it for it in items if (ECHO_TEXT_ONLY_ID, it["qa_id"]) not in have]
+    log(f"generator={ECHO_TEXT_ONLY_ID} missing={len(missing)} url={ANSWER_LLM_URL}")
+    for i, it in enumerate(missing, 1):
+        log(f"generate {ECHO_TEXT_ONLY_ID} {i}/{len(missing)} qa_id={it['qa_id']}")
+        t0 = time.time()
+        try:
+            ans = generate_echo_text_only(it["question"])
+        except Exception as e:
+            log(f"generate_fail qa_id={it['qa_id']} err={e!r}")
+            ans = ""
+        append_jsonl(
+            GENS,
+            {
+                "qa_id": it["qa_id"],
+                "question_type": it["question_type"],
+                "generator": ECHO_TEXT_ONLY_ID,
+                "question": it["question"],
+                "answer": ans,
+                "latency_s": round(time.time() - t0, 2),
+                "mode": "text_only_no_slides",
+            },
+        )
+
+
 def ensure_gemini(items: list[dict], existing: list[dict]) -> None:
     if not os.environ.get("GOOGLE_API_KEY"):
         log("skip gemini: GOOGLE_API_KEY unset")
@@ -407,10 +471,11 @@ def rewrite_summary() -> None:
         "exclude_note": "Llama-3.2-3B is the judge only; not reported as a generator baseline.",
         "note": (
             "Heldout-40 multimodel bake-off under Llama-3.2-3B CUDA judge. "
-            "ECHO answers are archived from heldout_qa_set.csv; other generators "
-            "see question text only (no slide images). Llama is judge-only. "
-            "Gemini included when GOOGLE_API_KEY is set. "
-            "Not human specialist scores; not Llama-3.3-70B."
+            "ECHO-AI_heldout_archived = deployed answers (may have had slides/session). "
+            "ECHO-AI_text_only = same Qwen3-4B answer-llm with question text only "
+            "(no slides/transcript/retrieval) for a fair blind-judge comparison. "
+            "Other generators and the Llama judge also see no slide images. "
+            "Gemini included when GOOGLE_API_KEY is set. Not human specialist scores."
         ),
     }
     SUMMARY.write_text(json.dumps(payload, indent=2) + "\n")
@@ -430,6 +495,8 @@ def main() -> None:
     existing = load_jsonl(GENS)
     log(f"heldout={len(items)} existing_gens={len(existing)}")
     ensure_echo(items, existing)
+    existing = load_jsonl(GENS)
+    ensure_echo_text_only(items, existing)
     existing = load_jsonl(GENS)
     ensure_gemini(items, existing)
     existing = load_jsonl(GENS)
