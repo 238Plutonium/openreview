@@ -1,73 +1,81 @@
 {
   "judge": "meta-llama/Llama-3.2-3B-Instruct (unsloth HF, CUDA)",
-  "n_items_heldout": 40,
+  "n_items_heldout_text_only": 12,
+  "included_question_types": [
+    "literature"
+  ],
+  "excluded_question_types": [
+    "slide",
+    "summary",
+    "prior_session",
+    "other"
+  ],
+  "exclude_types_note": "Stripped items that need slides, live/prior meeting context, or screen content. Fair blind Llama-judge packet = literature only (n=12).",
   "generators": [
     {
       "generator": "ECHO-AI_heldout_archived",
-      "factual": 4.15,
-      "grounding": 3.9,
-      "evidence": 2.83,
-      "safety": 4.42,
-      "usability": 4.9,
-      "overall": 4.04,
-      "n": 40
+      "factual": 4.58,
+      "grounding": 4.5,
+      "evidence": 4.83,
+      "safety": 3.92,
+      "usability": 5.0,
+      "overall": 4.57,
+      "n": 12
     },
     {
       "generator": "ECHO-AI_text_only (Qwen3-4B answer-llm)",
-      "factual": 4.6,
-      "grounding": 3.9,
-      "evidence": 2.8,
-      "safety": 4.3,
-      "usability": 4.67,
-      "overall": 4.05,
-      "n": 40
+      "factual": 4.42,
+      "grounding": 3.67,
+      "evidence": 3.5,
+      "safety": 4.0,
+      "usability": 4.42,
+      "overall": 4.0,
+      "n": 12
     },
     {
       "generator": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
       "factual": 4.33,
-      "grounding": 4.15,
-      "evidence": 2.33,
-      "safety": 4.58,
-      "usability": 4.78,
-      "overall": 4.03,
-      "n": 40
+      "grounding": 4.0,
+      "evidence": 3.08,
+      "safety": 4.25,
+      "usability": 4.58,
+      "overall": 4.05,
+      "n": 12
     },
     {
       "generator": "Qwen/Qwen2.5-1.5B-Instruct",
-      "factual": 4.05,
-      "grounding": 3.77,
-      "evidence": 1.98,
-      "safety": 4.62,
-      "usability": 4.83,
-      "overall": 3.85,
-      "n": 40
+      "factual": 4.08,
+      "grounding": 3.5,
+      "evidence": 2.25,
+      "safety": 4.33,
+      "usability": 4.58,
+      "overall": 3.75,
+      "n": 12
     },
     {
       "generator": "gemini-3.1-flash-lite",
-      "factual": 4.8,
-      "grounding": 4.75,
-      "evidence": 3.55,
-      "safety": 4.33,
-      "usability": 4.95,
-      "overall": 4.48,
-      "n": 40
+      "factual": 4.58,
+      "grounding": 4.5,
+      "evidence": 3.67,
+      "safety": 4.0,
+      "usability": 5.0,
+      "overall": 4.35,
+      "n": 12
     },
     {
       "generator": "google/gemma-2-2b-it (unsloth HF)",
-      "factual": 4.1,
-      "grounding": 3.9,
-      "evidence": 2.55,
-      "safety": 4.35,
-      "usability": 4.72,
-      "overall": 3.92,
-      "n": 40
+      "factual": 4.17,
+      "grounding": 4.17,
+      "evidence": 2.83,
+      "safety": 4.17,
+      "usability": 4.42,
+      "overall": 3.95,
+      "n": 12
     }
   ],
-  "cuda_visible_devices": "0,1,2,5,6,7",
-  "n_cuda_devices": 6,
+  "exclude_note": "Llama-3.2-3B is the judge only; not reported as a generator baseline.",
   "excluded_generators": [
     "meta-llama/Llama-3.2-3B-Instruct (unsloth HF)"
   ],
-  "exclude_note": "Llama-3.2-3B is the judge only; not reported as a generator baseline.",
-  "note": "Heldout-40 multimodel bake-off under Llama-3.2-3B CUDA judge. ECHO-AI_heldout_archived = deployed answers (may have had slides/session). ECHO-AI_text_only = same Qwen3-4B answer-llm with question text only (no slides/transcript/retrieval) for a fair blind-judge comparison. Other generators and the Llama judge also see no slide images. Gemini included when GOOGLE_API_KEY is set. Not human specialist scores."
+  "note": "Fair text-only heldout autograder under Llama-3.2-3B CUDA judge. Literature questions only. ECHO-AI_text_only = Qwen3-4B answer-llm with question text; ECHO-AI_heldout_archived = deployed answers. Not human specialist scores."
 }

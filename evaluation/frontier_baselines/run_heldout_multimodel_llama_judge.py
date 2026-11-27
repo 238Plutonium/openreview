@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Heldout-40 multimodel bake-off under a Llama CUDA judge.
+"""Heldout text-only multimodel bake-off under a Llama CUDA judge.
 
-Compares archived ECHO-AI answers vs local generators (Gemma / Qwen / SmolLM)
-and optional Gemini (GOOGLE_API_KEY) on evaluation/heldout_qa_set.csv (n=40).
-Judge: Llama-3.2-3B-Instruct (HF/transformers on GPU) — not used as a generator.
-Criterion: answer quality axes, not latency.
+Fair blind packet: literature questions only (slide/summary/prior_session/other
+need frames or meeting context and are stripped). Compares archived ECHO-AI,
+ECHO text-only (answer-llm), Gemma/Qwen/SmolLM, and optional Gemini
+(GOOGLE_API_KEY). Judge: Llama-3.2-3B-Instruct (HF/CUDA) — not a generator.
 
 Uses all visible CUDA devices (set CUDA_VISIBLE_DEVICES before launch).
 Resume-friendly JSONL artifacts under evaluation/frontier_baselines/.
@@ -45,6 +45,8 @@ GEMINI_GEN_ID = "gemini-3.1-flash-lite"
 JUDGE_REPO = "unsloth/Llama-3.2-3B-Instruct"
 JUDGE_ID = "meta-llama/Llama-3.2-3B-Instruct (unsloth HF, CUDA)"
 DIMS = ["factual", "grounding", "evidence", "safety", "usability"]
+# Questions that need slides / live or prior meeting context are excluded.
+TEXT_ONLY_TYPES = frozenset({"literature"})
 ANSWER_LLM_URL = os.environ.get(
     "ECHO_ANSWER_LLM_URL", "http://127.0.0.1:8001/v1/chat/completions"
 )
@@ -103,12 +105,15 @@ def load_items() -> list[dict]:
     for r in csv.DictReader(HELDOUT.open()):
         q = (r.get("question") or "").strip()
         a = (r.get("answer") or "").strip()
+        qtype = (r.get("question_type") or "").strip()
         if not q or not a:
+            continue
+        if qtype not in TEXT_ONLY_TYPES:
             continue
         rows.append(
             {
                 "qa_id": str(r["qa_id"]),
-                "question_type": r.get("question_type", ""),
+                "question_type": qtype,
                 "question": q,
                 "echo_answer": a,
             }
@@ -411,11 +416,13 @@ def means(score_rows: list[dict]) -> dict:
 
 
 def rewrite_summary() -> None:
-    # Never report the judge model as a generator baseline.
+    # Never report the judge model as a generator baseline; literature packet only.
     juds = [
         j
         for j in load_jsonl(JUDS)
-        if j.get("scores") and "Llama-3.2-3B-Instruct" not in j.get("generator", "")
+        if j.get("scores")
+        and "Llama-3.2-3B-Instruct" not in j.get("generator", "")
+        and (j.get("question_type") or "") in TEXT_ONLY_TYPES
     ]
     by_gen: dict[str, list[dict]] = defaultdict(list)
     by_gen_type: dict[str, dict[str, list[dict]]] = defaultdict(lambda: defaultdict(list))
@@ -463,19 +470,19 @@ def rewrite_summary() -> None:
     CSV_PATH.write_text("\n".join(lines + [""] + item_lines) + "\n")
     payload = {
         "judge": JUDGE_ID,
-        "n_items_heldout": 40,
+        "n_items_heldout_text_only": len({j["qa_id"] for j in juds}),
+        "included_question_types": sorted(TEXT_ONLY_TYPES),
+        "excluded_question_types": ["slide", "summary", "prior_session", "other"],
         "generators": summary_rows,
         "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
         "n_cuda_devices": torch.cuda.device_count() if torch.cuda.is_available() else 0,
-        "excluded_generators": [],
+        "excluded_generators": ["meta-llama/Llama-3.2-3B-Instruct (unsloth HF)"],
         "exclude_note": "Llama-3.2-3B is the judge only; not reported as a generator baseline.",
         "note": (
-            "Heldout-40 multimodel bake-off under Llama-3.2-3B CUDA judge. "
-            "ECHO-AI_heldout_archived = deployed answers (may have had slides/session). "
-            "ECHO-AI_text_only = same Qwen3-4B answer-llm with question text only "
-            "(no slides/transcript/retrieval) for a fair blind-judge comparison. "
-            "Other generators and the Llama judge also see no slide images. "
-            "Gemini included when GOOGLE_API_KEY is set. Not human specialist scores."
+            "Fair text-only literature packet under Llama-3.2-3B CUDA judge. "
+            "Slide/summary/prior_session/other stripped (need non-text context). "
+            "ECHO-AI_text_only = Qwen3-4B answer-llm, question only. "
+            "Gemini when GOOGLE_API_KEY is set. Not human specialist scores."
         ),
     }
     SUMMARY.write_text(json.dumps(payload, indent=2) + "\n")
@@ -530,7 +537,11 @@ def main() -> None:
         unload(model)
         existing = load_jsonl(GENS)
 
-    gens = [g for g in load_jsonl(GENS) if g.get("answer")]
+    gens = [
+        g
+        for g in load_jsonl(GENS)
+        if g.get("answer") and (g.get("question_type") or "") in TEXT_ONLY_TYPES
+    ]
     done = {
         (j["generator"], str(j["qa_id"]))
         for j in load_jsonl(JUDS)

@@ -130,12 +130,13 @@ Judge: Llama-3.2-3B-Instruct GGUF (local). Answers: archived ECHO from `evaluati
 Artifacts: `run_llama_autograder_heldout.py`, `llama_autograder_heldout_judgments.jsonl`, `llama_autograder_heldout_summary.json`, `llama_autograder_heldout_scores.csv`.
 Not Llama-3.3-70B (still needs `GROQ_API_KEY` as a Cloud Agent environment secret).
 
-## Heldout-40 multimodel (Llama CUDA judge)
-Same 40 heldout questions as `heldout_qa_set.csv`. Generators see question text only;
-no slide images for the blind Llama judge.
-**Llama is judge-only.** `ECHO-AI_heldout_archived` = deployed answers (may have had slides/session).
-`ECHO-AI_text_only` = same Qwen3-4B answer-llm with question text only (fair blind comparator).
-Gemini (`gemini-3.1-flash-lite`) via `GOOGLE_API_KEY` when available.
+## Heldout text-only multimodel (Llama CUDA judge)
+Fair blind packet: **literature only** (n=12). Slide / summary / prior_session / other
+items were stripped — they need frames or meeting context the judge and text-only
+baselines do not see. Llama is judge-only.
+
+`ECHO-AI_heldout_archived` = deployed answers; `ECHO-AI_text_only` = Qwen3-4B answer-llm,
+question text only. Gemini when `GOOGLE_API_KEY` is set.
 
 ```bash
 CUDA_VISIBLE_DEVICES=0,1,2,5,6,7 python evaluation/frontier_baselines/run_heldout_multimodel_llama_judge.py
@@ -143,12 +144,12 @@ CUDA_VISIBLE_DEVICES=0,1,2,5,6,7 python evaluation/frontier_baselines/run_heldou
 
 | Generator | Overall | n |
 |---|---:|---:|
-| gemini-3.1-flash-lite | **4.48** | 40 |
-| ECHO-AI_text_only (Qwen3-4B answer-llm) | **4.05** | 40 |
-| ECHO-AI_heldout_archived | **4.04** | 40 |
-| HuggingFaceTB/SmolLM2-1.7B-Instruct | **4.03** | 40 |
-| google/gemma-2-2b-it (unsloth HF) | **3.92** | 40 |
-| Qwen/Qwen2.5-1.5B-Instruct | **3.85** | 40 |
+| ECHO-AI_heldout_archived | **4.57** | 12 |
+| gemini-3.1-flash-lite | **4.35** | 12 |
+| HuggingFaceTB/SmolLM2-1.7B-Instruct | **4.05** | 12 |
+| ECHO-AI_text_only (Qwen3-4B answer-llm) | **4.0** | 12 |
+| google/gemma-2-2b-it (unsloth HF) | **3.95** | 12 |
+| Qwen/Qwen2.5-1.5B-Instruct | **3.75** | 12 |
 
 Artifacts: `run_heldout_multimodel_llama_judge.py`, `heldout_multimodel_generations.jsonl`,
 `heldout_multimodel_llama_judgments.jsonl`, `heldout_multimodel_llama_summary.json`,
