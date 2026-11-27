@@ -130,3 +130,23 @@ Judge: Llama-3.2-3B-Instruct GGUF (local). Answers: archived ECHO from `evaluati
 Artifacts: `run_llama_autograder_heldout.py`, `llama_autograder_heldout_judgments.jsonl`, `llama_autograder_heldout_summary.json`, `llama_autograder_heldout_scores.csv`.
 Not Llama-3.3-70B (still needs `GROQ_API_KEY` as a Cloud Agent environment secret).
 
+## Heldout-40 multimodel (Llama CUDA judge)
+Same 40 heldout questions as `heldout_qa_set.csv`. Generators see question text only;
+ECHO answers are archived. Judge: Llama-3.2-3B-Instruct (HF/CUDA, all visible GPUs).
+
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2,5,6,7 python evaluation/frontier_baselines/run_heldout_multimodel_llama_judge.py
+```
+
+| Generator | Overall | n |
+|---|---:|---:|
+| meta-llama/Llama-3.2-3B-Instruct (unsloth HF) | **4.13** | 40 |
+| ECHO-AI_heldout_archived | **4.04** | 40 |
+| HuggingFaceTB/SmolLM2-1.7B-Instruct | **4.03** | 40 |
+| google/gemma-2-2b-it (unsloth HF) | **3.92** | 40 |
+| Qwen/Qwen2.5-1.5B-Instruct | **3.85** | 40 |
+
+Artifacts: `run_heldout_multimodel_llama_judge.py`, `heldout_multimodel_generations.jsonl`,
+`heldout_multimodel_llama_judgments.jsonl`, `heldout_multimodel_llama_summary.json`,
+`heldout_multimodel_llama_scores.csv`.
+

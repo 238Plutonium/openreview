@@ -1,0 +1,59 @@
+{
+  "judge": "meta-llama/Llama-3.2-3B-Instruct (unsloth HF, CUDA)",
+  "n_items_heldout": 40,
+  "generators": [
+    {
+      "generator": "ECHO-AI_heldout_archived",
+      "factual": 4.15,
+      "grounding": 3.9,
+      "evidence": 2.83,
+      "safety": 4.42,
+      "usability": 4.9,
+      "overall": 4.04,
+      "n": 40
+    },
+    {
+      "generator": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
+      "factual": 4.33,
+      "grounding": 4.15,
+      "evidence": 2.33,
+      "safety": 4.58,
+      "usability": 4.78,
+      "overall": 4.03,
+      "n": 40
+    },
+    {
+      "generator": "Qwen/Qwen2.5-1.5B-Instruct",
+      "factual": 4.05,
+      "grounding": 3.77,
+      "evidence": 1.98,
+      "safety": 4.62,
+      "usability": 4.83,
+      "overall": 3.85,
+      "n": 40
+    },
+    {
+      "generator": "google/gemma-2-2b-it (unsloth HF)",
+      "factual": 4.1,
+      "grounding": 3.9,
+      "evidence": 2.55,
+      "safety": 4.35,
+      "usability": 4.72,
+      "overall": 3.92,
+      "n": 40
+    },
+    {
+      "generator": "meta-llama/Llama-3.2-3B-Instruct (unsloth HF)",
+      "factual": 4.4,
+      "grounding": 4.4,
+      "evidence": 2.85,
+      "safety": 4.28,
+      "usability": 4.72,
+      "overall": 4.13,
+      "n": 40
+    }
+  ],
+  "cuda_visible_devices": "0,1,2,5,6,7",
+  "n_cuda_devices": 6,
+  "note": "Heldout-40 multimodel bake-off under Llama-3.2-3B CUDA judge. ECHO answers are archived from heldout_qa_set.csv; other generators see question text only (no slide images). Not human specialist scores; not Llama-3.3-70B."
+}
