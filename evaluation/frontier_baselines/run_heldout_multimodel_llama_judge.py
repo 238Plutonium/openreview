@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Heldout-40 multimodel bake-off under a Llama CUDA judge.
 
-Compares archived ECHO-AI answers vs local generators (Llama / Gemma / Qwen /
-SmolLM) on evaluation/heldout_qa_set.csv (n=40). Judge: Llama-3.2-3B-Instruct
-(HF/transformers on GPU). Criterion: answer quality axes, not latency.
+Compares archived ECHO-AI answers vs local generators (Gemma / Qwen / SmolLM)
+on evaluation/heldout_qa_set.csv (n=40). Judge: Llama-3.2-3B-Instruct
+(HF/transformers on GPU) — not used as a generator. Criterion: answer quality
+axes, not latency.
 
 Uses all visible CUDA devices (set CUDA_VISIBLE_DEVICES before launch).
 Resume-friendly JSONL artifacts under evaluation/frontier_baselines/.
@@ -30,9 +31,8 @@ JUDS = OUT / "heldout_multimodel_llama_judgments.jsonl"
 SUMMARY = OUT / "heldout_multimodel_llama_summary.json"
 CSV_PATH = OUT / "heldout_multimodel_llama_scores.csv"
 
-# Ungated HF mirrors of the same open bake-off families (no Meta/Google accept needed).
+# Ungated HF mirrors. Llama-3.2 is judge-only (not a generator) to avoid same-model self-grade.
 GEN_MODELS = [
-    ("unsloth/Llama-3.2-3B-Instruct", "meta-llama/Llama-3.2-3B-Instruct (unsloth HF)"),
     ("unsloth/gemma-2-2b-it", "google/gemma-2-2b-it (unsloth HF)"),
     ("Qwen/Qwen2.5-1.5B-Instruct", "Qwen/Qwen2.5-1.5B-Instruct"),
     ("HuggingFaceTB/SmolLM2-1.7B-Instruct", "HuggingFaceTB/SmolLM2-1.7B-Instruct"),
@@ -276,11 +276,13 @@ def rewrite_summary() -> None:
         "generators": summary_rows,
         "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
         "n_cuda_devices": torch.cuda.device_count() if torch.cuda.is_available() else 0,
+        "excluded_generators": [],
+        "exclude_note": "Llama-3.2-3B is the judge only; not reported as a generator baseline.",
         "note": (
             "Heldout-40 multimodel bake-off under Llama-3.2-3B CUDA judge. "
             "ECHO answers are archived from heldout_qa_set.csv; other generators "
-            "see question text only (no slide images). Not human specialist scores; "
-            "not Llama-3.3-70B."
+            "see question text only (no slide images). Llama is judge-only. "
+            "Not human specialist scores; not Llama-3.3-70B."
         ),
     }
     SUMMARY.write_text(json.dumps(payload, indent=2) + "\n")
