@@ -92,5 +92,25 @@ python evaluation/frontier_baselines/run_grounding_integrity_test.py
 
 Artifacts: `grounding_integrity_labels.jsonl`, `grounding_integrity_summary.json`, `grounding_integrity_scores.csv`.
 
+### Cross-family sensitivity (Llama-3.2 judge)
+Same protocol with **Meta Llama-3.2-3B** as judge (not Qwen formatter family):
+
+```bash
+python evaluation/frontier_baselines/run_grounding_integrity_llama_judge.py
+```
+
+| Generator | Integrity mean | grounded | hedged | fabricated | n |
+|---|---:|---:|---:|---:|---:|
+| ECHO-AI_archived | 1.00 | 6 | 0 | 0 | 6 |
+| gemini-3.1-flash-lite | 1.00 | 6 | 0 | 0 | 6 |
+| SmolLM2-1.7B-Instruct | 1.00 | 6 | 0 | 0 | 6 |
+| Gemma-2-2B-IT GGUF | 1.00 | 6 | 0 | 0 | 6 |
+| Llama-3.2-3B-Instruct GGUF | 0.95 | 5 | 1 | 0 | 6 |
+| Qwen2.5-1.5B-Instruct | 0.83 | 5 | 0 | 1 | 6 |
+
+This 3B Llama judge is **too lenient** (near-ceiling scores) and does **not** reproduce the Qwen3 ranking. Treat as sensitivity, not a replacement primary judge. Prefer humans for quality claims; keep disclosing that the paper’s automatic packet/citation judges share the Qwen3 formatter family.
+
+Artifacts: `grounding_integrity_llama_judge_*`.
+
 ## MOUD specialist panel (awaiting humans)
 Template: `specialist_panel_scores.csv`. Rubric: `../RUBRIC.md`. Packet: `../packet_qa.csv`.
