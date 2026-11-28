@@ -1,0 +1,13 @@
+PMID 43033608
+Longer wait times after ED-initiated buprenorphine associated with lower appointment attendance.
+BACKGROUND: Buprenorphine, a medication for opioid use disorder, improves patient outcomes, and emergency department induction of buprenorphine (EDIB) offers a low-barrier entry to treatment. While longer intervals between referral and first outpatient appointment in non-ED settings are known to decrease attendance, the effect of the interval between EDIB and first outpatient follow-up has not been established.
+OBJECTIVES: To examine how the wait time between EDIB and the first outpatient appointment for medication for opioid use disorder (MOUD) affects attendance at that initial visit. We tested the null hypothesis that wait time is not associated with attendance.
+METHODS: In this single-center retrospective cohort study, data were collected on adult ED patients who received EDIB (observed i…
+
+PMID 42999476
+Type of medication for opioid use disorder is associated with distinct risk profiles among an urban community sample of people who use opioids.
+BACKGROUND: Medications for opioid use disorder (MOUD), such as methadone or buprenorphine, reduce opioid use and mortality. However, many people who use opioids (PWUO) continue to use non-prescription opiates during treatment. Little is known about how engagement in different types of MOUD used may be associated with ongoing drug use patterns, overdose history, and risk profiles. In this study, we examined whether using methadone, buprenorphine, or no MOUD was associated with varying sociodemographic characteristics, substance use behaviors, and overdose experiences among PWUO in Baltimore, Maryland.
+METHODS: We conducted a cross-sectional analysis of baseline survey data from a community-based study including N = 897 PWUO living in Baltimore. D…
+
+PMID 42954993
+Umbilical Cord Methadone and Buprenorphine Levels and Neonatal Opioid Withdrawal Severity.

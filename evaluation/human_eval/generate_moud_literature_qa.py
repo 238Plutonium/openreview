@@ -39,6 +39,18 @@ SEED_QUESTIONS = [
     "How should clinicians counsel patients about overdose prevention and naloxone while on MOUD?",
 ]
 
+# Extra MOUD literature asks (tight PubMed match) to fill context-decidable human-eval slots.
+EXTRA_SEED_QUESTIONS = [
+    "What does evidence say about low-dose or micro-induction buprenorphine initiation for patients using fentanyl?",
+    "How should ECHO clinicians discuss shared decision-making when choosing among buprenorphine, methadone, and XR-naltrexone?",
+    "What does the literature report about buprenorphine or methadone continuation for patients who are incarcerated or reentering the community?",
+    "What evidence informs MOUD care for adolescents and young adults with opioid use disorder?",
+    "How does evidence guide co-prescribing or distributing naloxone to patients receiving MOUD?",
+    "What do studies show about telehealth or virtual delivery of buprenorphine treatment for opioid use disorder?",
+    "What is known about treating co-occurring stimulant (methamphetamine or cocaine) use among patients on MOUD?",
+    "How should clinicians interpret and respond to a return to opioid use while a patient is retained in MOUD?",
+]
+
 
 def chat(messages: list[dict], max_tokens: int = 700, temperature: float = 0.2) -> str:
     body = {
@@ -191,41 +203,76 @@ def format_answer_with_refs(answer: str, abstracts: dict[str, str]) -> str:
     return "\n".join(lines).strip() + "\n"
 
 
+def _generate_one(qi: int, question: str, prefix: str = "S") -> dict | None:
+    qsearch = search_query_for_question(question)
+    pmids = pubmed_search(qsearch, retmax=3)
+    if len(pmids) < 2:
+        pmids = pubmed_search(
+            "medication for opioid use disorder[Title/Abstract] AND buprenorphine[Title/Abstract]",
+            retmax=3,
+        )
+    abstracts = fetch_abstracts(pmids)
+    abstracts = {p: t for p, t in abstracts.items() if len(t) >= 40}
+    if not abstracts:
+        print(f"skip {prefix}{qi:02d}: no abstracts")
+        return None
+    raw = draft_answer(question, abstracts)
+    answer = format_answer_with_refs(raw, abstracts)
+    row = {
+        "synth_id": f"{prefix}{qi:02d}",
+        "question_type": "literature",
+        "standalone_question": question,
+        "original_chat_question": question,
+        "answer": answer,
+        "pmids": list(abstracts.keys()),
+        "setting_for_grader": (
+            "MOUD literature / education question for Project ECHO. "
+            "Judge using the question and the PubMed abstracts shown."
+        ),
+        "session_id": "synthetic",
+    }
+    print(f"ok {row['synth_id']} pmids={row['pmids']} ans_len={len(answer)}")
+    time.sleep(0.2)
+    return row
+
+
 def main() -> None:
-    rows = []
-    for qi, question in enumerate(SEED_QUESTIONS, 1):
-        qsearch = search_query_for_question(question)
-        pmids = pubmed_search(qsearch, retmax=3)
-        if len(pmids) < 2:
-            # fallback broader MOUD search
-            pmids = pubmed_search(
-                "medication for opioid use disorder[Title/Abstract] AND buprenorphine[Title/Abstract]",
-                retmax=3,
-            )
-        abstracts = fetch_abstracts(pmids)
-        # keep only those with real abstract text
-        abstracts = {p: t for p, t in abstracts.items() if len(t) >= 40}
-        if not abstracts:
-            print(f"skip {qi}: no abstracts")
+    import sys
+
+    # Default: append EXTRA only (keeps existing S01–S16). Pass --all to regenerate everything.
+    do_all = "--all" in sys.argv
+    existing: list[dict] = []
+    if OUT.exists() and not do_all:
+        for line in OUT.open():
+            line = line.strip()
+            if line:
+                existing.append(json.loads(line))
+    rows: list[dict] = list(existing) if not do_all else []
+    seen_q = {re.sub(r"\s+", " ", (r.get("standalone_question") or "").lower()) for r in rows}
+
+    if do_all:
+        for qi, question in enumerate(SEED_QUESTIONS, 1):
+            row = _generate_one(qi, question)
+            if row:
+                rows.append(row)
+                seen_q.add(re.sub(r"\s+", " ", question.lower()))
+        next_id = len(SEED_QUESTIONS) + 1
+    else:
+        next_id = 1
+        for r in rows:
+            m = re.match(r"S(\d+)$", str(r.get("synth_id") or ""))
+            if m:
+                next_id = max(next_id, int(m.group(1)) + 1)
+
+    for question in EXTRA_SEED_QUESTIONS:
+        key = re.sub(r"\s+", " ", question.lower())
+        if key in seen_q:
             continue
-        raw = draft_answer(question, abstracts)
-        answer = format_answer_with_refs(raw, abstracts)
-        row = {
-            "synth_id": f"S{qi:02d}",
-            "question_type": "literature",
-            "standalone_question": question,
-            "original_chat_question": question,
-            "answer": answer,
-            "pmids": list(abstracts.keys()),
-            "setting_for_grader": (
-                "MOUD literature / education question for Project ECHO. "
-                "Judge using the question and the PubMed abstracts shown."
-            ),
-            "session_id": "synthetic",
-        }
-        rows.append(row)
-        print(f"ok {row['synth_id']} pmids={row['pmids']} ans_len={len(answer)}")
-        time.sleep(0.2)
+        row = _generate_one(next_id, question)
+        if row:
+            rows.append(row)
+            seen_q.add(key)
+            next_id += 1
 
     with OUT.open("w") as f:
         for r in rows:

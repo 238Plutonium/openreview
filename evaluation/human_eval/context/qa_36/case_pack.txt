@@ -1,3 +1,0 @@
-Type: Meeting summary
-
-Give a summary of the current meeting.

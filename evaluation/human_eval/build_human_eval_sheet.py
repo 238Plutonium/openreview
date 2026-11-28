@@ -31,11 +31,40 @@ ABSTRACT_CACHE = ROOT / "citation_faithfulness" / "abstract_cache.json"
 
 TARGET_N = 25
 MIN_FILL_SCORE = 8
-# Curated ECHO packet: MOUD-focused items with text-gradable context only.
-# Dropped: qa 3 HIV-only lit; 15 disclosures; 16 prior-session; 30/33–36
-# slide/summary asks without usable meeting notes for this survey.
-PACKET_IDS = [4, 12, 13, 17, 18]
+# Curated ECHO packet: only items a MOUD expert can judge from attached text.
+# Dropped: qa 3 HIV lit; 12 wrong-topic “K” abstracts; 15 disclosures;
+# 16 prior-session; vague slide/summary without usable notes.
+PACKET_IDS = [4, 13, 17, 18]
 SYNTH_LIT = OUT / "synthetic_moud_literature.jsonl"
+WRONG_TOPIC_ABS = re.compile(
+    r"\b(vitamin\s*k|ortho-?k|telomere|tetrahymena|diquat|ferroptosis|"
+    r"myopia|orthopedic diseases?|lung cancer|bac\s+teeth|mental disorders?)\b",
+    re.I,
+)
+SESSION_TOPIC_SECTIONS = [
+    (
+        re.compile(r"\bstigma|non-stigmatiz|return to use|people who have\b", re.I),
+        re.compile(
+            r"###?\s*5\.\s*\*\*Stigma.*?(?=###?\s*\d+\.|##\s*\*\*Decisions|$)",
+            re.I | re.S,
+        ),
+    ),
+    (
+        re.compile(r"\bdsm|illicit suboxone|diverted|oud diagnos|physical dependence\b", re.I),
+        re.compile(
+            r"###?\s*[23]\.\s*\*\*(?:Opioid Use Disorder|Distinction Between OUD).*?"
+            r"(?=###?\s*[45]\.|##\s*\*\*Decisions|$)",
+            re.I | re.S,
+        ),
+    ),
+    (
+        re.compile(r"\bwhat (?:are|is) opioids?\b|definition of opioids\b", re.I),
+        re.compile(
+            r"###?\s*1\.\s*\*\*Definition of Opioids\*\*.*?(?=###?\s*2\.|##\s*\*\*Decisions|$)",
+            re.I | re.S,
+        ),
+    ),
+]
 
 OFF_PAT = re.compile(
     r"\b(dementia|dimentia|diabetes|leukemia|lukemea|dental|dented\s+teeth|bac\s+teeth|"
@@ -272,20 +301,47 @@ def session_dirs(sid: str):
     return next((p for p in MINUTES.iterdir() if p.is_dir() and p.name.startswith(sid)), None)
 
 
-def meeting_excerpt(sid: str, max_chars: int = 1200) -> str:
+def _full_meeting_text(sid: str) -> tuple[str, str]:
+    """Return (filename, full text) for a session, or ('', '')."""
     mm = session_dirs(sid)
     if not mm:
-        return ""
+        return "", ""
     for name in ("summary.md", "transcript.txt"):
         path = mm / name
         if path.is_file():
             text = path.read_text(errors="replace").strip()
-            if not text:
-                continue
-            if len(text) > max_chars:
-                text = text[:max_chars].rstrip() + "…"
-            return f"[{name}]\n{text}"
-    return ""
+            if text:
+                return name, text
+    return "", ""
+
+
+def meeting_excerpt(sid: str, question: str = "", answer: str = "", max_chars: int = 3500) -> str:
+    """Attach topic-relevant meeting notes (not just the truncated document head)."""
+    name, text = _full_meeting_text(sid)
+    if not text:
+        return ""
+    probe = f"{question}\n{answer[:500]}"
+    chunks: list[str] = []
+    for qpat, spat in SESSION_TOPIC_SECTIONS:
+        if qpat.search(probe):
+            m = spat.search(text)
+            if m:
+                chunks.append(m.group(0).strip())
+    if not chunks:
+        # Fall back: Key Topics block, else head of summary
+        m = re.search(
+            r"##\s*\*\*Key Topics Covered\*\*.*?(?=##\s*\*\*Decisions|##\s*\*\*Action Items|$)",
+            text,
+            re.I | re.S,
+        )
+        if m:
+            chunks.append(m.group(0).strip())
+        else:
+            chunks.append(text[:max_chars])
+    body = "\n\n".join(chunks)
+    if len(body) > max_chars:
+        body = body[:max_chars].rstrip() + "…"
+    return f"[{name}]\n{body}"
 
 
 def human_availability(session_text: str, n_abstracts: int) -> str:
@@ -297,6 +353,122 @@ def human_availability(session_text: str, n_abstracts: int) -> str:
     if len(bits) == 1:
         return "You have the question text for this item."
     return "Available context: " + ", ".join(bits) + "."
+
+
+def _answer_hedges_limits(answer: str) -> bool:
+    return bool(
+        re.search(
+            r"not (directly |fully )?(address|provide|contain|compare|supported)|"
+            r"limited (direct )?evidence|do not contain|does not provide|"
+            r"abstracts? (do|does) not|not (directly )?addressed|"
+            r"no specific .+ (are|is) supported|further research is needed|"
+            r"available evidence does not",
+            answer or "",
+            re.I,
+        )
+    )
+
+
+def _moud_abstracts_ok(evidence_text: str) -> bool:
+    if not evidence_text or len(evidence_text) < 80:
+        return False
+    if WRONG_TOPIC_ABS.search(evidence_text) and not MOUD_LIT_PAT.search(evidence_text):
+        return False
+    # At least one abstract block should look MOUD-related.
+    return bool(MOUD_LIT_PAT.search(evidence_text) or POS_PAT.search(evidence_text))
+
+
+def _notes_cover_answer(question: str, answer: str, session_text: str) -> bool:
+    if not session_text or len(session_text) < 120:
+        return False
+    notes = session_text.lower()
+    # Distinctive multi-word spans from the answer that also appear in notes.
+    words = re.sub(r"\s+", " ", (answer or "").lower()).split()
+    hits = 0
+    for i in range(0, min(len(words) - 3, 60), 2):
+        phrase = " ".join(words[i : i + 4])
+        if len(phrase) >= 18 and phrase in notes:
+            hits += 1
+    if hits >= 1:
+        return True
+    # Topic keyword overlap for definitional / short answers
+    q = question or ""
+    for qpat, _ in SESSION_TOPIC_SECTIONS:
+        if qpat.search(q) and qpat.search(session_text):
+            return True
+    # Shared MOUD content words
+    q_kw = set(re.findall(r"[a-z]{5,}", q.lower()))
+    a_kw = set(re.findall(r"[a-z]{5,}", (answer or "").lower()[:800]))
+    n_kw = set(re.findall(r"[a-z]{5,}", notes))
+    return len((q_kw | a_kw) & n_kw & set(re.findall(r"[a-z]{5,}", " ".join([
+        "opioid opioids buprenorphine methadone stigma disorder criteria dependence "
+        "tolerance withdrawal monitoring relapse substance people"
+    ])))) >= 3
+
+
+def is_context_decidable(it: dict) -> bool:
+    """True iff a MOUD expert can rate using only the attached text pack."""
+    qtype = it.get("question_type") or ""
+    q = it.get("standalone_question") or ""
+    a = it.get("answer") or ""
+    sess = it.get("context_note") or ""
+    evid = it.get("context_evidence") or ""
+
+    if qtype == "prior_session":
+        return False
+    if OFF_PAT.search(q) or JUNK_PAT.search(q):
+        return False
+    if VAGUE_PAT.match(clean_question(q)):
+        return False
+
+    if qtype == "literature":
+        if not _moud_abstracts_ok(evid):
+            return False
+        if WRONG_TOPIC_ABS.search(evid):
+            return False
+        q_terms = set(re.findall(r"[a-z]{4,}", q.lower()))
+        e_terms = set(re.findall(r"[a-z]{4,}", evid.lower()))
+        # Drop ultra-common glue words from overlap so topical matches matter.
+        stop = {
+            "with", "from", "that", "this", "what", "when", "have", "does", "about",
+            "into", "than", "them", "they", "their", "were", "been", "also", "using",
+            "used", "such", "more", "most", "only", "both", "over", "after", "among",
+            "should", "would", "could", "patient", "patients", "treatment", "study",
+        }
+        overlap = len((q_terms & e_terms) - stop)
+        # Prefer abstracts that clearly match the ask; allow honest "gap" answers.
+        if _answer_hedges_limits(a):
+            return overlap >= 1 or bool(MOUD_LIT_PAT.search(evid))
+        # Unhedged answers must be tightly grounded in the attached abstracts.
+        if overlap < 2:
+            return False
+        # Reject boilerplate overclaims that are not reflected in abstract text.
+        strong = re.findall(
+            r"equally effective|FDA-approved|first-line|best practice|guidelines? (?:consistently )?support",
+            a,
+            re.I,
+        )
+        if strong and not any(s.lower() in evid.lower() for s in strong):
+            return False
+        return True
+
+    # slide / summary / other: need meeting notes that cover the claims
+    if not _notes_cover_answer(q, a, sess):
+        return False
+    return True
+
+
+def rewrite_for_attached_notes(question: str, qtype: str) -> str:
+    """Make session-backed asks clearly tied to the attached notes (not missing videos)."""
+    q = question or ""
+    if qtype in {"slide", "other", "summary"}:
+        q = re.sub(
+            r"From (?:previous|prior)(?:\s+ECHO)? videos?/records:?[,]?\s*",
+            "Using the meeting notes below, ",
+            q,
+            flags=re.I,
+        )
+    return re.sub(r"\s{2,}", " ", q).strip()
 
 
 def build_text_context(qa_id: str, sid: str, qtype: str, question: str, answer: str, abstracts: dict[str, str]) -> dict:
@@ -311,15 +483,19 @@ def build_text_context(qa_id: str, sid: str, qtype: str, question: str, answer: 
     if qtype == "slide":
         case_lines += [
             "",
-            "(The slide topic is written into the question. Score the answer against that wording—not against screenshots.)",
+            "(The slide topic is written into the question. Score the answer against that wording and the meeting notes—not against screenshots.)",
         ]
     case_text = "\n".join(case_lines)
     (dest / "case_pack.txt").write_text(case_text + "\n")
 
-    session_text = meeting_excerpt(sid)
+    session_text = meeting_excerpt(sid, question=question, answer=answer)
     if session_text:
-        # strip technical filename prefix for the UI; keep file with label for audit
         (dest / "session_excerpt.txt").write_text(session_text + "\n")
+    else:
+        # remove stale excerpt if regenerating
+        old = dest / "session_excerpt.txt"
+        if old.exists():
+            old.unlink()
 
     pmids = extract_pmids(answer)
     evidence_blocks: list[str] = []
@@ -332,8 +508,12 @@ def build_text_context(qa_id: str, sid: str, qtype: str, question: str, answer: 
     evidence_text = "\n\n".join(evidence_blocks)
     if evidence_text:
         (dest / "retrieved_evidence.txt").write_text(evidence_text + "\n")
+    else:
+        old_e = dest / "retrieved_evidence.txt"
+        if old_e.exists():
+            old_e.unlink()
 
-    availability = human_availability(session_text, len(evidence_blocks))
+    availability = human_availability(session_text, len([b for b in evidence_blocks if "Abstract not available" not in b]))
 
     return {
         "case_text": case_text,
@@ -358,32 +538,40 @@ def load_packet_items(abstracts: dict[str, str]) -> list[dict]:
             continue
         h = held.get(key, {})
         sid = (h.get("session_id") or "unknown").strip()
-        ctx = build_text_context(key, sid, p["question_type"], p["standalone_question"], p["answer"], abstracts)
-        setting = (p.get("setting_for_grader") or "").strip()
-        if setting:
-            setting = f"{setting} {ctx['availability']}"
+        qtype = p["question_type"]
+        standalone = rewrite_for_attached_notes(p["standalone_question"], qtype)
+        ctx = build_text_context(key, sid, qtype, standalone, p["answer"], abstracts)
+        if qtype in {"slide", "other", "summary"}:
+            setting = (
+                "Judge using only the question and the meeting notes below "
+                "(no prior recordings or screenshots). "
+                + ctx["availability"]
+            )
         else:
-            setting = ctx["availability"]
-        items.append(
-            {
-                "qa_id": key,
-                "source": "packet",
-                "question_type": p["question_type"],
-                "standalone_question": p["standalone_question"],
-                "setting_for_grader": setting,
-                "original_chat_question": p.get("original_chat_question") or "",
-                "answer": p["answer"],
-                "session_id": sid,
-                "n_frames_log": h.get("n_frames", ""),
-                "quality_score": "curated",
-                "context_images": [],
-                "context_note": ctx["session_text"],
-                "context_case": ctx["case_text"],
-                "context_evidence": ctx["evidence_text"],
-                "context_availability": ctx["availability"],
-                "pmids": ",".join(ctx["pmids"]),
-            }
-        )
+            setting = (p.get("setting_for_grader") or "").strip()
+            setting = f"{setting} {ctx['availability']}".strip() if setting else ctx["availability"]
+        item = {
+            "qa_id": key,
+            "source": "packet",
+            "question_type": qtype,
+            "standalone_question": standalone,
+            "setting_for_grader": setting,
+            "original_chat_question": p.get("original_chat_question") or "",
+            "answer": p["answer"],
+            "session_id": sid,
+            "n_frames_log": h.get("n_frames", ""),
+            "quality_score": "curated",
+            "context_images": [],
+            "context_note": ctx["session_text"],
+            "context_case": ctx["case_text"],
+            "context_evidence": ctx["evidence_text"],
+            "context_availability": ctx["availability"],
+            "pmids": ",".join(ctx["pmids"]),
+        }
+        if not is_context_decidable(item):
+            print(f"skip packet qa_id={key}: not decidable from attached context")
+            continue
+        items.append(item)
     return items
 
 
@@ -405,27 +593,33 @@ def load_synthetic_literature(abstracts: dict[str, str]) -> list[dict]:
         sid = (o.get("session_id") or "synthetic").strip()
         ctx = build_text_context(qid, sid, "literature", q, a, abstracts)
         setting = (o.get("setting_for_grader") or setting_for("literature", True)).strip()
-        setting = f"{setting} {ctx['availability']}"
-        items.append(
-            {
-                "qa_id": qid,
-                "source": "synthetic",
-                "question_type": "literature",
-                "standalone_question": q,
-                "setting_for_grader": setting,
-                "original_chat_question": o.get("original_chat_question") or q,
-                "answer": a,
-                "session_id": sid,
-                "n_frames_log": "0",
-                "quality_score": "generated",
-                "context_images": [],
-                "context_note": ctx["session_text"],
-                "context_case": ctx["case_text"],
-                "context_evidence": ctx["evidence_text"],
-                "context_availability": ctx["availability"],
-                "pmids": ",".join(ctx["pmids"] or o.get("pmids") or []),
-            }
+        setting = (
+            "Judge using only the question and the PubMed abstracts below "
+            "(do not bring in outside papers). "
+            + ctx["availability"]
         )
+        item = {
+            "qa_id": qid,
+            "source": "synthetic",
+            "question_type": "literature",
+            "standalone_question": q,
+            "setting_for_grader": setting,
+            "original_chat_question": o.get("original_chat_question") or q,
+            "answer": a,
+            "session_id": sid,
+            "n_frames_log": "0",
+            "quality_score": "generated",
+            "context_images": [],
+            "context_note": ctx["session_text"],
+            "context_case": ctx["case_text"],
+            "context_evidence": ctx["evidence_text"],
+            "context_availability": ctx["availability"],
+            "pmids": ",".join(ctx["pmids"] or o.get("pmids") or []),
+        }
+        if not is_context_decidable(item):
+            print(f"skip synth {qid}: not decidable from attached abstracts")
+            continue
+        items.append(item)
     return items
 
 
@@ -496,9 +690,18 @@ def _exclude_keys_for_item(it: dict) -> set[str]:
 
 def _make_rtms_item(qid: str, c: dict, abstracts: dict[str, str]) -> dict:
     qtype = c["question_type"]
-    standalone = clean_question(c["question"])
+    standalone = rewrite_for_attached_notes(clean_question(c["question"]), qtype)
     ctx = build_text_context(qid, c["session_id"], qtype, standalone, c["answer"], abstracts)
-    setting = f"{setting_for(qtype, c.get('topical', False))} {ctx['availability']}"
+    if qtype == "literature":
+        setting = (
+            "Judge using only the question and the PubMed abstracts below "
+            f"(do not bring in outside papers). {ctx['availability']}"
+        )
+    else:
+        setting = (
+            "Judge using only the question and the meeting notes below "
+            f"(no prior recordings or screenshots). {ctx['availability']}"
+        )
     return {
         "qa_id": qid,
         "source": "rtms",
@@ -609,15 +812,20 @@ def fill_to_target(packet_items: list[dict], abstracts: dict[str, str], target: 
         qtype = c["question_type"]
         if counts[qtype] >= TYPE_QUOTA.get(qtype, 99):
             continue
+        # Skip vague / prior-session / literature without MOUD focus early
+        if qtype == "prior_session":
+            continue
         qid = str(next_id)
-        next_id += 1
         item = _make_rtms_item(qid, c, abstracts)
+        if not is_context_decidable(item):
+            continue
+        next_id += 1
         items.append(item)
         counts[qtype] += 1
         exclude |= _exclude_keys_for_item(item)
         used_answers.add(na)
 
-    # Second pass: pad with slide questions (user request: bring n toward 25 with slides).
+    # Second pass: pad with topical slide questions only when notes cover the answer.
     if len(items) < target:
         for it in items:
             exclude |= _exclude_keys_for_item(it)
@@ -631,8 +839,10 @@ def fill_to_target(packet_items: list[dict], abstracts: dict[str, str], target: 
             if na in used_answers:
                 continue
             qid = str(next_id)
-            next_id += 1
             item = _make_rtms_item(qid, c, abstracts)
+            if not is_context_decidable(item):
+                continue
+            next_id += 1
             items.append(item)
             counts["slide"] += 1
             exclude |= _exclude_keys_for_item(item)
@@ -899,7 +1109,7 @@ def write_html(items: list[dict], path: Path) -> None:
   <p>There are <b>{n} questions</b>. For each one, please read the question, any meeting notes and PubMed abstracts, then the bot’s answer. Use the <a href="#rubric">rubric</a> below (<b>1 = Poor … 5 = Excellent</b>, or <b>N/A</b>). When you finish, enter your name and click <b>Download my scores (CSV)</b>, then kindly return that file to our team. We are grateful for your time.</p>
 </div>
 <div class="howto">
-  <p><b>How to complete each item:</b> click one score per row, optionally add tags and notes. Score from the text only—this survey does not include screenshots.</p>
+  <p><b>How to complete each item:</b> click one score per row, optionally add tags and notes. Score using <b>only</b> the question plus any meeting notes / PubMed abstracts shown for that item (your MOUD expertise is fine; do not look up outside papers or prior recordings). This survey does not include screenshots.</p>
 </div>
 {rubric_html()}
 {examples_html()}
@@ -1006,7 +1216,14 @@ def main() -> None:
             ).strip()
             it["setting_for_grader"] = f"{base} {avail}".strip()
         rebuilt.append(it)
-    items = assign_item_numbers(rebuilt)
+    # Final gate after evidence/notes rebuild
+    kept = []
+    for it in rebuilt:
+        if is_context_decidable(it):
+            kept.append(it)
+        else:
+            print(f"drop after rebuild qa_id={it['qa_id']}: not decidable from attached context")
+    items = assign_item_numbers(kept)
 
     write_csv(items, OUT / "human_eval_sheet.csv")
     write_ratings_template(items, OUT / "ratings_template.csv")

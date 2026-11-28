@@ -1,25 +1,26 @@
 item_num,qa_id,source,question_type,session_id,quality_score,context_availability,pmids
 1,4,packet,literature,b28ee899,curated,"Available context: question text, 5 PubMed abstracts.","32115044,34791564,41136120,38340973,27974843"
-2,12,packet,literature,6d0ff5cf,curated,"Available context: question text, 5 PubMed abstracts.","38493248,3907856,33871429,32605143,40676813"
-3,13,packet,other,43091a33,curated,"Available context: question text, meeting notes.",
-4,17,packet,slide,43091a33,curated,"Available context: question text, meeting notes.",
-5,18,packet,slide,43091a33,curated,"Available context: question text, meeting notes.",
-6,S01,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","43053082,42907695,42808565"
-7,S02,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","40892527,40833733,40302312"
-8,S03,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","42909039,42644692,42377009"
-9,S04,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","43099773,43077572,43062818"
-10,S05,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","42950702,42764963,42550090"
-11,S06,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","42549766,42097485,42096946"
-12,S07,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","42411711,42400535,42080577"
-13,S08,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","42982634,42390819,42299777"
-14,S09,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","43060569,42400535,42046533"
-15,S10,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","43033608,42999476,42954993"
-16,S11,synthetic,literature,synthetic,generated,"Available context: question text, 2 PubMed abstracts.","34752714,32635296"
-17,S12,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","42030759,41713593,42909039"
-18,S13,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","42971408,42887372,42798729"
-19,S14,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","40139416,36351448,34600258"
-20,S15,synthetic,literature,synthetic,generated,"Available context: question text, 2 PubMed abstracts.","38479161,30875177"
-21,S16,synthetic,literature,synthetic,generated,"Available context: question text, 2 PubMed abstracts.","30031696,29432081"
-22,1001,rtms,other,9c01dd60,10,You have the question text for this item.,
-23,1002,rtms,other,43091a33,10,"Available context: question text, meeting notes.",
-24,1003,rtms,other,5b4ccc78,10,You have the question text for this item.,
+2,13,packet,other,43091a33,curated,"Available context: question text, meeting notes.",
+3,17,packet,slide,43091a33,curated,"Available context: question text, meeting notes.",
+4,18,packet,slide,43091a33,curated,"Available context: question text, meeting notes.",
+5,S01,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","43053082,42907695,42808565"
+6,S03,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","42909039,42644692,42377009"
+7,S05,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","42950702,42764963,42550090"
+8,S06,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","42549766,42097485,42096946"
+9,S07,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","42411711,42400535,42080577"
+10,S09,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","43060569,42400535,42046533"
+11,S10,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","43033608,42999476,42954993"
+12,S11,synthetic,literature,synthetic,generated,"Available context: question text, 2 PubMed abstracts.","34752714,32635296"
+13,S12,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","42030759,41713593,42909039"
+14,S13,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","42971408,42887372,42798729"
+15,S14,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","40139416,36351448,34600258"
+16,S15,synthetic,literature,synthetic,generated,"Available context: question text, 2 PubMed abstracts.","38479161,30875177"
+17,S16,synthetic,literature,synthetic,generated,"Available context: question text, 2 PubMed abstracts.","30031696,29432081"
+18,S17,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","40902036,38886826,38571889"
+19,S18,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","43033608,42999476,42954993"
+20,S19,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","42854357,42850819,42350024"
+21,S20,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","43033608,42999476,42954993"
+22,S21,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","43033608,42999476,42954993"
+23,S22,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","43033608,42999476,42954993"
+24,S23,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","43033608,42999476,42954993"
+25,S24,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","43033608,42999476,42954993"

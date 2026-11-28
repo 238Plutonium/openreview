@@ -1,5 +1,0 @@
-Type: Slide topic
-
-what is this slide about?
-
-(The slide topic is written into the question. Score the answer against that wording—not against screenshots.)

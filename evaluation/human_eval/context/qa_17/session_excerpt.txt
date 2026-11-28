@@ -1,27 +1,15 @@
 [summary.md]
-# Meeting Minutes
+### 2. **Opioid Use Disorder (OUD) Diagnosis**
+- OUD is diagnosed when a person meets **two or more DSM-5 criteria**.
+- Criteria include:
+- Persistent desire to cut down or unsuccessful efforts to control use
+- Spending a lot of time obtaining, using, or recovering from the drug
+- Giving up important activities due to use
+- Continued use despite social or interpersonal problems
+- Tolerance and withdrawal (but **tolerance and withdrawal alone do not constitute OUD**)
+- Emphasis: Behavioral and functional impairments are required for diagnosis; physiological responses (like tolerance or withdrawal) are insufficient on their own.
 
-- Stream ID: 43091a331a414a2d9fd10f2f569a395f
-- Meeting UUID: dU583dt8SmaPkKHfF+JR3w==
-- Generated at: 2026-07-09T04:40:44.046Z
-- Meeting started: 2026-07-09T04:22:07.001Z
-- Meeting ended: 2026-07-09T04:27:44.578Z
-- Transcript segments: 54
-- Slides copied: 15
-
-## Summary
-
-# Meeting Minutes: Opioid Use Disorder (OUD) Presentation – July 9, 2026
-
----
-
-## **Overview**
-The meeting began with Binglin Zhou introducing the topic of medical management for Opioid Use Disorder (OUD), specifically focusing on evidence-based care, diagnostic criteria, and the role of primary care teams. The session included discussion on opioid definitions, DSM-5 criteria for OUD, the distinction between physical dependence and OUD, and the importance of non-stigmatizing language in clinical practice. The presentation also touched on data collection practices related to Project Echo AI.
-
----
-
-## **Key Topics Covered**
-
-### 1. **Definition of Opioids**
-- Opioids include both natural (e.g., morphine, codeine) and synthetic (e.g., fentanyl, oxycodone) compounds.
-- Mentioned examples: **fentanyl**, **oxycodone**, **phenylchlorine**, **mofila**, and **chlorine** (note: "chlorine" and "phenylchlor…
+### 3. **Distinction Between OUD, Physical Dependence, and Chronic Pain**
+- **Physical dependence** (tolerance and withdrawal) is common in patients on long-term prescribed opioids for pain but does **not** meet OUD criteria without behavioral indicators.
+- OUD requires **behavioral markers** such as loss of control, failed attempts to quit, and interference with daily life.
+- Patients with undertreated chronic pain may have physical dependence but lack the behavioral components of OUD.

@@ -1,5 +1,0 @@
-Type: Slide topic
-
-Agent What is on my slide
-
-(The slide topic is written into the question. Score the answer against that wording—not against screenshots.)
