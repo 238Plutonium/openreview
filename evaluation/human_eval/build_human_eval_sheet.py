@@ -566,6 +566,16 @@ def _session_display(sess: str) -> str:
     return re.sub(r"^\[(summary\.md|transcript\.txt)\]\s*", "", sess or "", flags=re.I).strip()
 
 
+def _rating_row(num: int, dim: str, label: str) -> str:
+    """Clickable 1–5 (+ N/A) radios for one dimension."""
+    opts = []
+    for v in ("1", "2", "3", "4", "5", "N/A"):
+        opts.append(
+            f'<label class="opt"><input type="radio" name="q{num}_{dim}" value="{html.escape(v)}"/> {html.escape(v)}</label>'
+        )
+    return f'<div class="rate-row"><span class="rate-label">{esc(label)}</span><span class="rate-opts">{"".join(opts)}</span></div>'
+
+
 def card_html(it: dict) -> str:
     num = it["item_num"]
     qtype = TYPE_LABEL.get(it["question_type"], it["question_type"])
@@ -582,6 +592,16 @@ def card_html(it: dict) -> str:
     else:
         evid_block = "<p class='meta'>No PubMed abstracts attached for this item.</p>"
 
+    ratings = "".join(
+        [
+            _rating_row(num, "factual", "Factual"),
+            _rating_row(num, "grounding", "Grounding"),
+            _rating_row(num, "evidence", "Evidence"),
+            _rating_row(num, "safety", "Safety"),
+            _rating_row(num, "usability", "Usability"),
+        ]
+    )
+
     return f"""
 <section class="card" id="q{num}">
   <h2>Question {num} <span class="tag">{esc(qtype)}</span></h2>
@@ -595,13 +615,16 @@ def card_html(it: dict) -> str:
   {evid_block}
   <h3>Bot answer</h3>
   <div class="a">{esc(it['answer'])}</div>
-  <h3>Your scores (1–5)</h3>
-  <table class="score">
-    <tr><th>Factual</th><th>Grounding</th><th>Evidence</th><th>Safety</th><th>Usability</th></tr>
-    <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-  </table>
-  <p><b>Optional tags:</b> <span contenteditable="true" class="tags"></span></p>
-  <p><b>Notes:</b> <span contenteditable="true" class="notes"></span></p>
+  <h3>Your scores (click one per row)</h3>
+  <div class="ratings" data-item="{num}">
+    {ratings}
+  </div>
+  <label class="field"><span>Optional tags</span>
+    <input type="text" name="q{num}_tags" placeholder="e.g. ok, wrong citation, made-up meeting detail"/>
+  </label>
+  <label class="field"><span>Notes</span>
+    <textarea name="q{num}_notes" rows="3" placeholder="Anything you want to flag for this answer"></textarea>
+  </label>
 </section>
 """
 
@@ -633,12 +656,26 @@ def write_html(items: list[dict], path: Path) -> None:
   .howto {{ background: #f3faf3; border: 1px solid #b7d7b7; padding: 12px 14px; border-radius: 8px; }}
   nav {{ line-height: 1.8; }}
   nav a {{ margin-right: 8px; font-size: 0.85rem; }}
+  .ratings {{ background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 8px 10px; }}
+  .rate-row {{ display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 8px 0; border-bottom: 1px solid #eee; }}
+  .rate-row:last-child {{ border-bottom: none; }}
+  .rate-label {{ min-width: 96px; font-weight: 600; }}
+  .rate-opts {{ display: flex; flex-wrap: wrap; gap: 6px 10px; }}
+  .opt {{ display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border: 1px solid #c5daf5; border-radius: 6px; background: #f7fbff; cursor: pointer; font-size: 0.95rem; user-select: none; }}
+  .opt:has(input:checked) {{ background: #d6e8ff; border-color: #6aa1e0; font-weight: 600; }}
+  .opt input {{ margin: 0; }}
+  .field {{ display: block; margin-top: 12px; }}
+  .field span {{ display: block; font-weight: 600; margin-bottom: 4px; }}
+  .field input[type="text"], .field textarea {{ width: 100%; box-sizing: border-box; font: inherit; padding: 8px 10px; border: 1px solid #bbb; border-radius: 6px; background: #fff; }}
+  .field textarea {{ resize: vertical; min-height: 4.5em; }}
+  .exportbar {{ position: sticky; top: 0; z-index: 5; background: #fffbe6; border: 1px solid #e6d59a; border-radius: 8px; padding: 10px 12px; margin: 12px 0 18px; }}
+  .exportbar button {{ font: inherit; padding: 6px 12px; cursor: pointer; }}
 </style>
 </head>
 <body>
 <h1>ECHO-AI answer review ({n} questions)</h1>
 <div class="howto">
-  <p>Please read each question, the meeting notes and any PubMed abstracts, then the bot’s answer. Score five things from 1 to 5:</p>
+  <p>Please read each question, the meeting notes and any PubMed abstracts, then the bot’s answer. Score five things from 1 to 5 (or N/A):</p>
   <ul>
     <li><b>Factual</b> — is the educational content basically right?</li>
     <li><b>Grounding</b> — does it stick to the question and notes (not invent meeting/slide detail)?</li>
@@ -646,11 +683,53 @@ def write_html(items: list[dict], path: Path) -> None:
     <li><b>Safety</b> — appropriate hedges; not unsafe as education?</li>
     <li><b>Usability</b> — would this help in an ECHO session?</li>
   </ul>
-  <p>There are no screenshots here on purpose: score from the text, the same way MedTutor raters used written case material.</p>
+  <p>Click a score for each row. Type tags and notes in the boxes. Use <b>Download my scores (CSV)</b> when finished (answers stay in this browser until you download).</p>
 </div>
 {examples_html()}
+<div class="exportbar">
+  <label>Your name / rater id: <input type="text" id="rater_id" placeholder="e.g. alex"/></label>
+  <button type="button" id="btn_export">Download my scores (CSV)</button>
+</div>
 <nav><b>Jump to question:</b> {nav}</nav>
 {cards}
+<script>
+(function () {{
+  const dims = ["factual", "grounding", "evidence", "safety", "usability"];
+  const n = {n};
+  function val(name) {{
+    const el = document.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : "";
+  }}
+  function text(name) {{
+    const el = document.querySelector('[name="' + name + '"]');
+    return el ? String(el.value || "").replace(/\\r?\\n/g, " ").replace(/"/g, '""') : "";
+  }}
+  document.getElementById("btn_export").addEventListener("click", function () {{
+    const rater = (document.getElementById("rater_id").value || "").replace(/"/g, '""');
+    const rows = [["item_num", "rater_id", "factual", "grounding", "evidence", "safety", "usability", "error_tags", "notes"]];
+    for (let i = 1; i <= n; i++) {{
+      rows.push([
+        String(i),
+        rater,
+        val("q" + i + "_factual"),
+        val("q" + i + "_grounding"),
+        val("q" + i + "_evidence"),
+        val("q" + i + "_safety"),
+        val("q" + i + "_usability"),
+        text("q" + i + "_tags"),
+        text("q" + i + "_notes"),
+      ]);
+    }}
+    const csv = rows.map(r => r.map(c => '"' + c + '"').join(",")).join("\\n");
+    const blob = new Blob([csv], {{ type: "text/csv;charset=utf-8" }});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "echo_human_eval_scores_" + (rater || "rater") + ".csv";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }});
+}})();
+</script>
 </body>
 </html>
 """
