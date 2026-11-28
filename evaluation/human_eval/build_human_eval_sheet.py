@@ -31,6 +31,8 @@ ABSTRACT_CACHE = ROOT / "citation_faithfulness" / "abstract_cache.json"
 
 TARGET_N = 25
 MIN_FILL_SCORE = 8
+# Public form posts scores here (FormSubmit → inbox). Change if the intake email moves.
+SUBMIT_EMAIL = "qxl5189@psu.edu"
 # Curated ECHO packet: only items a MOUD expert can judge from attached text.
 # Dropped: qa 3 HIV lit; 12 wrong-topic “K” abstracts; 15 disclosures;
 # 16 prior-session; vague slide/summary without usable notes.
@@ -1057,6 +1059,7 @@ def write_html(items: list[dict], path: Path) -> None:
     n = len(items)
     nav = "".join(f'<a href="#q{it["item_num"]}">{it["item_num"]}</a>' for it in items)
     cards = "".join(card_html(it) for it in items)
+    submit_endpoint = f"https://formsubmit.co/ajax/{SUBMIT_EMAIL}"
     doc = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1064,7 +1067,7 @@ def write_html(items: list[dict], path: Path) -> None:
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>ECHO-AI human evaluation ({n} questions)</title>
 <style>
-  body {{ font-family: Georgia, "Times New Roman", serif; max-width: 920px; margin: 24px auto; padding: 0 16px; line-height: 1.45; color: #111; }}
+  body {{ font-family: Georgia, "Times New Roman", serif; max-width: 920px; margin: 24px auto; padding: 0 16px 96px; line-height: 1.45; color: #111; }}
   h1 {{ font-size: 1.55rem; }}
   .card {{ border: 1px solid #ccc; border-radius: 8px; padding: 16px 18px; margin: 18px 0; background: #fafafa; }}
   .examples {{ background: #fff8e7; border-color: #e6d59a; }}
@@ -1096,8 +1099,18 @@ def write_html(items: list[dict], path: Path) -> None:
   .field span {{ display: block; font-weight: 600; margin-bottom: 4px; }}
   .field input[type="text"], .field textarea {{ width: 100%; box-sizing: border-box; font: inherit; padding: 8px 10px; border: 1px solid #bbb; border-radius: 6px; background: #fff; }}
   .field textarea {{ resize: vertical; min-height: 4.5em; }}
-  .exportbar {{ position: sticky; top: 0; z-index: 5; background: #fffbe6; border: 1px solid #e6d59a; border-radius: 8px; padding: 10px 12px; margin: 12px 0 18px; }}
-  .exportbar button {{ font: inherit; padding: 6px 12px; cursor: pointer; }}
+  .exportbar {{ position: sticky; top: 0; z-index: 5; background: #fffbe6; border: 1px solid #e6d59a; border-radius: 8px; padding: 10px 12px; margin: 12px 0 18px; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }}
+  .exportbar button, .submit-footer button {{ font: inherit; padding: 8px 14px; cursor: pointer; border-radius: 6px; border: 1px solid #888; background: #fff; }}
+  .exportbar .primary, .submit-footer .primary {{ background: #1a5fb4; color: #fff; border-color: #1a5fb4; font-weight: 600; }}
+  .exportbar .primary:disabled, .submit-footer .primary:disabled {{ opacity: 0.65; cursor: wait; }}
+  .exportbar label {{ display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }}
+  .exportbar input[type="text"] {{ font: inherit; padding: 6px 8px; min-width: 180px; border: 1px solid #bbb; border-radius: 6px; }}
+  .status {{ width: 100%; font-size: 0.95rem; margin: 0; }}
+  .status.ok {{ color: #0b6b2d; }}
+  .status.err {{ color: #a40000; }}
+  .submit-footer {{ margin: 28px 0 12px; padding: 16px; border: 1px solid #c5daf5; border-radius: 8px; background: #f4f8ff; }}
+  .submit-footer .row {{ display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }}
+  .hp {{ position: absolute; left: -9999px; opacity: 0; height: 0; width: 0; overflow: hidden; }}
 </style>
 </head>
 <body>
@@ -1106,23 +1119,36 @@ def write_html(items: list[dict], path: Path) -> None:
   <h2>Welcome — thank you for helping</h2>
   <p>We are the <b>ECHO-AI research team at Penn State</b>, working with <b>Penn State Project ECHO</b> on Medication for Opioid Use Disorder (MOUD) tele-mentoring. ECHO-AI is an educational meeting assistant that answers questions during Zoom ECHO sessions (slides, recent discussion, prior sessions, and PubMed).</p>
   <p><b>Purpose of this survey.</b> We would like your expert judgment on how good a sample of archived ECHO-AI answers are for real MOUD ECHO teaching. Your ratings help us understand answer quality on five dimensions and improve the system for facilitators and clinicians. This is educational research support—not a clinical trial, and not a request to prescribe or diagnose.</p>
-  <p>There are <b>{n} questions</b>. For each one, please read the question, any meeting notes and PubMed abstracts, then the bot’s answer. Use the <a href="#rubric">rubric</a> below (<b>1 = Poor … 5 = Excellent</b>, or <b>N/A</b>). When you finish, enter your name and click <b>Download my scores (CSV)</b>, then kindly return that file to our team. We are grateful for your time.</p>
+  <p>There are <b>{n} questions</b>. For each one, please read the question, any meeting notes and PubMed abstracts, then the bot’s answer. Use the <a href="#rubric">rubric</a> below (<b>1 = Poor … 5 = Excellent</b>, or <b>N/A</b>). When you finish, enter your name and click <b>Submit scores</b>—your ratings are sent directly to our team. You can also download a CSV copy for your records. We are grateful for your time.</p>
 </div>
 <div class="howto">
   <p><b>How to complete each item:</b> click one score per row, optionally add tags and notes. Score using <b>only</b> the question plus any meeting notes / PubMed abstracts shown for that item (your MOUD expertise is fine; do not look up outside papers or prior recordings). This survey does not include screenshots.</p>
 </div>
 {rubric_html()}
 {examples_html()}
-<div class="exportbar">
-  <label>Your name / rater id: <input type="text" id="rater_id" placeholder="e.g. your name"/></label>
-  <button type="button" id="btn_export">Download my scores (CSV)</button>
+<div class="exportbar" id="top_bar">
+  <label>Your name / rater id: <input type="text" id="rater_id" placeholder="e.g. your name" autocomplete="name"/></label>
+  <button type="button" class="primary" id="btn_submit">Submit scores</button>
+  <button type="button" id="btn_export">Download CSV copy</button>
+  <p class="status" id="submit_status" role="status" aria-live="polite"></p>
 </div>
 <nav><b>Jump to question:</b> {nav}</nav>
 {cards}
+<div class="submit-footer" id="bottom_bar">
+  <p><b>Done?</b> Enter your name (same as above) and submit. Your scores go directly to the ECHO-AI team.</p>
+  <div class="row">
+    <label>Your name / rater id: <input type="text" id="rater_id_bottom" placeholder="e.g. your name" autocomplete="name"/></label>
+    <button type="button" class="primary" id="btn_submit_bottom">Submit scores</button>
+    <button type="button" id="btn_export_bottom">Download CSV copy</button>
+  </div>
+  <p class="status" id="submit_status_bottom" role="status" aria-live="polite"></p>
+</div>
+<input class="hp" type="text" id="website" name="website" tabindex="-1" autocomplete="off"/>
 <script>
 (function () {{
   const dims = ["factual", "grounding", "evidence", "safety", "usability"];
   const n = {n};
+  const SUBMIT_URL = {json.dumps(submit_endpoint)};
   function val(name) {{
     const el = document.querySelector('input[name="' + name + '"]:checked');
     return el ? el.value : "";
@@ -1131,8 +1157,21 @@ def write_html(items: list[dict], path: Path) -> None:
     const el = document.querySelector('[name="' + name + '"]');
     return el ? String(el.value || "").replace(/\\r?\\n/g, " ").replace(/"/g, '""') : "";
   }}
-  document.getElementById("btn_export").addEventListener("click", function () {{
-    const rater = (document.getElementById("rater_id").value || "").replace(/"/g, '""');
+  function raterName() {{
+    const a = (document.getElementById("rater_id").value || "").trim();
+    const b = (document.getElementById("rater_id_bottom").value || "").trim();
+    return a || b;
+  }}
+  function syncRater(fromBottom) {{
+    const top = document.getElementById("rater_id");
+    const bot = document.getElementById("rater_id_bottom");
+    if (fromBottom) top.value = bot.value;
+    else bot.value = top.value;
+  }}
+  document.getElementById("rater_id").addEventListener("input", function () {{ syncRater(false); }});
+  document.getElementById("rater_id_bottom").addEventListener("input", function () {{ syncRater(true); }});
+  function buildRows() {{
+    const rater = raterName().replace(/"/g, '""');
     const rows = [["item_num", "rater_id", "factual", "grounding", "evidence", "safety", "usability", "error_tags", "notes"]];
     for (let i = 1; i <= n; i++) {{
       rows.push([
@@ -1147,14 +1186,89 @@ def write_html(items: list[dict], path: Path) -> None:
         text("q" + i + "_notes"),
       ]);
     }}
-    const csv = rows.map(r => r.map(c => '"' + c + '"').join(",")).join("\\n");
+    return rows;
+  }}
+  function toCsv(rows) {{
+    return rows.map(r => r.map(c => '"' + c + '"').join(",")).join("\\n");
+  }}
+  function scoredCount(rows) {{
+    let k = 0;
+    for (let i = 1; i < rows.length; i++) {{
+      if (rows[i].slice(2, 7).some(x => x)) k++;
+    }}
+    return k;
+  }}
+  function setStatus(msg, kind) {{
+    ["submit_status", "submit_status_bottom"].forEach(function (id) {{
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.className = "status" + (kind ? " " + kind : "");
+    }});
+  }}
+  function downloadCsv() {{
+    const rater = raterName();
+    const csv = toCsv(buildRows());
     const blob = new Blob([csv], {{ type: "text/csv;charset=utf-8" }});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "echo_human_eval_scores_" + (rater || "rater") + ".csv";
     a.click();
     URL.revokeObjectURL(a.href);
-  }});
+  }}
+  async function submitScores() {{
+    if ((document.getElementById("website").value || "").trim()) {{
+      setStatus("Submission blocked.", "err");
+      return;
+    }}
+    const rater = raterName();
+    if (!rater) {{
+      setStatus("Please enter your name before submitting.", "err");
+      document.getElementById("rater_id").focus();
+      return;
+    }}
+    const rows = buildRows();
+    const scored = scoredCount(rows);
+    if (scored < 1) {{
+      setStatus("Please score at least one question before submitting.", "err");
+      return;
+    }}
+    if (scored < n && !confirm("You scored " + scored + " of " + n + " questions. Submit anyway?")) {{
+      return;
+    }}
+    const csv = toCsv(rows);
+    const buttons = [document.getElementById("btn_submit"), document.getElementById("btn_submit_bottom")];
+    buttons.forEach(b => {{ b.disabled = true; }});
+    setStatus("Submitting…", "");
+    try {{
+      const resp = await fetch(SUBMIT_URL, {{
+        method: "POST",
+        headers: {{ "Content-Type": "application/json", "Accept": "application/json" }},
+        body: JSON.stringify({{
+          name: rater,
+          _subject: "ECHO-AI human eval scores — " + rater,
+          _template: "table",
+          _captcha: "false",
+          questions_scored: String(scored) + " / " + String(n),
+          scores_csv: csv,
+          message: "ECHO-AI human evaluation scores from " + rater + ". CSV is in scores_csv."
+        }})
+      }});
+      const data = await resp.json().catch(function () {{ return {{}}; }});
+      if (!resp.ok || data.success === "false" || data.error) {{
+        throw new Error((data && (data.message || data.error)) || ("HTTP " + resp.status));
+      }}
+      setStatus("Submitted — thank you! You can still download a CSV copy if you want.", "ok");
+    }} catch (err) {{
+      setStatus("Submit failed (" + (err && err.message ? err.message : "network") + "). Please use Download CSV copy and email it to the team.", "err");
+      downloadCsv();
+    }} finally {{
+      buttons.forEach(b => {{ b.disabled = false; }});
+    }}
+  }}
+  document.getElementById("btn_export").addEventListener("click", downloadCsv);
+  document.getElementById("btn_export_bottom").addEventListener("click", downloadCsv);
+  document.getElementById("btn_submit").addEventListener("click", submitScores);
+  document.getElementById("btn_submit_bottom").addEventListener("click", submitScores);
 }})();
 </script>
 </body>
