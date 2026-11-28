@@ -33,6 +33,10 @@ SEED_QUESTIONS = [
     "What non-stigmatizing, evidence-informed language should clinicians use when discussing MOUD and relapse?",
     "When a patient on buprenorphine still has cravings or ongoing opioid use, what adjustments does the literature support?",
     "What does evidence say about depot buprenorphine (injectable) versus daily sublingual buprenorphine for OUD?",
+    "What should ECHO clinicians know about urine drug testing and interpreting unexpected results during MOUD?",
+    "How does evidence guide take-home methadone or buprenorphine flexibility after COVID-era policy changes?",
+    "What are best practices for linking emergency-department patients with opioid use disorder to ongoing MOUD?",
+    "How should clinicians counsel patients about overdose prevention and naloxone while on MOUD?",
 ]
 
 

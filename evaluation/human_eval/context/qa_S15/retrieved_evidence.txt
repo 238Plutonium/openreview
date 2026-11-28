@@ -1,0 +1,10 @@
+PMID 38479161
+Factors associated with receipt of medication for opioid use disorder among pregnant individuals entering treatment programs in the U.S.
+BACKGROUND: Opioid use disorder (OUD) among pregnant individuals in the U.S. has been on the rise, and carries significant health risks if left untreated. Despite the effectiveness of medication for opioid use disorder (MOUD), rates of treatment utilization remain low, and access varies by state. This study seeks to expand on what is known about the utilization of MOUD by estimating annual percentages of MOUD use among treatment admissions among pregnant individuals across all 50 states and U.S. regions. The study also examines how pregnant people experiencing OUD are referred to substance use treatment programs to better understand which referral sources are most effective at linking them to MOUD.
+METHODS: This study estimated MOUD utilization among pr…
+
+PMID 30875177
+Common elements in opioid use disorder guidelines for buprenorphine prescribing.
+OBJECTIVES: This study sought to formulate a consolidation of guidelines representing best practices related to office-based opioid treatment (OBOT) of opioid use disorder (OUD) using buprenorphine. It also demonstrates how a set of evidence-based guidelines may be linked with claims data to leverage analytic techniques that drive cost-effective, positive health outcomes.
+STUDY DESIGN: Literature review of US and international guidelines for OBOT using buprenorphine for OUD.
+METHODS: The study conducted a review of currently available US and several international guidelines from 2009 to 2018 published on OUD and the use of buprenorphine in OBOT. Guidelines were consolidated based on common elements. The process of correlating common elements with available commercial and state Medicaid claims data is describ…

@@ -1,0 +1,17 @@
+PMID 42971408
+Urine drug testing practices at Opioid Treatment Programs in a large health system, 2018-2025.
+BACKGROUND: The COVID-19 public health emergency prompted substantial changes in opioid treatment program (OTP) practices, including expanded methadone take-home dosing and telehealth use. While many of these changes persisted after the emergency period, less is known about how urine drug testing practices were altered and whether any changes were sustained over time.
+METHODS: We examined monthly trends in urine drug testing among patients receiving methadone for opioid use disorder at 112 OTP clinics operated by a large national treatment organization. Administrative electronic medical record data from January 2018 through June 2025 were used to construct patient-level testing measures. A testing event was defined as any day in which a patient received at least one urine drug test. Interrupted…
+
+PMID 42887372
+Medication for opioid use disorder following urine drug testing: An observational cohort study of linked national laboratory and medical and pharmacy claims data.
+BACKGROUND AND AIMS: Urine drug testing (UDT) is commonly used in opioid use disorder (OUD) care to assess substance use and inform clinical decision-making, yet little is known about how opioid UDT results are associated with subsequent medication for opioid (MOUD) use and adherence. This study examines the association between opioid UDT, post-UDT MOUD use, and treatment adherence using linked national laboratory and medical and pharmacy claims data.
+DESIGN: Retrospective quantitative observational cohort study.
+SETTING: United States, using linked national laboratory and adjudicated medical and pharmacy claims data covering all 50 states and Washington DC.
+PARTICIPANTS: Adults aged 18-64 years with at least one opioid UDT bet…
+
+PMID 42798729
+Naloxone Metabolism Associated With Unexpected Noroxymorphone Detected in Urine During Pregnancy.
+BACKGROUND: Urine drug testing (UDT) is commonly used in obstetrics to monitor opioid use disorder treatment, but interpretation can be difficult and may trigger harmful consequences, including child welfare reporting. Noroxymorphone, also referred to as nornaloxone, may arise from metabolism of naloxone, oxycodone, or oxymorphone and may be detected in patients taking buprenorphine/naloxone.
+CASES: Two pregnant individuals receiving buprenorphine/naloxone had unexpected presumptive positive opiate screens. Confirmatory testing showed isolated low-level noroxymorphone (46 and 79 ng/mL) without detectable parent opioids, consistent with naloxone metabolism rather than opioid use. Both patients experienced significant distress after the initial results.
+CONCLUSION: Clinicians should recognize …

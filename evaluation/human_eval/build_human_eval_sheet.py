@@ -41,7 +41,8 @@ OFF_PAT = re.compile(
     r"\b(dementia|dimentia|diabetes|leukemia|lukemea|dental|dented\s+teeth|bac\s+teeth|"
     r"python|javascript|leetcode|hello\s+world|machine\s+learning|computer\s+science|"
     r"cs\s+slide|coding|homework|lung\s+cancer|rabid|rabies|german\s+orthopedic|"
-    r"mental\s+disorders?)\b",
+    r"mental\s+disorders?)\b|"
+    r"\b(?:treat(?:ing|ment)?\s+(?:for\s+|of\s+)?hiv|hiv\s+patients?|how do we treat hiv)\b",
     re.I,
 )
 POS_PAT = re.compile(

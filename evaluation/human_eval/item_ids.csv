@@ -16,7 +16,10 @@ item_num,qa_id,source,question_type,session_id,quality_score,context_availabilit
 15,S10,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","43033608,42999476,42954993"
 16,S11,synthetic,literature,synthetic,generated,"Available context: question text, 2 PubMed abstracts.","34752714,32635296"
 17,S12,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","42030759,41713593,42909039"
-18,1001,rtms,other,9c01dd60,10,You have the question text for this item.,
-19,1002,rtms,other,43091a33,10,"Available context: question text, meeting notes.",
-20,1003,rtms,other,5b4ccc78,10,You have the question text for this item.,
-21,1004,rtms,other,ecfcba4c,8,"Available context: question text, 5 PubMed abstracts.","38383266,35967854,23698562,39381005,28832366"
+18,S13,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","42971408,42887372,42798729"
+19,S14,synthetic,literature,synthetic,generated,"Available context: question text, 3 PubMed abstracts.","40139416,36351448,34600258"
+20,S15,synthetic,literature,synthetic,generated,"Available context: question text, 2 PubMed abstracts.","38479161,30875177"
+21,S16,synthetic,literature,synthetic,generated,"Available context: question text, 2 PubMed abstracts.","30031696,29432081"
+22,1001,rtms,other,9c01dd60,10,You have the question text for this item.,
+23,1002,rtms,other,43091a33,10,"Available context: question text, meeting notes.",
+24,1003,rtms,other,5b4ccc78,10,You have the question text for this item.,
