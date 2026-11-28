@@ -1,0 +1,35 @@
+[summary.md]
+# Meeting Minutes
+
+- Stream ID: eb8f31faac3a45b196b4327dde6f0fbb
+- Meeting UUID: m6+lTLD4QfmSiBtUiR/vKA==
+- Generated at: 2026-08-22T01:01:00.542Z
+- Meeting started: 2026-08-22T00:58:15.351Z
+- Meeting ended: 2026-08-22T01:01:00.409Z
+- Transcript segments: 18
+- Slides copied: 3
+
+## Summary
+
+# Meeting Minutes
+
+**Date:** 2026-08-22
+**Participants:** Qianyi Li, Echo AI Agent
+
+---
+
+## Overview
+The interaction began with Qianyi Li greeting the Echo AI agent and asking about their work and recent activities. The conversation included a series of repeated greetings ("Hello Echo AI," "Ciao," "Hi Echo AI") and a question regarding what is on the user’s screen or slide. The Echo AI agent responded to these queries with specific information about the slide content, while also acknowledging the inability to view live screen share.
+
+---
+
+## Key Topics
+- Greetings and casual conversation
+- Inquiry about the current slide or screen content
+- Clarification of the slide titled "Objectives" related to pain management in patients with opioid use disorder (OUD)
+
+---
+
+## Decisions
+- Echo AI Agent confirmed it cannot view live screen share and advised the user to check or restart screen sharing.
+- The ag…

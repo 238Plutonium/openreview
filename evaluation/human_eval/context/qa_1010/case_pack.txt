@@ -1,0 +1,5 @@
+Type: Slide topic
+
+what's on the slide
+
+(The slide topic is written into the question. Score the answer against that wording—not against screenshots.)

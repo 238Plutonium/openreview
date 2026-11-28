@@ -1,0 +1,5 @@
+Type: Slide topic
+
+answer the question on the screen with pubs
+
+(The slide topic is written into the question. Score the answer against that wording—not against screenshots.)

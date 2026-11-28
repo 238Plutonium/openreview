@@ -79,11 +79,16 @@ PMID_PLAIN = re.compile(r"\b([0-9]{7,8})\b")
 
 TYPE_QUOTA = {
     "literature": 6,
-    "slide": 8,
+    "slide": 15,  # allow slide fill toward TARGET_N=25
     "summary": 5,
     "prior_session": 2,
     "other": 6,
 }
+
+SLIDE_ASK = re.compile(
+    r"\b(slide|screen|veracity of the slide|info in the slide|on the scre)\b",
+    re.I,
+)
 
 
 def esc(s: str) -> str:
@@ -420,6 +425,96 @@ def _exclude_keys_for_item(it: dict) -> set[str]:
     return keys
 
 
+def _make_rtms_item(qid: str, c: dict, abstracts: dict[str, str]) -> dict:
+    qtype = c["question_type"]
+    standalone = clean_question(c["question"])
+    ctx = build_text_context(qid, c["session_id"], qtype, standalone, c["answer"], abstracts)
+    setting = f"{setting_for(qtype, c.get('topical', False))} {ctx['availability']}"
+    return {
+        "qa_id": qid,
+        "source": "rtms",
+        "question_type": qtype,
+        "standalone_question": standalone,
+        "setting_for_grader": setting,
+        "original_chat_question": c["question"],
+        "answer": c["answer"],
+        "session_id": c["session_id"],
+        "n_frames_log": str(c["n_frames"]),
+        "quality_score": str(c.get("score", "")),
+        "context_images": [],
+        "context_note": ctx["session_text"],
+        "context_case": ctx["case_text"],
+        "context_evidence": ctx["evidence_text"],
+        "context_availability": ctx["availability"],
+        "pmids": ",".join(ctx["pmids"]),
+    }
+
+
+def iter_slide_fill_candidates(exclude_norm: set[str]) -> list[dict]:
+    """Extra slide items to pad toward TARGET_N: topical answer + screenshare required."""
+    cands: list[dict] = []
+    seen: set[str] = set(exclude_norm)
+    if not RTMS_QA.exists():
+        return cands
+    for f in sorted(RTMS_QA.glob("*.ndjson")):
+        sid = f.stem[:8] if f.stem != "unknown" else "unknown"
+        for line in f.open(errors="replace"):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                o = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            q = (o.get("question") or "").strip()
+            a = (o.get("finalAnswer") or o.get("answer") or "").strip()
+            if not q or not a or len(a) < 100:
+                continue
+            cq = clean_question(q)
+            if not SLIDE_ASK.search(cq):
+                continue
+            if OFF_PAT.search(cq) or JUNK_PAT.search(cq):
+                continue
+            key = norm_q(q)
+            key_c = norm_q(cq)
+            ans_key = "A:" + norm_q(a)[:120]
+            if key in seen or key_c in seen or ans_key in seen:
+                continue
+            topical_q = bool(POS_PAT.search(cq))
+            topical_a = bool(POS_PAT.search(a[:700]))
+            if not topical_a and not topical_q:
+                continue
+            if not has_screenshare(sid):
+                continue
+            # Prefer specific slide prompts; still allow vague “what’s on my slide”
+            # when the archived answer is clearly MOUD/ECHO topical.
+            score = 0
+            score += 4 if topical_q else 1
+            score += 3  # screenshare present
+            score += 2 if len(a) >= 250 else 1
+            score += 2 if len(cq) >= 40 else 0
+            if SPECIFIC_BONUS.search(cq):
+                score += 2
+            if VAGUE_PAT.match(cq) and not topical_q:
+                score -= 1
+            cands.append(
+                {
+                    "session_id": sid,
+                    "question": q,
+                    "answer": a,
+                    "question_type": "slide",
+                    "n_frames": frame_count(o.get("screenShareFramesUsed")),
+                    "createdAt": o.get("createdAt") or o.get("askedAt") or "",
+                    "topical": topical_q or topical_a,
+                    "norm": key,
+                    "score": score,
+                }
+            )
+            seen.update({key, key_c, ans_key})
+    cands.sort(key=lambda c: (-c["score"], -len(c["answer"]), c["createdAt"]))
+    return cands
+
+
 def fill_to_target(packet_items: list[dict], abstracts: dict[str, str], target: int = TARGET_N) -> list[dict]:
     items = list(packet_items)
     exclude: set[str] = set()
@@ -442,31 +537,33 @@ def fill_to_target(packet_items: list[dict], abstracts: dict[str, str], target: 
             continue
         qid = str(next_id)
         next_id += 1
-        standalone = clean_question(c["question"])
-        ctx = build_text_context(qid, c["session_id"], qtype, standalone, c["answer"], abstracts)
-        setting = f"{setting_for(qtype, c['topical'])} {ctx['availability']}"
-        item = {
-            "qa_id": qid,
-            "source": "rtms",
-            "question_type": qtype,
-            "standalone_question": standalone,
-            "setting_for_grader": setting,
-            "original_chat_question": c["question"],
-            "answer": c["answer"],
-            "session_id": c["session_id"],
-            "n_frames_log": str(c["n_frames"]),
-            "quality_score": str(c["score"]),
-            "context_images": [],
-            "context_note": ctx["session_text"],
-            "context_case": ctx["case_text"],
-            "context_evidence": ctx["evidence_text"],
-            "context_availability": ctx["availability"],
-            "pmids": ",".join(ctx["pmids"]),
-        }
+        item = _make_rtms_item(qid, c, abstracts)
         items.append(item)
         counts[qtype] += 1
         exclude |= _exclude_keys_for_item(item)
         used_answers.add(na)
+
+    # Second pass: pad with slide questions (user request: bring n toward 25 with slides).
+    if len(items) < target:
+        for it in items:
+            exclude |= _exclude_keys_for_item(it)
+        slide_cands = iter_slide_fill_candidates(exclude)
+        for c in slide_cands:
+            if len(items) >= target:
+                break
+            if counts["slide"] >= TYPE_QUOTA.get("slide", 99):
+                break
+            na = norm_q(c["answer"])[:120]
+            if na in used_answers:
+                continue
+            qid = str(next_id)
+            next_id += 1
+            item = _make_rtms_item(qid, c, abstracts)
+            items.append(item)
+            counts["slide"] += 1
+            exclude |= _exclude_keys_for_item(item)
+            used_answers.add(na)
+
     return items
 
 
