@@ -1,0 +1,20 @@
+qa_id,source,question_type,session_id,quality_score,context_availability
+3,packet,literature,ecfcba4c,curated,2 session frame(s) attached
+4,packet,literature,b28ee899,curated,2 session frame(s) attached
+12,packet,literature,6d0ff5cf,curated,2 session frame(s) attached
+13,packet,other,43091a33,curated,4 session frame(s) attached; short meeting note/transcript excerpt attached
+15,packet,other,88934984,curated,4 session frame(s) attached
+16,packet,prior_session,b28ee899,curated,4 session frame(s) attached; no meeting transcript excerpt available for this session id
+17,packet,slide,43091a33,curated,4 session frame(s) attached; short meeting note/transcript excerpt attached
+18,packet,slide,43091a33,curated,4 session frame(s) attached; short meeting note/transcript excerpt attached
+30,packet,slide,6d0ff5cf,curated,4 session frame(s) attached; no meeting transcript excerpt available for this session id
+33,packet,summary,fe3fe521,curated,4 session frame(s) attached; no meeting transcript excerpt available for this session id
+34,packet,summary,fe3fe521,curated,4 session frame(s) attached; no meeting transcript excerpt available for this session id
+35,packet,summary,b28ee899,curated,4 session frame(s) attached; no meeting transcript excerpt available for this session id
+36,packet,summary,b28ee899,curated,4 session frame(s) attached; no meeting transcript excerpt available for this session id
+1001,rtms,other,9c01dd60,13,NO session frames attached
+1002,rtms,other,43091a33,13,4 session frame(s) attached; short meeting note/transcript excerpt attached
+1003,rtms,other,5b4ccc78,13,4 session frame(s) attached
+1004,rtms,literature,5a518058,8,2 session frame(s) attached
+1005,rtms,literature,da78cf81,8,2 session frame(s) attached
+1006,rtms,literature,ecfcba4c,8,2 session frame(s) attached

@@ -1,4 +1,4 @@
-# Human evaluation protocol — ECHO-AI (M=13 MOUD packet)
+# Human evaluation protocol — ECHO-AI (M≤25, quality-first)
 
 MedTutor-style clinician grading of **archived ECHO-AI answers**.  
 Primary claim = human Likert scores; automatic judges are companions only.
@@ -10,13 +10,26 @@ Primary claim = human Likert scores; automatic judges are companions only.
 | `human_eval_sheet.html` | Browser grading sheet (open locally) |
 | `human_eval_sheet.csv` | Same items for spreadsheet entry |
 | `ratings_template.csv` | Paste independent rater scores here |
+| `item_ids.csv` | Compact id / type / quality / context index |
 | `context/` | Session screenshots / notes attached per item |
 | `../RUBRIC.md` | Dimension definitions + error tags |
-| `../packet_qa.csv` | Source Q/A (ids 3,4,12,13,15–18,30,33–36) |
+| `../packet_qa.csv` | Curated core Q/A (ids 3,4,12,13,15–18,30,33–36) |
 
-**Excluded from this sheet:** off-domain heldout probes (dementia, diabetes, leukemia, dental, CS demo slides, etc.). Those are **not** the paper’s ECHO-content human packet.
+**Composition (ceiling M = 25, 宁缺毋滥):**
+1. **Curated packet (n=13)** — paper ECHO-content items (source=`packet`, original ids). Always included.
+2. **RTMS extras (n≤12)** — additional archived live-session Q/A that pass a quality bar (source=`rtms`, synthetic ids `1001+`).
 
-**M = 13** fixed ids: `3, 4, 12, 13, 15, 16, 17, 18, 30, 33, 34, 35, 36`.
+Quality bar for extras (must clear):
+- MOUD/ECHO topical **in the question**, **or** a grounding prompt with attachable frames + topical answer
+- Substantive answer (≥120 chars; usually much longer)
+- Not off-domain (diabetes, leukemia, dementia, CS demos, …)
+- Not vague-only (“what’s on my screen?”, bare “summarize”)
+- Soft type caps + de-duplication against the curated packet
+- Slide items require attachable session frames
+
+If fewer than 12 extras clear the bar, **we keep N &lt; 25** rather than padding.
+
+**Excluded:** off-domain heldout probes and low-information screen/summary asks.
 
 ## What raters see
 
@@ -65,6 +78,7 @@ You do **not** need Zoom. Use only the attached context.
 - Aim for **K ≥ 3 independent** clinicians/facilitators familiar with MOUD ECHO (author scores do not count toward K).
 - Report per-dimension mean/SD excluding N/A; report N/A rates; report IAA (e.g. Krippendorff’s α) after all ratings exist.
 - Separately report error-tag rates (`wrong_slide`, `no_frame_hallucination`, `irrelevant_pmid`, …).
+- Optionally stratify results by `source` (packet vs rtms) and by `question_type`.
 
 ## Rebuild the sheet
 
@@ -72,4 +86,4 @@ You do **not** need Zoom. Use only the attached context.
 python3 evaluation/human_eval/build_human_eval_sheet.py
 ```
 
-Requires local access to `/scratch1/ECHO_project/data/rtms/` for copying context frames (already run once into `context/`).
+Requires local access to `/scratch1/ECHO_project/data/rtms/` for QA logs + context frames (already run once into `context/`).
