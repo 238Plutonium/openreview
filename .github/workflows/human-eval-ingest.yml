@@ -1,0 +1,84 @@
+name: Ingest human-eval submission
+
+on:
+  repository_dispatch:
+    types: [human-eval-submit]
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  save-csv:
+    if: >
+      (github.event_name == 'repository_dispatch') ||
+      (github.event_name == 'issues' && (
+        contains(join(github.event.issue.labels.*.name, ','), 'human-eval-submission') ||
+        (github.event.action == 'opened' && startsWith(github.event.issue.title, 'ECHO-AI human eval scores'))
+      ))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Materialize payload
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          CLIENT_PAYLOAD: ${{ toJson(github.event.client_payload) }}
+        run: |
+          mkdir -p evaluation/human_eval/submissions /tmp/heval
+          printf '%s' "$CLIENT_PAYLOAD" > /tmp/heval/payload.json
+          printf '%s' "$ISSUE_BODY" > /tmp/heval/issue_body.txt
+          printf '%s' "$ISSUE_TITLE" > /tmp/heval/issue_title.txt
+          printf '%s' "${ISSUE_NUMBER:-}" > /tmp/heval/issue_number.txt
+          printf '%s' "$EVENT_NAME" > /tmp/heval/event_name.txt
+
+      - name: Write submission CSV
+        run: |
+          python3 <<'PY'
+          import json, re, pathlib, datetime, os
+          root = pathlib.Path("evaluation/human_eval/submissions")
+          root.mkdir(parents=True, exist_ok=True)
+          ts = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+          event = pathlib.Path("/tmp/heval/event_name.txt").read_text()
+          if event == "repository_dispatch":
+              payload = json.loads(pathlib.Path("/tmp/heval/payload.json").read_text() or "{}")
+              rater = str(payload.get("rater") or "anonymous")
+              safe = "".join(c for c in rater if c.isalnum() or c in "._-")[:40] or "anonymous"
+              csv_text = str(payload.get("csv") or "").strip() + "\n"
+              out = root / f"{ts}_{safe}.csv"
+              meta = root / f"{ts}_{safe}.json"
+              meta.write_text(json.dumps({
+                  "rater": rater,
+                  "scored": payload.get("scored"),
+                  "source": "repository_dispatch",
+                  "submitted_at_utc": ts,
+              }, indent=2) + "\n")
+          else:
+              title = pathlib.Path("/tmp/heval/issue_title.txt").read_text()
+              body = pathlib.Path("/tmp/heval/issue_body.txt").read_text()
+              num = pathlib.Path("/tmp/heval/issue_number.txt").read_text().strip() or "x"
+              m = re.search(r"```(?:csv)?\s*\n(.*?)```", body, re.S | re.I)
+              csv_text = ((m.group(1) if m else body).strip() + "\n")
+              safe = "".join(c if (c.isalnum() or c in "._-") else "_" for c in title)[:50] or "issue"
+              out = root / f"{ts}_issue{num}_{safe}.csv"
+          out.write_text(csv_text)
+          print(f"Wrote {out} ({len(csv_text)} bytes)")
+          PY
+
+      - name: Commit submission
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add evaluation/human_eval/submissions
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Add human-eval submission"
+          git push

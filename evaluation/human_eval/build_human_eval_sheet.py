@@ -13,6 +13,7 @@ from __future__ import annotations
 import csv
 import html
 import json
+import os
 import re
 import subprocess
 import time
@@ -31,8 +32,11 @@ ABSTRACT_CACHE = ROOT / "citation_faithfulness" / "abstract_cache.json"
 
 TARGET_N = 25
 MIN_FILL_SCORE = 8
-# Public form posts scores here (FormSubmit → inbox). Change if the intake email moves.
-SUBMIT_EMAIL = "qxl5189@psu.edu"
+# Public HTTPS ingest (echo-ai-website via ngrok) → commits CSV into openreview repo.
+SUBMIT_URL = os.environ.get(
+    "HUMAN_EVAL_SUBMIT_URL",
+    "https://chive-shrouded-gag.ngrok-free.dev/api/human-eval",
+)
 # Curated ECHO packet: only items a MOUD expert can judge from attached text.
 # Dropped: qa 3 HIV lit; 12 wrong-topic “K” abstracts; 15 disclosures;
 # 16 prior-session; vague slide/summary without usable notes.
@@ -1059,7 +1063,7 @@ def write_html(items: list[dict], path: Path) -> None:
     n = len(items)
     nav = "".join(f'<a href="#q{it["item_num"]}">{it["item_num"]}</a>' for it in items)
     cards = "".join(card_html(it) for it in items)
-    submit_endpoint = f"https://formsubmit.co/ajax/{SUBMIT_EMAIL}"
+    submit_endpoint = SUBMIT_URL
     doc = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1119,7 +1123,7 @@ def write_html(items: list[dict], path: Path) -> None:
   <h2>Welcome — thank you for helping</h2>
   <p>We are the <b>ECHO-AI research team at Penn State</b>, working with <b>Penn State Project ECHO</b> on Medication for Opioid Use Disorder (MOUD) tele-mentoring. ECHO-AI is an educational meeting assistant that answers questions during Zoom ECHO sessions (slides, recent discussion, prior sessions, and PubMed).</p>
   <p><b>Purpose of this survey.</b> We would like your expert judgment on how good a sample of archived ECHO-AI answers are for real MOUD ECHO teaching. Your ratings help us understand answer quality on five dimensions and improve the system for facilitators and clinicians. This is educational research support—not a clinical trial, and not a request to prescribe or diagnose.</p>
-  <p>There are <b>{n} questions</b>. For each one, please read the question, any meeting notes and PubMed abstracts, then the bot’s answer. Use the <a href="#rubric">rubric</a> below (<b>1 = Poor … 5 = Excellent</b>, or <b>N/A</b>). When you finish, enter your name and click <b>Submit scores</b>—your ratings are sent directly to our team. You can also download a CSV copy for your records. We are grateful for your time.</p>
+  <p>There are <b>{n} questions</b>. For each one, please read the question, any meeting notes and PubMed abstracts, then the bot’s answer. Use the <a href="#rubric">rubric</a> below (<b>1 = Poor … 5 = Excellent</b>, or <b>N/A</b>). When you finish, enter your name and click <b>Submit scores</b>—your ratings are saved into our <b>openreview</b> GitHub repository. You can also download a CSV copy for your records. We are grateful for your time.</p>
 </div>
 <div class="howto">
   <p><b>How to complete each item:</b> click one score per row, optionally add tags and notes. Score using <b>only</b> the question plus any meeting notes / PubMed abstracts shown for that item (your MOUD expertise is fine; do not look up outside papers or prior recordings). This survey does not include screenshots.</p>
@@ -1135,7 +1139,7 @@ def write_html(items: list[dict], path: Path) -> None:
 <nav><b>Jump to question:</b> {nav}</nav>
 {cards}
 <div class="submit-footer" id="bottom_bar">
-  <p><b>Done?</b> Enter your name (same as above) and submit. Your scores go directly to the ECHO-AI team.</p>
+  <p><b>Done?</b> Enter your name (same as above) and submit. Your scores are written to the openreview repository.</p>
   <div class="row">
     <label>Your name / rater id: <input type="text" id="rater_id_bottom" placeholder="e.g. your name" autocomplete="name"/></label>
     <button type="button" class="primary" id="btn_submit_bottom">Submit scores</button>
@@ -1242,24 +1246,25 @@ def write_html(items: list[dict], path: Path) -> None:
     try {{
       const resp = await fetch(SUBMIT_URL, {{
         method: "POST",
-        headers: {{ "Content-Type": "application/json", "Accept": "application/json" }},
+        headers: {{
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "ngrok-skip-browser-warning": "1"
+        }},
         body: JSON.stringify({{
-          name: rater,
-          _subject: "ECHO-AI human eval scores — " + rater,
-          _template: "table",
-          _captcha: "false",
-          questions_scored: String(scored) + " / " + String(n),
-          scores_csv: csv,
-          message: "ECHO-AI human evaluation scores from " + rater + ". CSV is in scores_csv."
+          rater: rater,
+          scored: String(scored) + "/" + String(n),
+          csv: csv
         }})
       }});
       const data = await resp.json().catch(function () {{ return {{}}; }});
-      if (!resp.ok || data.success === "false" || data.error) {{
-        throw new Error((data && (data.message || data.error)) || ("HTTP " + resp.status));
+      if (!resp.ok || !data.ok) {{
+        throw new Error((data && data.error) || ("HTTP " + resp.status));
       }}
-      setStatus("Submitted — thank you! You can still download a CSV copy if you want.", "ok");
+      const where = data.path ? (" Saved as " + data.path + " in openreview.") : "";
+      setStatus("Submitted — thank you!" + where + " You can still download a CSV copy if you want.", "ok");
     }} catch (err) {{
-      setStatus("Submit failed (" + (err && err.message ? err.message : "network") + "). Please use Download CSV copy and email it to the team.", "err");
+      setStatus("Submit failed (" + (err && err.message ? err.message : "network") + "). Please use Download CSV copy and send it to the team.", "err");
       downloadCsv();
     }} finally {{
       buttons.forEach(b => {{ b.disabled = false; }});
