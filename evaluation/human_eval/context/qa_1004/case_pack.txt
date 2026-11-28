@@ -1,5 +1,3 @@
-Type: Slide topic
+Type: General
 
-answer the question on the screen with literature review
-
-(The slide topic is written into the question. Score the answer against that wording—not against screenshots.)
+how do we treat HIV patients

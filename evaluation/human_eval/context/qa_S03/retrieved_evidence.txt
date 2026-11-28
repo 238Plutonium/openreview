@@ -1,0 +1,13 @@
+PMID 42909039
+Comparative efficacy of naltrexone-accelerated versus sublingual buprenorphine in opioid withdrawal management and initiating injectable naltrexone treatment: study protocol for a randomized controlled trial.
+BACKGROUND: Extended-release injectable naltrexone (XR-NTX), a long-acting opioid antagonist, is an effective relapse prevention strategy in the treatment of opioid use disorder (OUD). However, standard XR-NTX initiation requires completion of opioid withdrawal management and a 1-2 week opioid-free period. This interval is associated with heightened vulnerability to lapse and relapse, and many patients fail to initiate XR-NTX treatment successfully. Therefore, alternative strategies that enable rapid XR-NTX initiation are needed. This study aimed to compare the effectiveness and safety of naltrexone-accelerated (NA) versus sublingual buprenorphine (SB) withdrawal management in facil…
+
+PMID 42644692
+Extended-release naltrexone versus buprenorphine-naloxone for opioid use disorder: a systematic review and meta-analysis of randomized controlled trials.
+Background: Extended-release naltrexone (XR-NTX) and buprenorphine-naloxone (BUP-NLX) are approved for opioid use disorder (OUD), but their comparative efficacy and safety are unclear.Objectives: We conducted a systematic review and meta-analysis of randomized controlled trials (RCTs) comparing XR-NTX and BUP-NLX.Methods: PubMed, Embase, and Cochrane were searched from inception to July 2025. Main efficacy outcomes were treatment initiation, retention, time to relapse, number of relapses, opioid-positive urine samples, and self-reported opioid use days. Odds ratios (OR), mean differences (MD), and hazard ratios (HR) with 95% confidence intervals (CI) were calculated. Heterogeneity was assessed with I2 and evidence certainty rated with G…
+
+PMID 42377009
+Impact of Assertive Outreach, Individual Involvement, and Significant Other Involvement on XR-NTX Adherence.
+BACKGROUND AND OBJECTIVES: The current study investigates the roles of assertive outreach, individual participant involvement, and treatment significant other (TSO) involvement through the Medication Adherence Therapy: Psychosocial Leverage Using a Significant other (MAT-PLUS) intervention on extended-release naltrexone (XR-NTX) adherence for the treatment of opioid and/or alcohol use disorder (OUD/AUD).
+METHODS: Participants receiving XR-NTX for OUD and/or AUD received 16 weeks of the MAT-PLUS intervention through a prior randomized controlled trial (RCT). Logs tracked XR-NTX adherence, treatment team outreach, and participant/family communications and sessions.
+RESULTS: Of the contact types examined, only the number of family sessions attended significantly predicted next XR-NTX…

@@ -1,0 +1,14 @@
+PMID 43060569
+Examining contingency management delivery in specialty addiction treatment programs: a multisite analysis of implementation determinants.
+AIMS: Despite strong evidence, contingency management (CM) remains underutilized due to multilevel implementation challenges. Digital CM delivery has shown promise in overcoming barriers to in-person delivery, but there is limited understanding of how factors affecting delivery differ across digital and in-person modalities. This study compared implementation determinants across two cohorts of outpatient specialty addiction treatment programs delivering CM through digital or in-person modalities to inform future delivery decisions and guide implementation strategies to support CM scale in real-world treatment.
+METHODS: Ten outpatient specialty addiction treatment programs received a multilevel implementation strategy to assist with CM uptake via a digi…
+
+PMID 42400535
+Drug Use, Treatment, and Hopes for the Future: A Qualitative Study of Patients on Methadone Who Use Cocaine in the Age of Fentanyl.
+BACKGROUND: Ongoing cocaine use is common during methadone treatment and is associated with poorer outcomes. Digital health tools offer promising new ways to enhance methadone treatment through remote delivery of adjunctive behavioral health interventions. The experiences of patients on methadone who also use cocaine are under-represented in the recent literature. This qualitative study of recently admitted patients on methadone who also used cocaine examines their experiences and views on drug use and treatment.
+METHODS: Twenty-one participants were purposively sampled from the intervention arm of an ongoing multi-site clinical trial of a digital behavioral intervention. Qualitative interviews were carried out approximately 3 months after randomization into…
+
+PMID 42046533
+Evaluating comparative effect of non-pharmacological interventions adjunctive to opioid agonist therapy for opioid use disorder: A systematic review with network meta-analysis.
+BACKGROUND AND AIMS: Non-pharmacological therapies are critical for disease management, particularly when pharmacological approaches are limited. Investigating their role as adjuncts to pharmacotherapy to improve outcomes in opioid use disorder (OUD) is of substantial clinical importance. This study aimed to evaluate the efficacy of non-pharmacological therapies as adjuncts to opioid agonist therapy (OAT) management for OUD.
+METHODS: We systematically searched PubMed, Cochrane Controlled Register of Trials, Embase and Web of Science from inception to 8 February 2025 for randomized controlled trials (RCTs) comparing OAT alone versus OAT combined with non-pharmacological interventions in OUD. Outcomes of interest in…

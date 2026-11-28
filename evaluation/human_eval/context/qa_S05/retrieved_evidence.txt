@@ -1,0 +1,13 @@
+PMID 42950702
+Orthopedic trauma in patients with opioid use disorder: Current concepts in perioperative management.
+BACKGROUND: Opioid use disorder (OUD) is an important challenge in orthopedic trauma, where acute injury intersects with preexisting opioid exposure, tolerance, complex pain, and barriers to continuity of addiction treatment. OUD has been associated with higher rates of complications, readmission, and treatment disruption, yet OUD-specific perioperative management remains inconsistently incorporated into orthopedic trauma practice. This review synthesizes the epidemiology, outcomes, and perioperative management evidence for this population.
+METHODS: A clinically oriented current concepts review synthesized peer-reviewed literature, prioritizing studies published from 2013 onward. PubMed and Embase were searched, supplemented by Google Scholar, Semantic Scholar, and manual review of refer…
+
+PMID 42764963
+Opioid use and perioperative pain management practices in dogs and cats in Latvia: A national survey highlighting regional disparities and generational differences.
+BACKGROUND AND AIM: Effective pain management is fundamental to animal welfare and successful perioperative care. Although multimodal analgesia incorporating opioids is considered the standard of care in companion animal practice, opioid availability and clinical use vary considerably among countries because of differences in regulations, access, and professional training. Information regarding opioid prescribing and pain management practices in the Baltic region is lacking. This study aimed to evaluate opioid availability, opioid use patterns, perioperative pain management practices, and pain assessment approaches among veterinarians in Latvia, with particular emphasis on regional disparities, surgical activity, and generati…
+
+PMID 42550090
+Perioperative care for patients with opioid exposure and opioid use disorder: screening and treatment strategies.
+PURPOSE OF REVIEW: The prevalence of opioid tolerance, dependence, and use disorder is increasing among patients presenting for surgical care, yet perioperative management strategies for these patients remain inconsistent. This review examines the impact of preoperative opioid exposure on surgical outcomes, the scope of untreated opioid use disorder (OUD) among surgical patients, and advances in clinical and systems-level approaches to perioperative care.
+RECENT FINDINGS: Preoperative opioid exposure independently predicts worse surgical outcomes, including higher opioid consumption, readmissions, complications, and mortality, in a dose-dependent manner. Perioperative opioid exposure predicts persistent opioid use after surgery, with the duration of exposure a stronger predic…

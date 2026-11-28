@@ -27,7 +27,7 @@ Slide/screen questions name the topic in the question itself. Raters judge wheth
 | `context/qa_*/session_excerpt.txt` | Meeting summary/transcript excerpt (when available) |
 | `context/qa_*/retrieved_evidence.txt` | Cited PMID abstracts (when available) |
 
-**Composition (ceiling M=25):** curated ECHO packet + additional slide / session items. Off-domain or vague probes are excluded.
+**Composition (ceiling M=25):** curated MOUD ECHO packet + **generated MOUD literature** Q/A (local model + real PubMed abstracts) + adequate RTMS items. Literature items are **MOUD-only**. Off-domain, disclosures, prior-session-without-notes, and vague slide/summary probes are excluded.
 
 ## What raters see (per item)
 

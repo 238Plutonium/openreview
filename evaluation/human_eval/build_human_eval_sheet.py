@@ -31,9 +31,11 @@ ABSTRACT_CACHE = ROOT / "citation_faithfulness" / "abstract_cache.json"
 
 TARGET_N = 25
 MIN_FILL_SCORE = 8
-# Curated ECHO packet minus items that need context we do not attach:
-# qa 15 disclosures (slide text); qa 16 prior-session (no prior transcript).
-PACKET_IDS = [3, 4, 12, 13, 17, 18, 30, 33, 34, 35, 36]
+# Curated ECHO packet: MOUD-focused items with text-gradable context only.
+# Dropped: qa 3 HIV-only lit; 15 disclosures; 16 prior-session; 30/33–36
+# slide/summary asks without usable meeting notes for this survey.
+PACKET_IDS = [4, 12, 13, 17, 18]
+SYNTH_LIT = OUT / "synthetic_moud_literature.jsonl"
 
 OFF_PAT = re.compile(
     r"\b(dementia|dimentia|diabetes|leukemia|lukemea|dental|dented\s+teeth|bac\s+teeth|"
@@ -82,12 +84,23 @@ PMID_RE = re.compile(r"\bPMID[:\s#]*([0-9]{6,9})\b|\b(PMID)\s*([0-9]{6,9})\b|\[p
 PMID_PLAIN = re.compile(r"\b([0-9]{7,8})\b")
 
 TYPE_QUOTA = {
-    "literature": 6,
-    "slide": 15,  # allow slide fill toward TARGET_N=25
+    "literature": 14,  # prefer MOUD literature (archived + generated)
+    "slide": 8,
     "summary": 5,
-    "prior_session": 2,
+    "prior_session": 0,  # excluded without prior transcript
     "other": 6,
 }
+
+MOUD_LIT_PAT = re.compile(
+    r"\b(moud|oud|opioid use disorder|buprenorphine|methadone|naltrexone|xr-ntx|"
+    r"suboxone|medication for opioid|opioid agonist|opioid antagonist|"
+    r"precipitated withdrawal|fentanyl|substance use disorder|\bsud\b)\b",
+    re.I,
+)
+
+
+def is_moud_literature_question(q: str) -> bool:
+    return bool(MOUD_LIT_PAT.search(q or ""))
 
 SLIDE_ASK = re.compile(
     r"\b(slide|screen|veracity of the slide|info in the slide|on the scre)\b",
@@ -339,6 +352,9 @@ def load_packet_items(abstracts: dict[str, str]) -> list[dict]:
     for qid in PACKET_IDS:
         key = str(qid)
         p = packet[key]
+        if p["question_type"] == "literature" and not is_moud_literature_question(p["standalone_question"]):
+            print(f"skip packet lit qa_id={key}: not MOUD-focused")
+            continue
         h = held.get(key, {})
         sid = (h.get("session_id") or "unknown").strip()
         ctx = build_text_context(key, sid, p["question_type"], p["standalone_question"], p["answer"], abstracts)
@@ -365,6 +381,48 @@ def load_packet_items(abstracts: dict[str, str]) -> list[dict]:
                 "context_evidence": ctx["evidence_text"],
                 "context_availability": ctx["availability"],
                 "pmids": ",".join(ctx["pmids"]),
+            }
+        )
+    return items
+
+
+def load_synthetic_literature(abstracts: dict[str, str]) -> list[dict]:
+    """MOUD-only literature Q/A generated with vLLM + real PubMed abstracts."""
+    if not SYNTH_LIT.exists():
+        return []
+    items = []
+    for line in SYNTH_LIT.open():
+        line = line.strip()
+        if not line:
+            continue
+        o = json.loads(line)
+        q = (o.get("standalone_question") or "").strip()
+        a = (o.get("answer") or "").strip()
+        if not q or not a or not is_moud_literature_question(q):
+            continue
+        qid = str(o.get("synth_id") or f"S{len(items)+1}")
+        sid = (o.get("session_id") or "synthetic").strip()
+        ctx = build_text_context(qid, sid, "literature", q, a, abstracts)
+        setting = (o.get("setting_for_grader") or setting_for("literature", True)).strip()
+        setting = f"{setting} {ctx['availability']}"
+        items.append(
+            {
+                "qa_id": qid,
+                "source": "synthetic",
+                "question_type": "literature",
+                "standalone_question": q,
+                "setting_for_grader": setting,
+                "original_chat_question": o.get("original_chat_question") or q,
+                "answer": a,
+                "session_id": sid,
+                "n_frames_log": "0",
+                "quality_score": "generated",
+                "context_images": [],
+                "context_note": ctx["session_text"],
+                "context_case": ctx["case_text"],
+                "context_evidence": ctx["evidence_text"],
+                "context_availability": ctx["availability"],
+                "pmids": ",".join(ctx["pmids"] or o.get("pmids") or []),
             }
         )
     return items
@@ -398,12 +456,18 @@ def iter_rtms_candidates(exclude_norm: set[str]) -> list[dict]:
             score = quality_score(cq, a, sid)
             if score is None:
                 continue
+            qtype = classify_type(q, o.get("replyType") or "")
+            if qtype == "literature" and not is_moud_literature_question(cq):
+                continue
+            # Vague slide asks without a named MOUD topic are not adequate for text-only grading.
+            if qtype == "slide" and VAGUE_PAT.match(cq) and not is_moud_literature_question(cq):
+                continue
             cands.append(
                 {
                     "session_id": sid,
                     "question": q,
                     "answer": a,
-                    "question_type": classify_type(q, o.get("replyType") or ""),
+                    "question_type": qtype,
                     "n_frames": frame_count(o.get("screenShareFramesUsed")),
                     "createdAt": o.get("createdAt") or o.get("askedAt") or "",
                     "topical": bool(POS_PAT.search(cq)),
@@ -488,10 +552,12 @@ def iter_slide_fill_candidates(exclude_norm: set[str]) -> list[dict]:
             topical_a = bool(POS_PAT.search(a[:700]))
             if not topical_a and not topical_q:
                 continue
+            # Text-only survey: require a named clinical topic in the question
+            # (not bare “what’s on my slide”).
+            if VAGUE_PAT.match(cq) or not topical_q:
+                continue
             if not has_screenshare(sid):
                 continue
-            # Prefer specific slide prompts; still allow vague “what’s on my slide”
-            # when the archived answer is clearly MOUD/ECHO topical.
             score = 0
             score += 4 if topical_q else 1
             score += 3  # screenshare present
@@ -499,8 +565,6 @@ def iter_slide_fill_candidates(exclude_norm: set[str]) -> list[dict]:
             score += 2 if len(cq) >= 40 else 0
             if SPECIFIC_BONUS.search(cq):
                 score += 2
-            if VAGUE_PAT.match(cq) and not topical_q:
-                score -= 1
             cands.append(
                 {
                     "session_id": sid,
@@ -521,6 +585,11 @@ def iter_slide_fill_candidates(exclude_norm: set[str]) -> list[dict]:
 
 def fill_to_target(packet_items: list[dict], abstracts: dict[str, str], target: int = TARGET_N) -> list[dict]:
     items = list(packet_items)
+    # Prefer generated MOUD literature next (adequate + abstracts).
+    for it in load_synthetic_literature(abstracts):
+        if len(items) >= target:
+            break
+        items.append(it)
     exclude: set[str] = set()
     for it in items:
         exclude |= _exclude_keys_for_item(it)

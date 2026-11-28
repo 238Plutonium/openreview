@@ -1,0 +1,13 @@
+PMID 42411711
+Adaption of a posttraumatic stress disorder intervention for patients who use stimulants and opioids in the opioid treatment programme setting.
+Background: Polysubstance use of stimulants and opioids is prevalent among patients receiving methadone in opioid treatment programmes (OTPs) and has been linked with complex clinical profiles and poor outcomes, including psychiatric comorbidity, overdose death, and early attrition from treatment.Objective: The study goal was to adapt the evidence-based intervention Skills Training in Affective and Interpersonal Regulation with Narrative Therapy (STAIR-NT) for polysubstance populations informed by the ADAPT-ITT framework to gain preliminary information regarding intervention acceptability and implementation barriers.Method: To obtain feedback on adapting the intervention and approaches to integrate it, focus groups with key stakeholders (i.e. cou…
+
+PMID 42400535
+Drug Use, Treatment, and Hopes for the Future: A Qualitative Study of Patients on Methadone Who Use Cocaine in the Age of Fentanyl.
+BACKGROUND: Ongoing cocaine use is common during methadone treatment and is associated with poorer outcomes. Digital health tools offer promising new ways to enhance methadone treatment through remote delivery of adjunctive behavioral health interventions. The experiences of patients on methadone who also use cocaine are under-represented in the recent literature. This qualitative study of recently admitted patients on methadone who also used cocaine examines their experiences and views on drug use and treatment.
+METHODS: Twenty-one participants were purposively sampled from the intervention arm of an ongoing multi-site clinical trial of a digital behavioral intervention. Qualitative interviews were carried out approximately 3 months after randomization into…
+
+PMID 42080577
+Methadone Is Associated With Superior Long-Term Treatment Retention Compared With Buprenorphine/Naloxone in a Large Canadian Cohort.
+OBJECTIVE: We aimed to compare the effectiveness of methadone and sublingual buprenorphine/naloxone and their association with treatment discontinuation using real-world data from Ontario, Canada.
+METHOD: We conducted a longitudinal retrospective cohort study using linked, population-level administrative databases in Ontario. We included data on all Ontario residents with an indication of opioid use disorder (OUD) between January 1, 2014, and a maximum follow-up of December 31, 2022 (n = 45,230). We defined exposure groups as methadone and buprenorphine, and the primary outcome was treatment discontinuation. We applied propensity score matching to compare treatment discontinuation outcomes between patients initiating methadone or buprenorphine/naloxone, con…

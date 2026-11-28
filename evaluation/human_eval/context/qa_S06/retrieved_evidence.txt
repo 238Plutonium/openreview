@@ -1,0 +1,15 @@
+PMID 42549766
+Olanzapine/Samidorphan-Associated Opioid Withdrawal Reported to US Poison Centers.
+PURPOSE/BACKGROUND: Olanzapine/samidorphan is a combination medication indicated for the treatment of mood and psychotic symptoms with limited weight gain. Samidorphan is a mu-opioid receptor antagonist that is contraindicated in patients actively using opioids.
+METHODS/PROCEDURES: Retrospective evaluation of olanzapine/samidorphan cases reported to the National Poison Data System between May 1, 2021, and June 30, 2025. We reviewed coded data to identify those possibly describing a patient who experienced opioid withdrawal. Case notes were requested from individual poison centers, and clinical factors were extracted from the notes.
+FINDINGS/RESULTS: There were 426 cases reported to the National Poison Data System, of which 31 were patients experiencing opioid withdrawal. About half were male, and the media…
+
+PMID 42097485
+Qualitative study of blister pack use during buprenorphine low dose initiation.
+BACKGROUND: Buprenorphine low-dose initiation (LDI) protocols can reduce the risk of precipitated withdrawal by initiating buprenorphine at low doses without needing to be in opioid withdrawal when starting. However, they are challenging for patients to implement in outpatient settings, in part because they involve splitting doses and following a multi-day regimen with dynamic daily instructions. Blister packs offer a structured approach to completing LDI by providing prepackaged, presplit buprenorphine doses with simplified instructions; however, there are limited data of buprenorphine blister pack implementation and experiences with their use.
+OBJECTIVE: To explore attitudes of health care providers and patients with outpatient buprenorphine LDI blister packing to provide insight into their use in real-worl…
+
+PMID 42096946
+Extended-Release Buprenorphine Administration by Emergency Medical Services Paramedics: A Case Series.
+BACKGROUND: Medications for opioid use disorder (MOUD), including buprenorphine, reduce mortality and improve treatment retention. However, daily sublingual formulations may be impractical for patients with unstable housing, limited healthcare access, or interrupted care. Extended-release buprenorphine (XR-BUP) provides sustained therapeutic levels without daily dosing and may overcome barriers to adherence. Emergency Medical Services (EMS), both 911 and Mobile Integrated Healthcare (MIH) models, are uniquely positioned to initiate or maintain MOUD among high-risk individuals in community settings. The purpose of this case series is to describe EMS clinicians administering XR-BUP to individuals with opioid use disorder (OUD) in a 911-based system.
+METHODS: We report three cases of param…
