@@ -92,4 +92,8 @@ Requires local access to `/scratch1/ECHO_project/data/rtms/` for QA logs + conte
 
 `human_eval_sheet.html` **embeds compressed session frames** (data URIs), so a single file works offline in Chrome/Edge.
 
-Cursor’s built-in preview / GitHub blob view may still blank large pages — download the HTML and open it in a normal browser if needed. Relative `context/` files remain available for HTTP serving as a fallback.
+**Public link (external raters):** https://238plutonium.github.io/openreview/human-eval/
+
+Fallback CDN mirror: https://cdn.jsdelivr.net/gh/238Plutonium/openreview@cursor/llama33-ovh-bakeoff-22b0/evaluation/human_eval/human_eval_sheet.html
+
+Cursor’s built-in preview may still blank large pages — use the public link or download the HTML into Chrome/Edge.
