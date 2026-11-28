@@ -35,18 +35,19 @@ ECHO slide/screen questions are handled the same way: the **slide topic is writt
 5. Scores: factual · grounding · evidence · safety · usability (1–5)  
 6. Optional error tags + notes
 
-## Scoring (short)
+## Rubric (MedTutor-style)
 
-1. **1 = poor … 5 = strong** (see `../RUBRIC.md`).
-2. **Grounding** = consistency with the case pack / session excerpt (not pixel matching).
-3. **Evidence** = cited material (abstracts) must support the claims; PMID lists alone ≠ good evidence.
-4. Inventing meeting/slide specifics absent from the case/excerpt → low grounding; tag `hallucinated_session` / `weak_case_grounding`.
-5. Independent raters; author scores do not count toward K.
+Full text: [`RUBRIC.md`](RUBRIC.md) (also embedded at the top of the HTML sheet).
+
+- Scale: **1 = Poor … 5 = Excellent** (plus **N/A**)
+- Dimensions: Factual · Grounding · Evidence · Safety · Usability  
+- Anchors for 1–2 / 3 / 4–5 are in the rubric table  
+- Grounding = consistency with question + notes (not screenshots)  
+- Independent raters; author scores do not count toward K
 
 ## Worked examples
 
-See the HTML “Annotation examples” panel (literature+abstracts; slide-topic-in-case-text; summary/prior; citation dump).
-
+See the HTML “Quick examples” panel.
 ## Target raters / reporting
 
 - **K ≥ 3** independent clinicians/facilitators familiar with MOUD ECHO  
