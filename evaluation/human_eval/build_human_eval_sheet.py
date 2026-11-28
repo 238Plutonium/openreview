@@ -680,7 +680,7 @@ def rubric_html() -> str:
       <td>Clear, concise, meeting-ready</td>
     </tr>
   </table>
-  <p class="meta">Full write-up: <code>RUBRIC.md</code> in this folder. Optional tags: <code>ok</code>, <code>unsupported claim</code>, <code>wrong citation</code>, <code>overconfident</code>, <code>made-up meeting detail</code>.</p>
+  <p class="meta">Optional short tags (in the box under each question): <code>ok</code>, <code>unsupported claim</code>, <code>wrong citation</code>, <code>overconfident</code>, <code>made-up meeting detail</code>.</p>
 </section>
 """
 
