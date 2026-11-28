@@ -6,15 +6,25 @@ archives only when items clear a quality bar (宁缺毋滥 — may finish under 
 """
 from __future__ import annotations
 
-import base64
 import csv
 import html
+import io
 import json
-import mimetypes
 import re
 import shutil
 from collections import Counter
 from pathlib import Path
+
+try:
+    from PIL import Image
+except ImportError:  # pragma: no cover
+    Image = None  # type: ignore
+
+# Cursor/GitHub file previews often block relative or data-URI images.
+# Default: relative paths + compress frames; open via local HTTP server.
+EMBED_IMAGES = False
+JPEG_MAX_W = 960
+JPEG_QUALITY = 55
 
 ROOT = Path(__file__).resolve().parents[1]  # evaluation/
 OUT = Path(__file__).resolve().parent
@@ -252,9 +262,8 @@ def copy_context(qa_id: str, sid: str, qtype: str) -> dict:
     imgs = collect_images(ss, mm, limit=4 if qtype in {"slide", "summary", "other", "prior_session"} else 2)
     rel_imgs: list[str] = []
     for i, src in enumerate(imgs, 1):
-        dst = dest / f"frame_{i}{src.suffix.lower()}"
-        if not dst.exists() or dst.stat().st_size != src.stat().st_size:
-            shutil.copy2(src, dst)
+        dst = dest / f"frame_{i}.jpg"
+        _write_compressed_jpeg(src, dst)
         rel_imgs.append(f"context/qa_{qa_id}/{dst.name}")
 
     note = meeting_note(mm) if qtype in {"summary", "prior_session", "other", "slide"} else ""
@@ -541,20 +550,18 @@ def examples_html() -> str:
 """
 
 
-def data_uri_for(rel_or_abs: str) -> str:
-    """Embed image so Cursor/GitHub previews (no relative FS) still show frames."""
-    path = Path(rel_or_abs)
-    if not path.is_absolute():
-        path = OUT / path
-    if not path.is_file():
-        return ""
-    mime = mimetypes.guess_type(path.name)[0] or "image/jpeg"
-    raw = path.read_bytes()
-    # Keep HTML usable: skip absurdly large singles (>2.5MB).
-    if len(raw) > 2_500_000:
-        return ""
-    b64 = base64.b64encode(raw).decode("ascii")
-    return f"data:{mime};base64,{b64}"
+def _write_compressed_jpeg(src: Path, dst: Path) -> None:
+    """Copy/resize frame so the HTTP-served sheet stays light."""
+    if Image is None:
+        shutil.copy2(src, dst)
+        return
+    im = Image.open(src).convert("RGB")
+    w, h = im.size
+    if w > JPEG_MAX_W:
+        im = im.resize((JPEG_MAX_W, int(h * JPEG_MAX_W / w)), Image.Resampling.LANCZOS)
+    buf = io.BytesIO()
+    im.save(buf, format="JPEG", quality=JPEG_QUALITY, optimize=True)
+    dst.write_bytes(buf.getvalue())
 
 
 def card_html(it: dict) -> str:
@@ -564,13 +571,11 @@ def card_html(it: dict) -> str:
     src_tag = it.get("source") or ""
     img_block = ""
     if imgs:
-        figs = []
-        for src in imgs:
-            uri = data_uri_for(src) or src
-            figs.append(
-                f'<figure class="ctx"><img src="{html.escape(uri)}" alt="session frame for qa {qid}" loading="lazy"/><figcaption>{html.escape(Path(src).name)}</figcaption></figure>'
-            )
-        img_block = f"<div class='ctx-grid'>{''.join(figs)}</div>"
+        figs = "".join(
+            f'<figure class="ctx"><img src="{html.escape(src)}" alt="session frame for qa {qid}" loading="lazy"/><figcaption>{html.escape(Path(src).name)}</figcaption></figure>'
+            for src in imgs
+        )
+        img_block = f"<div class='ctx-grid'>{figs}</div>"
     else:
         img_block = "<p class='warn'><b>No frames attached</b> for this item. If the question needs a slide/screen, mark grounding N/A unless you are only scoring honesty of abstention.</p>"
 
@@ -650,6 +655,7 @@ def write_html(items: list[dict], path: Path) -> None:
   <p><b>Type mix:</b> {esc(type_str)}</p>
   <p><b>Task:</b> Score the archived ECHO answer on factual · grounding · evidence · safety · usability (1–5). Use <b>N/A</b> for grounding when required context is missing.</p>
   <p><b>Context:</b> Where available, session frames and short notes are attached below each question (see also <code>PROTOCOL.md</code>).</p>
+  <p><b>How to open:</b> do <i>not</i> rely on Cursor/GitHub file preview (images will be blank). Serve this folder over HTTP, e.g. <code>python3 -m http.server 8765</code> then open <code>http://127.0.0.1:8765/human_eval_sheet.html</code>.</p>
   <p>Save a copy of this HTML after editing, or copy scores into <code>ratings_template.csv</code>.</p>
 </div>
 {examples_html()}

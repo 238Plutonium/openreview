@@ -87,3 +87,15 @@ python3 evaluation/human_eval/build_human_eval_sheet.py
 ```
 
 Requires local access to `/scratch1/ECHO_project/data/rtms/` for QA logs + context frames (already run once into `context/`).
+
+## How to view (images)
+
+Cursor / GitHub HTML previews often show **blank** context frames. Serve the folder instead:
+
+```bash
+cd evaluation/human_eval
+python3 -m http.server 8765
+```
+
+Then open: http://127.0.0.1:8765/human_eval_sheet.html  
+(If using remote SSH/Cursor, accept the port-forward prompt for 8765.)
