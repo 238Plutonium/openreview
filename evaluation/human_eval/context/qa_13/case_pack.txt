@@ -1,0 +1,6 @@
+CASE PACK (MedTutor-style text context for the grader)
+Question type: other
+Session id: 43091a33
+
+Case / self-contained question:
+What are opioids?

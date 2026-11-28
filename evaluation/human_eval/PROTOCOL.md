@@ -1,99 +1,66 @@
-# Human evaluation protocol — ECHO-AI (M≤25, quality-first)
+# Human evaluation protocol — ECHO-AI (MedTutor-style text context, M≤25)
 
-MedTutor-style clinician grading of **archived ECHO-AI answers**.  
-Primary claim = human Likert scores; automatic judges are companions only.
+Clinician grading of **archived ECHO-AI answers**, aligned with MedTutor (Jang et al., 2025):
 
-## Packet (ECHO / MOUD only)
+- Raters see a **text case pack** + **retrieved evidence (PubMed title/abstract)** + optional **session text excerpt**
+- Raters score Likert dimensions in an annotation UI
+- **No Zoom slide screenshots** in the grading UI (MedTutor uses text case reports, not live slides)
+
+## Why not slides-as-images?
+
+MedTutor’s radiologists graded against **clinical case report text** and retrieved textbook/literature snippets—not live screenshare pixels.  
+ECHO slide/screen questions are handled the same way: the **slide topic is written into the self-contained question** (the “case”), and grounding is judged against that case text (+ session excerpt when available).
+
+## Packet
 
 | File | Role |
 |---|---|
-| `human_eval_sheet.html` | Browser grading sheet (open locally) |
-| `human_eval_sheet.csv` | Same items for spreadsheet entry |
-| `ratings_template.csv` | Paste independent rater scores here |
-| `item_ids.csv` | Compact id / type / quality / context index |
-| `context/` | Session screenshots / notes attached per item |
-| `../RUBRIC.md` | Dimension definitions + error tags |
-| `../packet_qa.csv` | Curated core Q/A (ids 3,4,12,13,15–18,30,33–36) |
+| `human_eval_sheet.html` | Browser grading sheet |
+| `human_eval_sheet.csv` | Spreadsheet twin |
+| `ratings_template.csv` | Independent rater scores |
+| `item_ids.csv` | Id / type / context index |
+| `context/qa_*/case_pack.txt` | Text case pack |
+| `context/qa_*/session_excerpt.txt` | Meeting summary/transcript excerpt (when available) |
+| `context/qa_*/retrieved_evidence.txt` | Cited PMID abstracts (when available) |
+| `../RUBRIC.md` | Dimension definitions |
 
-**Composition (ceiling M = 25, 宁缺毋滥):**
-1. **Curated packet (n=13)** — paper ECHO-content items (source=`packet`, original ids). Always included.
-2. **RTMS extras (n≤12)** — additional archived live-session Q/A that pass a quality bar (source=`rtms`, synthetic ids `1001+`).
+**Composition (ceiling M=25, 宁缺毋滥):** curated packet (n=13) + quality RTMS extras. Off-domain / vague items excluded.
 
-Quality bar for extras (must clear):
-- MOUD/ECHO topical **in the question**, **or** a grounding prompt with attachable frames + topical answer
-- Substantive answer (≥120 chars; usually much longer)
-- Not off-domain (diabetes, leukemia, dementia, CS demos, …)
-- Not vague-only (“what’s on my screen?”, bare “summarize”)
-- Soft type caps + de-duplication against the curated packet
-- Slide items require attachable session frames
+## What raters see (per item)
 
-If fewer than 12 extras clear the bar, **we keep N &lt; 25** rather than padding.
-
-**Excluded:** off-domain heldout probes and low-information screen/summary asks.
-
-## What raters see
-
-For each item:
-1. Self-contained question (+ original chat text)
-2. **Setting / context availability** note (whether slides or transcript excerpts are attached)
-3. **Context panel** when available (screenshare frames and/or short meeting notes)
-4. Bot answer (ECHO archived)
-5. Score boxes: factual · grounding · evidence · safety · usability (1–5 or **N/A**)
+1. **Case pack** — self-contained question + setting (MedTutor “case report” analog)  
+2. **Session text excerpt** — short meeting summary/transcript when available  
+3. **Retrieved evidence** — PubMed title/abstract for cited PMIDs  
+4. **System output** — archived ECHO answer  
+5. Scores: factual · grounding · evidence · safety · usability (1–5)  
 6. Optional error tags + notes
 
-You do **not** need Zoom. Use only the attached context.
+## Scoring (short)
 
-## Scoring rules (short)
+1. **1 = poor … 5 = strong** (see `../RUBRIC.md`).
+2. **Grounding** = consistency with the case pack / session excerpt (not pixel matching).
+3. **Evidence** = cited material (abstracts) must support the claims; PMID lists alone ≠ good evidence.
+4. Inventing meeting/slide specifics absent from the case/excerpt → low grounding; tag `hallucinated_session` / `weak_case_grounding`.
+5. Independent raters; author scores do not count toward K.
 
-1. **1 = poor … 5 = strong** on each axis (see `../RUBRIC.md`).
-2. If the question needs a slide/meeting and **no usable context is attached**, mark **grounding = N/A** (do not invent a grounding score). Still score honesty: inventing slide/meeting detail → low factual/grounding and tag `no_frame_hallucination`.
-3. If context **is** attached, grounding must be checked against it (wrong slide content → `wrong_slide`).
-4. PMIDs alone ≠ good evidence; the cited material must support the claim.
-5. Do not discuss scores with other raters until all have finished.
-6. Author/prior scores must stay hidden during independent rating.
+## Worked examples
 
-## Worked examples (how to annotate)
+See the HTML “Annotation examples” panel (literature+abstracts; slide-topic-in-case-text; summary/prior; citation dump).
 
-### Example A — literature with useful citations (aim high evidence)
-- Question asks for MOUD/pain/SUD education with literature.
-- Answer hedges appropriately and citations support the claims.
-- Typical: factual 4–5, grounding 4–5 (or N/A if no session needed), evidence 4–5, safety 4–5, usability 4–5; tags `ok`.
+## Target raters / reporting
 
-### Example B — slide question + frames attached (check pixels)
-- Question: “what’s on my slide about pain treatment in SUD?”
-- Context panel shows screenshare frames.
-- If the answer matches visible slide text → high grounding.
-- If it invents bullets not on the frames → grounding 1–2, tag `wrong_slide` / `unsupported_claim`.
+- **K ≥ 3** independent clinicians/facilitators familiar with MOUD ECHO  
+- Report mean/SD per dimension; IAA (e.g. Krippendorff’s α); error-tag rates  
+- Optional stratify by `source` / `question_type`
 
-### Example C — slide/summary ask but weak/missing context
-- Setting says frames/transcript incomplete.
-- Bot invents a detailed slide/meeting narrative → do **not** give high grounding; use **N/A** for grounding if you cannot verify, and tag `no_frame_hallucination` if it asserts unverifiable detail.
-- Bot says it cannot see the slide/meeting → factual/safety/usability can still be mid–high; grounding N/A or low only if it then contradicts itself.
+## Public link
 
-### Example D — irrelevant or mismatched citations
-- Answer dumps PMIDs that do not support the claims → evidence 1–2, tag `irrelevant_pmid`.
+https://238plutonium.github.io/openreview/human-eval/
 
-## Target raters and reporting
-
-- Aim for **K ≥ 3 independent** clinicians/facilitators familiar with MOUD ECHO (author scores do not count toward K).
-- Report per-dimension mean/SD excluding N/A; report N/A rates; report IAA (e.g. Krippendorff’s α) after all ratings exist.
-- Separately report error-tag rates (`wrong_slide`, `no_frame_hallucination`, `irrelevant_pmid`, …).
-- Optionally stratify results by `source` (packet vs rtms) and by `question_type`.
-
-## Rebuild the sheet
+## Rebuild
 
 ```bash
 python3 evaluation/human_eval/build_human_eval_sheet.py
 ```
 
-Requires local access to `/scratch1/ECHO_project/data/rtms/` for QA logs + context frames (already run once into `context/`).
-
-## How to view (images)
-
-`human_eval_sheet.html` **embeds compressed session frames** (data URIs), so a single file works offline in Chrome/Edge.
-
-**Public link (external raters):** https://238plutonium.github.io/openreview/human-eval/
-
-Fallback CDN mirror: https://cdn.jsdelivr.net/gh/238Plutonium/openreview@cursor/llama33-ovh-bakeoff-22b0/evaluation/human_eval/human_eval_sheet.html
-
-Cursor’s built-in preview may still blank large pages — use the public link or download the HTML into Chrome/Edge.
+Needs NCBI access to refresh PubMed abstracts (cached under `../citation_faithfulness/abstract_cache.json`) and optional `/scratch1/ECHO_project/data/rtms/minutes/` for session excerpts.

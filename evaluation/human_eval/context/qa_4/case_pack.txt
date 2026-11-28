@@ -1,0 +1,6 @@
+CASE PACK (MedTutor-style text context for the grader)
+Question type: literature
+Session id: b28ee899
+
+Case / self-contained question:
+Can you give guidance on treatment for pain in patients with substance use disorders (SUD)?

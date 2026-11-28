@@ -1,0 +1,6 @@
+CASE PACK (MedTutor-style text context for the grader)
+Question type: literature
+Session id: 6d0ff5cf
+
+Case / self-contained question:
+Can you explain ketamine (“K”) treatment in patients with substance use disorders (SUD)?

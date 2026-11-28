@@ -1,45 +1,36 @@
 #!/usr/bin/env python3
-"""Build ECHO-only human-eval HTML/CSV (target ≤25, quality-first).
+"""Build MedTutor-style ECHO human-eval sheet (text case context; M≤25 quality-first).
 
-Always keeps the curated paper packet (M=13). Fills remaining slots from RTMS
-archives only when items clear a quality bar (宁缺毋滥 — may finish under 25).
+Graders see:
+  1) case pack = self-contained question + setting
+  2) retrieved evidence = PubMed title/abstract for cited PMIDs (when present)
+  3) optional session text excerpt (meeting summary/transcript)
+
+No Zoom slide screenshots in the grading UI (MedTutor uses text case reports, not live slides).
 """
 from __future__ import annotations
 
-import base64
 import csv
 import html
-import io
 import json
 import re
-import shutil
+import subprocess
+import time
+import xml.etree.ElementTree as ET
 from collections import Counter
 from pathlib import Path
-
-try:
-    from PIL import Image
-except ImportError:  # pragma: no cover
-    Image = None  # type: ignore
-
-# Embed compressed frames as data URIs so a single HTML file opens offline
-# (Cursor/GitHub relative-path previews show blank images).
-EMBED_IMAGES = True
-JPEG_MAX_W = 960
-JPEG_QUALITY = 55
 
 ROOT = Path(__file__).resolve().parents[1]  # evaluation/
 OUT = Path(__file__).resolve().parent
 PACKET = ROOT / "packet_qa.csv"
 HELDOUT = ROOT / "heldout_qa_set.csv"
 CTX = OUT / "context"
-SCREENSHARE = Path("/scratch1/ECHO_project/data/rtms/screenshare")
-MINUTES = Path("/scratch1/ECHO_project/data/rtms/minutes")
 RTMS_QA = Path("/scratch1/ECHO_project/data/rtms/qa")
+MINUTES = Path("/scratch1/ECHO_project/data/rtms/minutes")
+ABSTRACT_CACHE = ROOT / "citation_faithfulness" / "abstract_cache.json"
 
-TARGET_N = 25  # soft ceiling; stop early if quality pool is exhausted
+TARGET_N = 25
 MIN_FILL_SCORE = 8
-
-# Paper ECHO-content packet (MOUD/OUD-related only) — always included first.
 PACKET_IDS = [3, 4, 12, 13, 15, 16, 17, 18, 30, 33, 34, 35, 36]
 
 OFF_PAT = re.compile(
@@ -83,8 +74,9 @@ SPECIFIC_BONUS = re.compile(
     r"perioperative|pregnant|criteria|naltrexone|physical dependence)\b",
     re.I,
 )
+PMID_RE = re.compile(r"\bPMID[:\s#]*([0-9]{6,9})\b|\b(PMID)\s*([0-9]{6,9})\b|\[pmid[:\s]*([0-9]{6,9})\]", re.I)
+PMID_PLAIN = re.compile(r"\b([0-9]{7,8})\b")
 
-# Soft caps so fillers do not all collapse into one type.
 TYPE_QUOTA = {
     "literature": 6,
     "slide": 8,
@@ -104,8 +96,14 @@ def norm_q(q: str) -> str:
 
 def clean_question(q: str) -> str:
     q = re.sub(r"@?\s*ECHO\s+AI\s+Assistant\s*", "", q or "", flags=re.I).strip()
-    q = re.sub(r"\s+", " ", q).strip()
-    return q
+    return re.sub(r"\s+", " ", q).strip()
+
+
+def has_screenshare(sid: str) -> bool:
+    ss = Path("/scratch1/ECHO_project/data/rtms/screenshare")
+    if not sid or sid == "unknown" or not ss.exists():
+        return False
+    return any(p.is_dir() and p.name.startswith(sid) for p in ss.iterdir())
 
 
 def frame_count(frames) -> int:
@@ -115,12 +113,6 @@ def frame_count(frames) -> int:
         return int(frames or 0)
     except (TypeError, ValueError):
         return 0
-
-
-def has_screenshare(sid: str) -> bool:
-    if not sid or sid == "unknown" or not SCREENSHARE.exists():
-        return False
-    return any(p.is_dir() and p.name.startswith(sid) for p in SCREENSHARE.iterdir())
 
 
 def classify_type(q: str, reply_type: str) -> str:
@@ -150,98 +142,106 @@ def classify_type(q: str, reply_type: str) -> str:
 
 def setting_for(qtype: str, topical: bool) -> str:
     base = {
-        "literature": "Literature / education ask during an MOUD-related ECHO session.",
-        "slide": "Slide / screenshare ask. Check attached frames when present.",
-        "summary": "In-meeting summary ask. Use attached frames/notes when present.",
-        "prior_session": "Prior-session recall ask. Grade claimed prior-session content carefully.",
-        "other": "General MOUD/ECHO educational ask during a live session.",
-    }.get(qtype, "ECHO session ask.")
+        "literature": "Literature / education ask (MedTutor-style: judge against case text + cited abstracts).",
+        "slide": "Slide-topic ask stated in the question text. Grade consistency with that stated case; no screenshot panel.",
+        "summary": "In-meeting summary ask. Use session text excerpt when present.",
+        "prior_session": "Prior-session recall. Grade claimed prior-session content against available session text.",
+        "other": "General MOUD/ECHO educational ask.",
+    }.get(qtype, "ECHO educational ask.")
     if not topical and qtype in {"slide", "summary"}:
-        base += " Question is session/context-oriented; topical MOUD keywords may be weak."
+        base += " Topical MOUD keywords in the question may be weak; rely on case + session text."
     return base
 
 
 def quality_score(cq: str, answer: str, sid: str) -> int | None:
-    """Return score if item clears the quality bar, else None."""
     if len(cq) < 20 or len(answer) < 120:
         return None
     if OFF_PAT.search(cq) or JUNK_PAT.search(cq):
         return None
     if VAGUE_PAT.match(cq):
         return None
-
     topical_q = bool(POS_PAT.search(cq))
     topical_a = bool(POS_PAT.search(answer[:600]))
-    ss = has_screenshare(sid)
     grounding = bool(GROUNDING_PROMPT.search(cq))
-
-    # Primary path: MOUD/ECHO topical question.
-    # Secondary: grounding prompt with frames + topical answer (useful for slide checks).
+    ss = has_screenshare(sid)
     if topical_q:
         pass
     elif grounding and ss and topical_a and len(answer) >= 200:
         pass
     else:
         return None
-
     score = 0
     score += 4 if topical_q else 1
-    score += 3 if ss else 0
     score += 2 if len(answer) >= 250 else (1 if len(answer) >= 150 else 0)
     score += 2 if len(cq) >= 50 else (1 if len(cq) >= 30 else 0)
     if SPECIFIC_BONUS.search(cq):
         score += 2
-    # Thin generic lit prompts still need frames + strong answer; mild penalty.
-    if re.fullmatch(
-        r"(cite relevant pubs|answer the question citing pubs|use pubmed source for the question)",
-        cq,
-        re.I,
-    ):
-        score -= 2
     if score < MIN_FILL_SCORE:
         return None
     return score
 
 
-def session_dirs(sid: str) -> tuple[Path | None, Path | None]:
-    if not sid or sid == "unknown":
-        return None, None
-    ss = (
-        next((p for p in SCREENSHARE.iterdir() if p.is_dir() and p.name.startswith(sid)), None)
-        if SCREENSHARE.exists()
-        else None
-    )
-    mm = (
-        next((p for p in MINUTES.iterdir() if p.is_dir() and p.name.startswith(sid)), None)
-        if MINUTES.exists()
-        else None
-    )
-    return ss, mm
-
-
-def collect_images(ss: Path | None, mm: Path | None, limit: int = 4) -> list[Path]:
-    imgs: list[Path] = []
-    if mm and (mm / "slides").is_dir():
-        imgs.extend(sorted((mm / "slides").glob("slide_*.jpg")))
-    if ss:
-        uniq = ss / "unique" / "frames"
-        if uniq.is_dir():
-            imgs.extend(sorted(uniq.glob("*.jpg")))
-        else:
-            imgs.extend(sorted(ss.rglob("*.jpg")))
+def extract_pmids(answer: str) -> list[str]:
+    found: list[str] = []
+    for m in re.finditer(r"PMID[:\s]*([0-9]{6,9})", answer or "", flags=re.I):
+        found.append(m.group(1))
+    # also lines like "[4]: PMID 38383266 |"
+    for m in re.finditer(r"PMID\s+([0-9]{6,9})", answer or "", flags=re.I):
+        found.append(m.group(1))
+    out: list[str] = []
     seen: set[str] = set()
-    out: list[Path] = []
-    for p in imgs:
-        if p.name in seen:
+    for p in found:
+        if p not in seen:
+            seen.add(p)
+            out.append(p)
+    return out[:8]
+
+
+def fetch_abstracts(pmids: list[str]) -> dict[str, str]:
+    cache: dict[str, str] = {}
+    if ABSTRACT_CACHE.exists():
+        try:
+            cache = json.loads(ABSTRACT_CACHE.read_text())
+        except json.JSONDecodeError:
+            cache = {}
+    missing = [p for p in pmids if p not in cache or len(cache.get(p, "")) < 40]
+    for i in range(0, len(missing), 15):
+        batch = missing[i : i + 15]
+        url = (
+            "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?"
+            f"db=pubmed&id={','.join(batch)}&retmode=xml"
+            "&tool=echoai_humaneval&email=qxl5189%40psu.edu"
+        )
+        proc = subprocess.run(["curl", "-fsSL", url], capture_output=True)
+        if proc.returncode != 0:
             continue
-        seen.add(p.name)
-        out.append(p)
-        if len(out) >= limit:
-            break
-    return out
+        try:
+            root = ET.fromstring(proc.stdout)
+        except ET.ParseError:
+            continue
+        for art in root.findall(".//PubmedArticle"):
+            pmid = (art.findtext(".//PMID") or "").strip()
+            texts = []
+            for abs_ in art.findall(".//Abstract/AbstractText"):
+                label = abs_.attrib.get("Label")
+                t = "".join(abs_.itertext()).strip()
+                texts.append(f"{label}: {t}" if label else t)
+            title = art.findtext(".//ArticleTitle") or ""
+            cache[pmid] = (title + "\n" + "\n".join(texts)).strip()
+        time.sleep(0.35)
+    ABSTRACT_CACHE.parent.mkdir(parents=True, exist_ok=True)
+    ABSTRACT_CACHE.write_text(json.dumps(cache, indent=2))
+    return cache
 
 
-def meeting_note(mm: Path | None, max_chars: int = 900) -> str:
+def session_dirs(sid: str):
+    if not sid or sid == "unknown" or not MINUTES.exists():
+        return None
+    return next((p for p in MINUTES.iterdir() if p.is_dir() and p.name.startswith(sid)), None)
+
+
+def meeting_excerpt(sid: str, max_chars: int = 1200) -> str:
+    mm = session_dirs(sid)
     if not mm:
         return ""
     for name in ("summary.md", "transcript.txt"):
@@ -256,54 +256,75 @@ def meeting_note(mm: Path | None, max_chars: int = 900) -> str:
     return ""
 
 
-def copy_context(qa_id: str, sid: str, qtype: str) -> dict:
+def build_text_context(qa_id: str, sid: str, qtype: str, question: str, answer: str, abstracts: dict[str, str]) -> dict:
     dest = CTX / f"qa_{qa_id}"
     dest.mkdir(parents=True, exist_ok=True)
-    ss, mm = session_dirs(sid)
-    imgs = collect_images(ss, mm, limit=4 if qtype in {"slide", "summary", "other", "prior_session"} else 2)
-    rel_imgs: list[str] = []
-    for i, src in enumerate(imgs, 1):
-        dst = dest / f"frame_{i}.jpg"
-        _write_compressed_jpeg(src, dst)
-        rel_imgs.append(f"context/qa_{qa_id}/{dst.name}")
 
-    note = meeting_note(mm) if qtype in {"summary", "prior_session", "other", "slide"} else ""
-    if note:
-        (dest / "meeting_note.txt").write_text(note + "\n")
+    case_lines = [
+        "CASE PACK (MedTutor-style text context for the grader)",
+        f"Question type: {qtype}",
+        f"Session id: {sid}",
+        "",
+        "Case / self-contained question:",
+        question.strip(),
+    ]
+    if qtype == "slide":
+        case_lines += [
+            "",
+            "Note: This is a slide-topic item. The slide topic is named in the question text above. "
+            "Judge whether the answer is consistent with that stated case (as MedTutor judges against a text case report). "
+            "Do not require Zoom screenshots.",
+        ]
+    case_text = "\n".join(case_lines)
+    (dest / "case_pack.txt").write_text(case_text + "\n")
 
-    availability = []
-    if rel_imgs:
-        availability.append(f"{len(rel_imgs)} session frame(s) attached")
-    else:
-        availability.append("NO session frames attached")
-    if note:
-        availability.append("short meeting note/transcript excerpt attached")
-    elif qtype in {"summary", "prior_session", "slide"}:
-        availability.append("no meeting transcript excerpt available for this session id")
+    session_text = meeting_excerpt(sid)
+    if session_text:
+        (dest / "session_excerpt.txt").write_text(session_text + "\n")
+
+    pmids = extract_pmids(answer)
+    evidence_blocks: list[str] = []
+    for p in pmids:
+        body = (abstracts.get(p) or "").strip()
+        if body:
+            evidence_blocks.append(f"PMID {p}\n{body[:900]}{'…' if len(body) > 900 else ''}")
+        else:
+            evidence_blocks.append(f"PMID {p}\n[abstract not retrieved]")
+    evidence_text = "\n\n".join(evidence_blocks)
+    if evidence_text:
+        (dest / "retrieved_evidence.txt").write_text(evidence_text + "\n")
+
+    parts = []
+    if session_text:
+        parts.append("session text excerpt")
+    if evidence_blocks:
+        parts.append(f"{len(evidence_blocks)} PubMed abstract(s)")
+    parts.append("case pack (question text)")
+    availability = "; ".join(parts)
 
     return {
-        "images": rel_imgs,
-        "note": note,
-        "availability": "; ".join(availability),
-        "session_id": sid,
-        "screenshare_dir": str(ss) if ss else "",
+        "case_text": case_text,
+        "session_text": session_text,
+        "evidence_text": evidence_text,
+        "pmids": pmids,
+        "availability": availability,
+        "images": [],  # MedTutor-style: no screenshot panel
+        "note": session_text,
     }
 
 
-def load_packet_items() -> list[dict]:
+def load_packet_items(abstracts: dict[str, str]) -> list[dict]:
     packet = {r["qa_id"]: r for r in csv.DictReader(PACKET.open())}
     held = {r["qa_id"]: r for r in csv.DictReader(HELDOUT.open())}
     items = []
     for qid in PACKET_IDS:
         key = str(qid)
-        if key not in packet:
-            raise SystemExit(f"missing packet qa_id={qid}")
         p = packet[key]
         h = held.get(key, {})
         sid = (h.get("session_id") or "unknown").strip()
-        ctx = copy_context(key, sid, p["question_type"])
+        ctx = build_text_context(key, sid, p["question_type"], p["standalone_question"], p["answer"], abstracts)
         setting = (p.get("setting_for_grader") or "").strip()
-        setting = f"{setting} Context availability: {ctx['availability']}."
+        setting = f"{setting} Text context: {ctx['availability']}."
         items.append(
             {
                 "qa_id": key,
@@ -316,9 +337,12 @@ def load_packet_items() -> list[dict]:
                 "session_id": sid,
                 "n_frames_log": h.get("n_frames", ""),
                 "quality_score": "curated",
-                "context_images": ctx["images"],
-                "context_note": ctx["note"],
+                "context_images": [],
+                "context_note": ctx["session_text"],
+                "context_case": ctx["case_text"],
+                "context_evidence": ctx["evidence_text"],
                 "context_availability": ctx["availability"],
+                "pmids": ",".join(ctx["pmids"]),
             }
         )
     return items
@@ -330,8 +354,7 @@ def iter_rtms_candidates(exclude_norm: set[str]) -> list[dict]:
     if not RTMS_QA.exists():
         return cands
     for f in sorted(RTMS_QA.glob("*.ndjson")):
-        sid_full = f.stem
-        sid = sid_full[:8] if sid_full != "unknown" else "unknown"
+        sid = f.stem[:8] if f.stem != "unknown" else "unknown"
         for line in f.open(errors="replace"):
             line = line.strip()
             if not line:
@@ -353,24 +376,20 @@ def iter_rtms_candidates(exclude_norm: set[str]) -> list[dict]:
             score = quality_score(cq, a, sid)
             if score is None:
                 continue
-            topical = bool(POS_PAT.search(cq))
-            qtype = classify_type(q, o.get("replyType") or "")
             cands.append(
                 {
                     "session_id": sid,
                     "question": q,
                     "answer": a,
-                    "question_type": qtype,
+                    "question_type": classify_type(q, o.get("replyType") or ""),
                     "n_frames": frame_count(o.get("screenShareFramesUsed")),
                     "createdAt": o.get("createdAt") or o.get("askedAt") or "",
-                    "topical": topical,
+                    "topical": bool(POS_PAT.search(cq)),
                     "norm": key,
                     "score": score,
                 }
             )
-            seen.add(key)
-            seen.add(key_c)
-            seen.add(ans_key)
+            seen.update({key, key_c, ans_key})
     cands.sort(key=lambda c: (-c["score"], -len(c["answer"]), c["createdAt"]))
     return cands
 
@@ -379,17 +398,16 @@ def _exclude_keys_for_item(it: dict) -> set[str]:
     keys: set[str] = set()
     for field in ("original_chat_question", "standalone_question"):
         raw = it.get(field) or ""
-        if not raw:
-            continue
-        keys.add(norm_q(raw))
-        keys.add(norm_q(clean_question(raw)))
+        if raw:
+            keys.add(norm_q(raw))
+            keys.add(norm_q(clean_question(raw)))
     ans = norm_q(it.get("answer") or "")
     if ans:
         keys.add("A:" + ans[:120])
     return keys
 
 
-def fill_to_target(packet_items: list[dict], target: int = TARGET_N) -> list[dict]:
+def fill_to_target(packet_items: list[dict], abstracts: dict[str, str], target: int = TARGET_N) -> list[dict]:
     items = list(packet_items)
     exclude: set[str] = set()
     for it in items:
@@ -399,17 +417,22 @@ def fill_to_target(packet_items: list[dict], target: int = TARGET_N) -> list[dic
     next_id = 1001
     used_answers = {norm_q(it["answer"])[:120] for it in items}
 
-    def take(c: dict) -> dict:
-        nonlocal next_id
+    for c in cands:
+        if len(items) >= target:
+            break
+        nq, nqc = c["norm"], norm_q(clean_question(c["question"]))
+        na = norm_q(c["answer"])[:120]
+        if nq in exclude or nqc in exclude or ("A:" + na) in exclude or na in used_answers:
+            continue
+        qtype = c["question_type"]
+        if counts[qtype] >= TYPE_QUOTA.get(qtype, 99):
+            continue
         qid = str(next_id)
         next_id += 1
-        qtype = c["question_type"]
-        sid = c["session_id"]
-        ctx = copy_context(qid, sid, qtype)
         standalone = clean_question(c["question"])
-        setting = setting_for(qtype, c["topical"])
-        setting = f"{setting} Context availability: {ctx['availability']}."
-        return {
+        ctx = build_text_context(qid, c["session_id"], qtype, standalone, c["answer"], abstracts)
+        setting = setting_for(qtype, c["topical"]) + f" Text context: {ctx['availability']}."
+        item = {
             "qa_id": qid,
             "source": "rtms",
             "question_type": qtype,
@@ -417,46 +440,20 @@ def fill_to_target(packet_items: list[dict], target: int = TARGET_N) -> list[dic
             "setting_for_grader": setting,
             "original_chat_question": c["question"],
             "answer": c["answer"],
-            "session_id": sid,
+            "session_id": c["session_id"],
             "n_frames_log": str(c["n_frames"]),
             "quality_score": str(c["score"]),
-            "context_images": ctx["images"],
-            "context_note": ctx["note"],
+            "context_images": [],
+            "context_note": ctx["session_text"],
+            "context_case": ctx["case_text"],
+            "context_evidence": ctx["evidence_text"],
             "context_availability": ctx["availability"],
+            "pmids": ",".join(ctx["pmids"]),
         }
-
-    def is_dup(c: dict) -> bool:
-        nq = c["norm"]
-        nqc = norm_q(clean_question(c["question"]))
-        na = norm_q(c["answer"])[:120]
-        if nq in exclude or nqc in exclude or ("A:" + na) in exclude:
-            return True
-        if na in used_answers:
-            return True
-        return False
-
-    # Single pass: highest score first; respect soft type caps; never lower the bar.
-    for c in cands:
-        if len(items) >= target:
-            break
-        if is_dup(c):
-            continue
-        qtype = c["question_type"]
-        if counts[qtype] >= TYPE_QUOTA.get(qtype, 99):
-            continue
-        # Prefer extras that actually have attachable frames when type needs them.
-        if qtype in {"slide", "summary"} and not has_screenshare(c["session_id"]):
-            continue
-        item = take(c)
-        # Drop if context copy still found nothing for grounding-critical types.
-        if qtype in {"slide"} and not item["context_images"]:
-            shutil.rmtree(CTX / f"qa_{item['qa_id']}", ignore_errors=True)
-            continue
         items.append(item)
         counts[qtype] += 1
         exclude |= _exclude_keys_for_item(item)
-        used_answers.add(norm_q(c["answer"])[:120])
-
+        used_answers.add(na)
     return items
 
 
@@ -472,7 +469,7 @@ def write_csv(items: list[dict], path: Path) -> None:
         "n_frames_log",
         "quality_score",
         "context_availability",
-        "context_images",
+        "pmids",
         "answer",
         "factual_1to5",
         "grounding_1to5",
@@ -487,132 +484,84 @@ def write_csv(items: list[dict], path: Path) -> None:
         w.writeheader()
         for it in items:
             row = {k: it.get(k, "") for k in fields}
-            row["context_images"] = "|".join(it.get("context_images") or [])
-            for k in [
-                "factual_1to5",
-                "grounding_1to5",
-                "evidence_1to5",
-                "safety_1to5",
-                "usability_1to5",
-                "error_tags",
-                "notes",
-            ]:
+            for k in ["factual_1to5", "grounding_1to5", "evidence_1to5", "safety_1to5", "usability_1to5", "error_tags", "notes"]:
                 row[k] = ""
             w.writerow(row)
 
 
 def write_ratings_template(items: list[dict], path: Path) -> None:
-    fields = [
-        "qa_id",
-        "rater_id",
-        "rater_role",
-        "factual",
-        "grounding",
-        "evidence",
-        "safety",
-        "usability",
-        "error_tags",
-        "notes",
-    ]
+    fields = ["qa_id", "rater_id", "rater_role", "factual", "grounding", "evidence", "safety", "usability", "error_tags", "notes"]
     with path.open("w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=fields)
         w.writeheader()
         for it in items:
-            w.writerow(
-                {
-                    "qa_id": it["qa_id"],
-                    "rater_id": "",
-                    "rater_role": "facilitator",
-                    "factual": "",
-                    "grounding": "",
-                    "evidence": "",
-                    "safety": "",
-                    "usability": "",
-                    "error_tags": "",
-                    "notes": "",
-                }
-            )
+            w.writerow({"qa_id": it["qa_id"], "rater_id": "", "rater_role": "facilitator", "factual": "", "grounding": "", "evidence": "", "safety": "", "usability": "", "error_tags": "", "notes": ""})
+
+
+def write_id_list(items: list[dict], path: Path) -> None:
+    with path.open("w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=["qa_id", "source", "question_type", "session_id", "quality_score", "context_availability", "pmids"])
+        w.writeheader()
+        for it in items:
+            w.writerow({k: it.get(k, "") for k in ["qa_id", "source", "question_type", "session_id", "quality_score", "context_availability", "pmids"]})
 
 
 def examples_html() -> str:
     return """
 <section class="card examples" id="examples">
-  <h2>Annotation examples (read before scoring)</h2>
-  <p>Score each axis <b>1–5</b>, or type <b>N/A</b> for grounding when required context is missing/unusable. Error tags (optional): <code>ok</code>, <code>wrong_slide</code>, <code>no_frame_hallucination</code>, <code>irrelevant_pmid</code>, <code>unsupported_claim</code>, <code>overconfident</code>, <code>frame_refuse</code>, <code>asr_cascade</code>.</p>
-  <h3>Example A — literature with supportive citations</h3>
-  <p>MOUD/pain/SUD educational answer, appropriate hedges, citations actually support claims → typically factual/evidence/safety/usability <b>4–5</b>; tags <code>ok</code>.</p>
-  <h3>Example B — slide question with frames attached</h3>
-  <p>Compare the answer to the images in the Context panel. Matches visible text → high grounding. Invents bullets not on the frames → grounding <b>1–2</b>, tag <code>wrong_slide</code>.</p>
-  <h3>Example C — needs slide/meeting but context weak or absent</h3>
-  <p>Mark grounding <b>N/A</b> if you cannot verify. If the bot invents detailed slide/meeting content anyway → tag <code>no_frame_hallucination</code> and keep factual/grounding low. If it honestly refuses → grounding N/A is fine; do not punish abstention.</p>
+  <h2>Annotation examples (MedTutor-style)</h2>
+  <p>Score each axis <b>1–5</b>. Optional tags: <code>ok</code>, <code>unsupported_claim</code>, <code>irrelevant_pmid</code>, <code>overconfident</code>, <code>weak_case_grounding</code>, <code>hallucinated_session</code>.</p>
+  <h3>Example A — literature + abstracts</h3>
+  <p>Case asks for MOUD/pain/SUD education. Answer hedges; cited abstracts support claims → factual/evidence/safety/usability <b>4–5</b>; tags <code>ok</code>.</p>
+  <h3>Example B — slide-topic stated in the case text</h3>
+  <p>Question names the slide topic (e.g. DSM / stigma). Answer matches that stated topic and session excerpt → high grounding. Invents unrelated slide content → grounding <b>1–2</b>, tag <code>weak_case_grounding</code>.</p>
+  <h3>Example C — summary / prior session</h3>
+  <p>Use the session text excerpt when present. If the bot invents specific meeting details absent from the excerpt → tag <code>hallucinated_session</code> and keep grounding low. Honest abstention is not punished.</p>
   <h3>Example D — citation dump</h3>
-  <p>PMID list that does not support the claims → evidence <b>1–2</b>, tag <code>irrelevant_pmid</code>.</p>
+  <p>PMIDs whose abstracts do not support the claims → evidence <b>1–2</b>, tag <code>irrelevant_pmid</code>.</p>
 </section>
 """
 
 
-def _write_compressed_jpeg(src: Path, dst: Path) -> None:
-    """Copy/resize frame so the HTTP-served sheet stays light."""
-    if Image is None:
-        shutil.copy2(src, dst)
-        return
-    im = Image.open(src).convert("RGB")
-    w, h = im.size
-    if w > JPEG_MAX_W:
-        im = im.resize((JPEG_MAX_W, int(h * JPEG_MAX_W / w)), Image.Resampling.LANCZOS)
-    buf = io.BytesIO()
-    im.save(buf, format="JPEG", quality=JPEG_QUALITY, optimize=True)
-    dst.write_bytes(buf.getvalue())
-
-
-def data_uri_for(rel: str) -> str:
-    path = OUT / rel if not Path(rel).is_absolute() else Path(rel)
-    if not path.is_file():
-        return rel
-    b64 = base64.b64encode(path.read_bytes()).decode("ascii")
-    return f"data:image/jpeg;base64,{b64}"
-
-
 def card_html(it: dict) -> str:
     qid = it["qa_id"]
-    imgs = it.get("context_images") or []
-    note = it.get("context_note") or ""
-    src_tag = it.get("source") or ""
-    img_block = ""
-    if imgs:
-        figs = []
-        for src in imgs:
-            uri = data_uri_for(src) if EMBED_IMAGES else src
-            figs.append(
-                f'<figure class="ctx"><img src="{html.escape(uri)}" alt="session frame for qa {qid}" loading="lazy"/><figcaption>{html.escape(Path(src).name)}</figcaption></figure>'
-            )
-        img_block = f"<div class='ctx-grid'>{''.join(figs)}</div>"
-    else:
-        img_block = "<p class='warn'><b>No frames attached</b> for this item. If the question needs a slide/screen, mark grounding N/A unless you are only scoring honesty of abstention.</p>"
+    case = it.get("context_case") or ""
+    sess = it.get("context_note") or ""
+    evid = it.get("context_evidence") or ""
 
-    note_block = ""
-    if note:
-        note_block = f"<details open><summary>Meeting note / transcript excerpt</summary><pre class='note'>{esc(note)}</pre></details>"
+    case_block = f"<pre class='note'>{esc(case)}</pre>" if case else "<p class='warn'>No case pack.</p>"
+    sess_block = (
+        f"<details open><summary>Session text excerpt (like MedTutor case-adjacent notes)</summary><pre class='note'>{esc(sess)}</pre></details>"
+        if sess
+        else "<p class='meta'>No meeting summary/transcript excerpt for this session id.</p>"
+    )
+    evid_block = (
+        f"<details open><summary>Retrieved evidence — PubMed title/abstract</summary><pre class='note'>{esc(evid)}</pre></details>"
+        if evid
+        else "<p class='meta'>No PMIDs / abstracts attached (non-literature or uncited answer).</p>"
+    )
 
     return f"""
 <section class="card" id="q{qid}">
-  <h2>Question {qid} <span class="tag">{esc(it['question_type'])}</span> <span class="tag src">{esc(src_tag)}</span></h2>
-  <h3>Question (self-contained)</h3>
+  <h2>Question {qid} <span class="tag">{esc(it['question_type'])}</span> <span class="tag src">{esc(it.get('source') or '')}</span></h2>
+  <h3>1. Case pack</h3>
   <p class="q">{esc(it['standalone_question'])}</p>
-  <p class="setting"><b>Setting for grader:</b> {esc(it['setting_for_grader'])}</p>
-  <p class="orig"><b>Original chat text:</b> <em>{esc(it['original_chat_question'])}</em></p>
-  <p class="meta">session_id=<code>{esc(it['session_id'])}</code> · log n_frames={esc(str(it.get('n_frames_log','')))} · quality={esc(str(it.get('quality_score','')))} · {esc(it['context_availability'])}</p>
-  <h3>Context for grader</h3>
-  {img_block}
-  {note_block}
-  <h3>Bot answer (ECHO archived)</h3>
+  <p class="setting"><b>Setting:</b> {esc(it['setting_for_grader'])}</p>
+  <p class="orig"><b>Original chat:</b> <em>{esc(it['original_chat_question'])}</em></p>
+  <p class="meta">session_id=<code>{esc(it['session_id'])}</code> · quality={esc(str(it.get('quality_score','')))} · {esc(it['context_availability'])}</p>
+  {case_block}
+  <h3>2. Session / case-adjacent text</h3>
+  {sess_block}
+  <h3>3. Retrieved evidence (abstracts)</h3>
+  {evid_block}
+  <h3>4. System output to grade</h3>
   <div class="a">{esc(it['answer'])}</div>
-  <h3>Your scores (1–5; use N/A if not judgeable)</h3>
+  <h3>Your scores (1–5)</h3>
   <table class="score">
     <tr><th>factual</th><th>grounding</th><th>evidence</th><th>safety</th><th>usability</th></tr>
     <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
   </table>
-  <p><b>error_tags</b> (optional): <span contenteditable="true" class="tags"></span></p>
+  <p><b>error_tags</b>: <span contenteditable="true" class="tags"></span></p>
   <p><b>notes</b>: <span contenteditable="true" class="notes"></span></p>
 </section>
 """
@@ -631,7 +580,7 @@ def write_html(items: list[dict], path: Path) -> None:
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ECHO-AI Human Evaluation — M={n}</title>
+<title>ECHO-AI Human Evaluation — MedTutor-style M={n}</title>
 <style>
   body {{ font-family: Georgia, "Times New Roman", serif; max-width: 920px; margin: 24px auto; padding: 0 16px; line-height: 1.45; color: #111; }}
   h1 {{ font-size: 1.55rem; }}
@@ -644,11 +593,6 @@ def write_html(items: list[dict], path: Path) -> None:
   .orig, .meta {{ color: #444; font-size: 0.9rem; }}
   .a {{ background: #fff; border: 1px solid #ddd; padding: 10px 12px; border-radius: 6px; font-size: 0.95rem; }}
   .warn {{ background: #ffe8e8; border: 1px solid #e2a0a0; padding: 8px 10px; border-radius: 6px; }}
-  .ctx-grid {{ display: grid; grid-template-columns: 1fr; gap: 10px; }}
-  @media (min-width: 720px) {{ .ctx-grid {{ grid-template-columns: 1fr 1fr; }} }}
-  figure.ctx {{ margin: 0; background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 6px; }}
-  figure.ctx img {{ width: 100%; height: auto; display: block; border-radius: 4px; }}
-  figure.ctx figcaption {{ font-size: 0.75rem; color: #555; margin-top: 4px; }}
   pre.note {{ white-space: pre-wrap; background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 6px; font-size: 0.85rem; }}
   table.score {{ border-collapse: collapse; width: 100%; margin-top: 8px; }}
   table.score th, table.score td {{ border: 1px solid #bbb; padding: 8px; text-align: center; background: #fff; min-width: 70px; }}
@@ -656,18 +600,15 @@ def write_html(items: list[dict], path: Path) -> None:
   .howto {{ background: #f3faf3; border: 1px solid #b7d7b7; padding: 12px 14px; border-radius: 8px; }}
   nav {{ line-height: 1.8; }}
   nav a {{ margin-right: 8px; font-size: 0.85rem; }}
-  code {{ font-size: 0.9em; }}
 </style>
 </head>
 <body>
-<h1>ECHO-AI human evaluation — M={n} (quality-first ECHO / MOUD)</h1>
+<h1>ECHO-AI human evaluation — MedTutor-style text context (M={n})</h1>
 <div class="howto">
-  <p><b>Scope:</b> ECHO/MOUD-related items only (n={n}: {n_packet} curated packet + {n_rtms} high-quality RTMS extras). Off-domain probes and vague screen/summary asks are excluded. Target ceiling is 25; we do not pad with weak items.</p>
-  <p><b>Type mix:</b> {esc(type_str)}</p>
-  <p><b>Task:</b> Score the archived ECHO answer on factual · grounding · evidence · safety · usability (1–5). Use <b>N/A</b> for grounding when required context is missing.</p>
-  <p><b>Context:</b> Where available, session frames and short notes are attached below each question (see also <code>PROTOCOL.md</code>).</p>
-  <p><b>How to open:</b> this file is <b>self-contained</b> (frames embedded). Download and open in Chrome/Edge, or use “Open in Browser”. Cursor’s tiny preview pane may still struggle with a multi‑MB page.</p>
-  <p>Save a copy of this HTML after editing, or copy scores into <code>ratings_template.csv</code>.</p>
+  <p><b>Design:</b> Follows MedTutor (Jang et al., 2025): clinicians grade against a <b>text case pack</b> + <b>retrieved evidence abstracts</b> (+ optional session text). <b>No Zoom slide screenshots</b> in this UI.</p>
+  <p><b>Scope:</b> n={n} ({n_packet} curated packet + {n_rtms} quality RTMS extras). Types: {esc(type_str)}.</p>
+  <p><b>Task:</b> Score factual · grounding · evidence · safety · usability (1–5). Grounding = consistency with the case pack / session excerpt, not pixel matching.</p>
+  <p>Public link: <a href="https://238plutonium.github.io/openreview/human-eval/">https://238plutonium.github.io/openreview/human-eval/</a></p>
 </div>
 {examples_html()}
 <nav><b>Jump:</b> {nav}</nav>
@@ -678,52 +619,63 @@ def write_html(items: list[dict], path: Path) -> None:
     path.write_text(doc)
 
 
-def write_id_list(items: list[dict], path: Path) -> None:
-    with path.open("w", newline="") as f:
-        w = csv.DictWriter(
-            f,
-            fieldnames=[
-                "qa_id",
-                "source",
-                "question_type",
-                "session_id",
-                "quality_score",
-                "context_availability",
-            ],
-        )
-        w.writeheader()
-        for it in items:
-            w.writerow(
-                {
-                    "qa_id": it["qa_id"],
-                    "source": it.get("source", ""),
-                    "question_type": it["question_type"],
-                    "session_id": it["session_id"],
-                    "quality_score": it.get("quality_score", ""),
-                    "context_availability": it["context_availability"],
-                }
-            )
-
-
 def main() -> None:
     if CTX.exists():
-        shutil.rmtree(CTX)
+        # keep directory but clear old image-heavy trees for a clean text pack
+        for p in CTX.iterdir():
+            if p.is_dir():
+                for f in p.iterdir():
+                    if f.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"}:
+                        f.unlink(missing_ok=True)
     CTX.mkdir(parents=True, exist_ok=True)
-    packet_items = load_packet_items()
-    items = fill_to_target(packet_items, TARGET_N)
+
+    # First pass: packet answers to know PMIDs, then fetch abstracts, then build.
+    packet_preview = list(csv.DictReader(PACKET.open()))
+    seed_pmids: list[str] = []
+    for r in packet_preview:
+        seed_pmids.extend(extract_pmids(r.get("answer") or ""))
+    # Also scan RTMS quickly for fill candidates' PMIDs after selection — fetch after fill too.
+    abstracts = fetch_abstracts(seed_pmids)
+    packet_items = load_packet_items(abstracts)
+    items = fill_to_target(packet_items, abstracts, TARGET_N)
+    # fetch any new PMIDs from extras
+    more = []
+    for it in items:
+        more.extend(extract_pmids(it["answer"]))
+    abstracts = fetch_abstracts(more)
+    # rebuild text evidence blocks with full abstract cache
+    rebuilt = []
+    for it in items:
+        ctx = build_text_context(
+            it["qa_id"],
+            it["session_id"],
+            it["question_type"],
+            it["standalone_question"],
+            it["answer"],
+            abstracts,
+        )
+        it = dict(it)
+        it["context_case"] = ctx["case_text"]
+        it["context_note"] = ctx["session_text"]
+        it["context_evidence"] = ctx["evidence_text"]
+        it["context_availability"] = ctx["availability"]
+        it["pmids"] = ",".join(ctx["pmids"])
+        # refresh setting suffix
+        base_setting = re.sub(r"\s*Text context:.*$", "", it["setting_for_grader"]).strip()
+        it["setting_for_grader"] = f"{base_setting} Text context: {ctx['availability']}."
+        rebuilt.append(it)
+    items = rebuilt
+
     write_csv(items, OUT / "human_eval_sheet.csv")
     write_ratings_template(items, OUT / "ratings_template.csv")
     write_html(items, OUT / "human_eval_sheet.html")
     write_id_list(items, OUT / "item_ids.csv")
-    with_ctx = sum(1 for it in items if it["context_images"])
-    types = Counter(it["question_type"] for it in items)
+    with_abs = sum(1 for it in items if it.get("context_evidence"))
+    with_sess = sum(1 for it in items if it.get("context_note"))
     print(
-        f"wrote {len(items)} ECHO/MOUD items (ceiling {TARGET_N}); "
-        f"{with_ctx} with frame context; types={dict(types)} → {OUT}"
+        f"wrote {len(items)} MedTutor-style items; {with_abs} with abstracts; "
+        f"{with_sess} with session text; types={dict(Counter(i['question_type'] for i in items))} → {OUT}"
     )
-    extras = [it for it in items if it.get("source") == "rtms"]
-    for it in extras:
-        print(f"  + {it['qa_id']} score={it['quality_score']} {it['question_type']}: {it['standalone_question'][:90]}")
     if len(items) < TARGET_N:
         print(f"stopped at {len(items)} (quality pool exhausted; not padding to {TARGET_N})")
 

@@ -1,0 +1,6 @@
+CASE PACK (MedTutor-style text context for the grader)
+Question type: summary
+Session id: b28ee899
+
+Case / self-contained question:
+I am late — summarize what has been presented so far on treating SUD with non-judgmental, patient-centered care and pain management.

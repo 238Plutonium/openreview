@@ -1,0 +1,6 @@
+CASE PACK (MedTutor-style text context for the grader)
+Question type: summary
+Session id: fe3fe521
+
+Case / self-contained question:
+Summarize this whole meeting on managing pain in patients with substance use disorders.

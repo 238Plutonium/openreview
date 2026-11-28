@@ -1,0 +1,8 @@
+CASE PACK (MedTutor-style text context for the grader)
+Question type: slide
+Session id: 43091a33
+
+Case / self-contained question:
+We are on the stigma slide. From prior ECHO videos/records, what non-stigmatizing language or clinical framing did presenters recommend when discussing OUD, relapse, or MOUD?
+
+Note: This is a slide-topic item. The slide topic is named in the question text above. Judge whether the answer is consistent with that stated case (as MedTutor judges against a text case report). Do not require Zoom screenshots.

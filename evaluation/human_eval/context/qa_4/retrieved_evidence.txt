@@ -1,0 +1,19 @@
+PMID 32115044
+Pain: Pathways and Physiology.
+Pain involves a complex interplay between messages sent from the periphery to the central nervous system and vice versa. Specific pathways play a vital role in carrying these messages, and modulating, or exacerbating their downstream effects. This review describes the anatomy and physiology of pain emphasizing targeted treatment pathways of pain.
+
+PMID 34791564
+Treating Chronic Pain with Buprenorphine-The Practical Guide.
+Buprenorphine has unique and favorable pharmacological properties that make it useful in a variety of clinical scenarios. It has been recommended to consider buprenorphine first-line opioid for chronic pain, especially in the elderly as it may be associated with less cognitive impairment, falls, sexual dysfunction, and sarcopenia when compared with schedule II opioids. It may be useful in patients with comorbid substance use disorder or non-medical opioid use, as there is less risk of misuse, euphoria and it may improve mood. When used to treat opioid use disorder, the training and waiver was recently waived for licensed practitioners with a DEA and any provider may prescribe buprenorphine. For many reasons outlined in this article, the popularity of using buprenorphine for analgesia continues to grow and a practitioner should…
+
+PMID 41136120
+Overview of Pain Physiology.
+This article examines the intricate physiology of pain, highlighting its role as a protective mechanism while discussing its subjective and multifaceted nature. It traces the historic evolution of pain understanding, emphasizing advancements that have shaped current pain management strategies. The article categorizes pain into nociceptive, neuropathic, and functional types, exploring the neurophysiological mechanisms underlying each. It further differentiates between acute and chronic pain, focusing on the importance of accurate assessment and tailored treatment. By understanding the complex processes involved in pain, health care professionals can improve pain management strategies, leading to better patient care and enhanced quality of life.
+
+PMID 38340973
+Buprenorphine for Pain: A Narrative Review and Practical Applications.
+Chronic noncancer pain affects about 20% of US adults and can significantly affect function and quality of life. Current guidelines recommend multimodal pain control. Despite risks associated with long-term opioid therapy, opioids are commonly prescribed. Buprenorphine is a partial opioid agonist with an improved safety profile compared to full agonists. Some formulations are approved for chronic pain and others for opioid use disorder. Buprenorphine is an option for patients who use chronic daily opioids for pain. This review summarizes the literature on buprenorphine's efficacy and safety for chronic pain and provides recommendations to generalists on initiation, titration, and monitoring of buprenorphine-based pain treatment. We also discuss a communication approach when considering buprenorphine for pain.
+
+PMID 27974843
+Structural plasticity and reorganisation in chronic pain.
+Chronic pain is not simply a temporal continuum of acute pain. Studies on functional plasticity in neural circuits of pain have provided mechanistic insights and linked various modulatory factors to a change in perception and behaviour. However, plasticity also occurs in the context of structural remodelling and reorganisation of synapses, cells and circuits, potentially contributing to the long-term nature of chronic pain. This Review discusses maladaptive structural plasticity in neural circuits of pain, spanning multiple anatomical and spatial scales in animal models and human patients, and addresses key questions on structure-function relationships.

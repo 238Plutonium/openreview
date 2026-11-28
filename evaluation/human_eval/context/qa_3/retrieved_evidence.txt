@@ -1,0 +1,21 @@
+PMID 38383266
+Epidemiology, treatment and prognosis of HIV infection in 2024: A practical review.
+In recent years, the epidemiology and prognosis of HIV infection have undergone significant changes thanks to the recommendation of antiretroviral therapy (ART) for all infected persons, the development of more effective and better tolerated drugs, and preventive measures such as pre-exposure prophylaxis (PrEP). The evolution of ART, now with simple oral and injectable options, has also contributed to improvements in comprehensive HIV treatment and care. With early diagnosis and early initiation of ART, the life expectancy of people with HIV has reached the same as the general population. However, many people with HIV remain undiagnosed or are diagnosed late, and some population groups experience greater vulnerability, affecting individual and collective health. In this review we review the current epidem…
+
+PMID 35967854
+The reservoir of latent HIV.
+The persistence of latent reservoir of the human immunodeficiency virus (HIV) is currently the major challenge in curing HIV infection. After HIV infects the human body, the latent HIV is unable to be recognized by the body's immune system. Currently, the widely adopted antiretroviral therapy (ART) is also unble to eliminate it, thus hindering the progress of HIV treatment. This review discusses the existence of latent HIV vault for HIV treatment, its formation and factors affecting its formation, cell, and tissue localization, methods for detection and removing latent reservoir, to provide a comprehensive understanding of latent HIV vault, in order to assist in the future research and play a potential role in achieving HIV treatment.
+
+PMID 23698562
+The natural history of HIV infection.
+PURPOSE OF REVIEW: To review recent published literature around three areas: long-term nonprogression/viral control; predictors of viral load set point/disease progression; and the potential impact of antiretroviral therapy (ART) in early HIV infection.
+RECENT FINDINGS: The natural course of untreated HIV infection varies widely with some HIV-positive individuals able to maintain high CD4 cell counts and/or suppressed viral load in the absence of ART. Although similar, the underlying mechanistic processes leading to long-term nonprogression and viral control are likely to differ. Concerted ongoing research efforts will hopefully identify host factors that are causally related to these phenotypes, thus providing opportunities for the development of novel treatment or preventive strategies. Although there is increasing evidence that initiation of ART d…
+
+PMID 39381005
+Editorial: Immunological non-responders in HIV infection.
+
+PMID 28832366
+HIV and myocarditis.
+PURPOSE OF REVIEW: The purpose of this article is to review the literature on HIV and myocarditis and HIV-associated heart failure.
+RECENT FINDINGS: Currently, 17 million people are receiving antiretroviral therapy (ART) globally. There is a decrease in mortality from HIV in the last decade with increased survival in those receiving ART. HIV-associated cardiac failure is on the increase, with more cases of diastolic dysfunction reported in the ART era. The pathophysiology of HIV-associated myocarditis is multifactorial. Cardiovascular magnetic resonance (CMR), through tissue characterization, demonstrates increased native T1 values which reflect both increased myocardial inflammation and fibrosis in HIV infection.
+SUMMARY: HIV-associated myocarditis is common and may be an important cause of HIV-associated cardiac failure. CMR is an important imaging modality for the…
