@@ -31,8 +31,9 @@ ABSTRACT_CACHE = ROOT / "citation_faithfulness" / "abstract_cache.json"
 
 TARGET_N = 25
 MIN_FILL_SCORE = 8
-# Curated ECHO packet minus disclosures (qa 15): needs live slide text we do not show.
-PACKET_IDS = [3, 4, 12, 13, 16, 17, 18, 30, 33, 34, 35, 36]
+# Curated ECHO packet minus items that need context we do not attach:
+# qa 15 disclosures (slide text); qa 16 prior-session (no prior transcript).
+PACKET_IDS = [3, 4, 12, 13, 17, 18, 30, 33, 34, 35, 36]
 
 OFF_PAT = re.compile(
     r"\b(dementia|dimentia|diabetes|leukemia|lukemea|dental|dented\s+teeth|bac\s+teeth|"
@@ -52,7 +53,8 @@ POS_PAT = re.compile(
 JUNK_PAT = re.compile(
     r"(respond to this message|echo ai is how we get|under each thread|"
     r"what is today.?s target|hi echo ai|hello echo ai|"
-    r"disclos|conflict of interest|financial conflict)",
+    r"disclos|conflict of interest|financial conflict|"
+    r"missed the previous meeting|previous meeting content|prior session)",
     re.I,
 )
 VAGUE_PAT = re.compile(
