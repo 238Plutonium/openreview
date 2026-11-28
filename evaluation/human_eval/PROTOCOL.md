@@ -90,12 +90,6 @@ Requires local access to `/scratch1/ECHO_project/data/rtms/` for QA logs + conte
 
 ## How to view (images)
 
-Cursor / GitHub HTML previews often show **blank** context frames. Serve the folder instead:
+`human_eval_sheet.html` **embeds compressed session frames** (data URIs), so a single file works offline in Chrome/Edge.
 
-```bash
-cd evaluation/human_eval
-python3 -m http.server 8765
-```
-
-Then open: http://127.0.0.1:8765/human_eval_sheet.html  
-(If using remote SSH/Cursor, accept the port-forward prompt for 8765.)
+Cursor’s built-in preview / GitHub blob view may still blank large pages — download the HTML and open it in a normal browser if needed. Relative `context/` files remain available for HTTP serving as a fallback.

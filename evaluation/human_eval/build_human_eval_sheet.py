@@ -6,6 +6,7 @@ archives only when items clear a quality bar (宁缺毋滥 — may finish under 
 """
 from __future__ import annotations
 
+import base64
 import csv
 import html
 import io
@@ -20,9 +21,9 @@ try:
 except ImportError:  # pragma: no cover
     Image = None  # type: ignore
 
-# Cursor/GitHub file previews often block relative or data-URI images.
-# Default: relative paths + compress frames; open via local HTTP server.
-EMBED_IMAGES = False
+# Embed compressed frames as data URIs so a single HTML file opens offline
+# (Cursor/GitHub relative-path previews show blank images).
+EMBED_IMAGES = True
 JPEG_MAX_W = 960
 JPEG_QUALITY = 55
 
@@ -564,6 +565,14 @@ def _write_compressed_jpeg(src: Path, dst: Path) -> None:
     dst.write_bytes(buf.getvalue())
 
 
+def data_uri_for(rel: str) -> str:
+    path = OUT / rel if not Path(rel).is_absolute() else Path(rel)
+    if not path.is_file():
+        return rel
+    b64 = base64.b64encode(path.read_bytes()).decode("ascii")
+    return f"data:image/jpeg;base64,{b64}"
+
+
 def card_html(it: dict) -> str:
     qid = it["qa_id"]
     imgs = it.get("context_images") or []
@@ -571,11 +580,13 @@ def card_html(it: dict) -> str:
     src_tag = it.get("source") or ""
     img_block = ""
     if imgs:
-        figs = "".join(
-            f'<figure class="ctx"><img src="{html.escape(src)}" alt="session frame for qa {qid}" loading="lazy"/><figcaption>{html.escape(Path(src).name)}</figcaption></figure>'
-            for src in imgs
-        )
-        img_block = f"<div class='ctx-grid'>{figs}</div>"
+        figs = []
+        for src in imgs:
+            uri = data_uri_for(src) if EMBED_IMAGES else src
+            figs.append(
+                f'<figure class="ctx"><img src="{html.escape(uri)}" alt="session frame for qa {qid}" loading="lazy"/><figcaption>{html.escape(Path(src).name)}</figcaption></figure>'
+            )
+        img_block = f"<div class='ctx-grid'>{''.join(figs)}</div>"
     else:
         img_block = "<p class='warn'><b>No frames attached</b> for this item. If the question needs a slide/screen, mark grounding N/A unless you are only scoring honesty of abstention.</p>"
 
@@ -655,7 +666,7 @@ def write_html(items: list[dict], path: Path) -> None:
   <p><b>Type mix:</b> {esc(type_str)}</p>
   <p><b>Task:</b> Score the archived ECHO answer on factual · grounding · evidence · safety · usability (1–5). Use <b>N/A</b> for grounding when required context is missing.</p>
   <p><b>Context:</b> Where available, session frames and short notes are attached below each question (see also <code>PROTOCOL.md</code>).</p>
-  <p><b>How to open:</b> do <i>not</i> rely on Cursor/GitHub file preview (images will be blank). Serve this folder over HTTP, e.g. <code>python3 -m http.server 8765</code> then open <code>http://127.0.0.1:8765/human_eval_sheet.html</code>.</p>
+  <p><b>How to open:</b> this file is <b>self-contained</b> (frames embedded). Download and open in Chrome/Edge, or use “Open in Browser”. Cursor’s tiny preview pane may still struggle with a multi‑MB page.</p>
   <p>Save a copy of this HTML after editing, or copy scores into <code>ratings_template.csv</code>.</p>
 </div>
 {examples_html()}
