@@ -795,6 +795,8 @@ def write_html(items: list[dict], path: Path) -> None:
   table.rubric-table {{ border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 0.92rem; }}
   table.rubric-table th, table.rubric-table td {{ border: 1px solid #b7c9e8; padding: 8px 10px; vertical-align: top; background: #fff; }}
   table.rubric-table th {{ background: #e8eef8; }}
+  .intro {{ background: #f7fafc; border: 1px solid #c5d4e0; padding: 14px 16px; border-radius: 8px; margin: 16px 0; }}
+  .intro h2 {{ font-size: 1.15rem; margin: 0 0 8px; }}
   .howto {{ background: #f3faf3; border: 1px solid #b7d7b7; padding: 12px 14px; border-radius: 8px; }}
   nav {{ line-height: 1.8; }}
   nav a {{ margin-right: 8px; font-size: 0.85rem; }}
@@ -816,14 +818,19 @@ def write_html(items: list[dict], path: Path) -> None:
 </head>
 <body>
 <h1>ECHO-AI answer review ({n} questions)</h1>
+<div class="intro">
+  <h2>Welcome — thank you for helping</h2>
+  <p>We are the <b>ECHO-AI research team at Penn State</b>, working with <b>Penn State Project ECHO</b> on Medication for Opioid Use Disorder (MOUD) tele-mentoring. ECHO-AI is an educational meeting assistant that answers questions during Zoom ECHO sessions (slides, recent discussion, prior sessions, and PubMed).</p>
+  <p><b>Purpose of this survey.</b> We would like your expert judgment on how good a sample of archived ECHO-AI answers are for real MOUD ECHO teaching. Your ratings help us understand answer quality on five dimensions and improve the system for facilitators and clinicians. This is educational research support—not a clinical trial, and not a request to prescribe or diagnose.</p>
+  <p>There are <b>{n} questions</b>. For each one, please read the question, any meeting notes and PubMed abstracts, then the bot’s answer. Use the <a href="#rubric">rubric</a> below (<b>1 = Poor … 5 = Excellent</b>, or <b>N/A</b>). When you finish, enter your name and click <b>Download my scores (CSV)</b>, then kindly return that file to our team. We are grateful for your time.</p>
+</div>
 <div class="howto">
-  <p>This is an independent ECHO answer-quality survey. Read the <a href="#rubric">rubric</a>, then for each question read the notes/abstracts and the bot answer. Click <b>1–5</b> (or <b>N/A</b>) on each row, type tags/notes, and download your CSV when done.</p>
-  <p><b>1 = Poor … 5 = Excellent</b>. Score from the text only—there are no screenshots in this survey.</p>
+  <p><b>How to complete each item:</b> click one score per row, optionally add tags and notes. Score from the text only—this survey does not include screenshots.</p>
 </div>
 {rubric_html()}
 {examples_html()}
 <div class="exportbar">
-  <label>Your name / rater id: <input type="text" id="rater_id" placeholder="e.g. alex"/></label>
+  <label>Your name / rater id: <input type="text" id="rater_id" placeholder="e.g. your name"/></label>
   <button type="button" id="btn_export">Download my scores (CSV)</button>
 </div>
 <nav><b>Jump to question:</b> {nav}</nav>

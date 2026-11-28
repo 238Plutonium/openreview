@@ -1,6 +1,10 @@
 # Human evaluation protocol — ECHO-AI (text context, M≤25)
 
-Independent clinician review of **archived ECHO-AI answers** from MOUD Project ECHO sessions.
+Polite expert review of **archived ECHO-AI answers** from Penn State Project ECHO (MOUD) sessions.
+
+**Who we are.** The ECHO-AI research team at Penn State, working with Penn State Project ECHO.
+
+**Purpose.** Gather independent clinician/facilitator ratings of answer quality so we can improve an educational meeting assistant used in MOUD tele-mentoring. This is not a clinical trial and not a prescribing tool.
 
 - Raters see the **question**, optional **meeting notes**, and **PubMed abstracts** when citations appear
 - Raters score Likert dimensions in the annotation page
