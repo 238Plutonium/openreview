@@ -6,9 +6,11 @@ archives only when items clear a quality bar (宁缺毋滥 — may finish under 
 """
 from __future__ import annotations
 
+import base64
 import csv
 import html
 import json
+import mimetypes
 import re
 import shutil
 from collections import Counter
@@ -539,6 +541,22 @@ def examples_html() -> str:
 """
 
 
+def data_uri_for(rel_or_abs: str) -> str:
+    """Embed image so Cursor/GitHub previews (no relative FS) still show frames."""
+    path = Path(rel_or_abs)
+    if not path.is_absolute():
+        path = OUT / path
+    if not path.is_file():
+        return ""
+    mime = mimetypes.guess_type(path.name)[0] or "image/jpeg"
+    raw = path.read_bytes()
+    # Keep HTML usable: skip absurdly large singles (>2.5MB).
+    if len(raw) > 2_500_000:
+        return ""
+    b64 = base64.b64encode(raw).decode("ascii")
+    return f"data:{mime};base64,{b64}"
+
+
 def card_html(it: dict) -> str:
     qid = it["qa_id"]
     imgs = it.get("context_images") or []
@@ -546,11 +564,13 @@ def card_html(it: dict) -> str:
     src_tag = it.get("source") or ""
     img_block = ""
     if imgs:
-        figs = "".join(
-            f'<figure class="ctx"><img src="{html.escape(src)}" alt="session frame for qa {qid}" loading="lazy"/><figcaption>{html.escape(Path(src).name)}</figcaption></figure>'
-            for src in imgs
-        )
-        img_block = f"<div class='ctx-grid'>{figs}</div>"
+        figs = []
+        for src in imgs:
+            uri = data_uri_for(src) or src
+            figs.append(
+                f'<figure class="ctx"><img src="{html.escape(uri)}" alt="session frame for qa {qid}" loading="lazy"/><figcaption>{html.escape(Path(src).name)}</figcaption></figure>'
+            )
+        img_block = f"<div class='ctx-grid'>{''.join(figs)}</div>"
     else:
         img_block = "<p class='warn'><b>No frames attached</b> for this item. If the question needs a slide/screen, mark grounding N/A unless you are only scoring honesty of abstention.</p>"
 
