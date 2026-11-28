@@ -1,17 +1,17 @@
-qa_id,source,question_type,session_id,quality_score,context_availability,pmids
-3,packet,literature,ecfcba4c,curated,5 PubMed abstract(s); case pack (question text),"38383266,35967854,23698562,39381005,28832366"
-4,packet,literature,b28ee899,curated,5 PubMed abstract(s); case pack (question text),"32115044,34791564,41136120,38340973,27974843"
-12,packet,literature,6d0ff5cf,curated,5 PubMed abstract(s); case pack (question text),"38493248,3907856,33871429,32605143,40676813"
-13,packet,other,43091a33,curated,session text excerpt; case pack (question text),
-15,packet,other,88934984,curated,case pack (question text),
-16,packet,prior_session,b28ee899,curated,case pack (question text),
-17,packet,slide,43091a33,curated,session text excerpt; case pack (question text),
-18,packet,slide,43091a33,curated,session text excerpt; case pack (question text),
-30,packet,slide,6d0ff5cf,curated,case pack (question text),
-33,packet,summary,fe3fe521,curated,case pack (question text),
-34,packet,summary,fe3fe521,curated,case pack (question text),
-35,packet,summary,b28ee899,curated,case pack (question text),
-36,packet,summary,b28ee899,curated,case pack (question text),
-1001,rtms,other,9c01dd60,10,case pack (question text),
-1002,rtms,other,43091a33,10,session text excerpt; case pack (question text),
-1003,rtms,other,5b4ccc78,10,case pack (question text),
+item_num,qa_id,source,question_type,session_id,quality_score,context_availability,pmids
+1,3,packet,literature,ecfcba4c,curated,"Available context: question text, 5 PubMed abstracts.","38383266,35967854,23698562,39381005,28832366"
+2,4,packet,literature,b28ee899,curated,"Available context: question text, 5 PubMed abstracts.","32115044,34791564,41136120,38340973,27974843"
+3,12,packet,literature,6d0ff5cf,curated,"Available context: question text, 5 PubMed abstracts.","38493248,3907856,33871429,32605143,40676813"
+4,13,packet,other,43091a33,curated,"Available context: question text, meeting notes.",
+5,15,packet,other,88934984,curated,You have the question text for this item.,
+6,16,packet,prior_session,b28ee899,curated,You have the question text for this item.,
+7,17,packet,slide,43091a33,curated,"Available context: question text, meeting notes.",
+8,18,packet,slide,43091a33,curated,"Available context: question text, meeting notes.",
+9,30,packet,slide,6d0ff5cf,curated,You have the question text for this item.,
+10,33,packet,summary,fe3fe521,curated,You have the question text for this item.,
+11,34,packet,summary,fe3fe521,curated,You have the question text for this item.,
+12,35,packet,summary,b28ee899,curated,You have the question text for this item.,
+13,36,packet,summary,b28ee899,curated,You have the question text for this item.,
+14,1001,rtms,other,9c01dd60,10,You have the question text for this item.,
+15,1002,rtms,other,43091a33,10,"Available context: question text, meeting notes.",
+16,1003,rtms,other,5b4ccc78,10,You have the question text for this item.,

@@ -1,8 +1,5 @@
-CASE PACK (MedTutor-style text context for the grader)
-Question type: slide
-Session id: 43091a33
+Type: Slide topic
 
-Case / self-contained question:
 We are on the DSM criteria slide for opioid use disorder. From prior ECHO videos/records: for a patient NOT prescribed buprenorphine who is using diverted/illicit Suboxone, can that use support an OUD diagnosis? Which DSM criteria did prior case discussion mention? Distinguish from tolerance/withdrawal during prescribed use.
 
-Note: This is a slide-topic item. The slide topic is named in the question text above. Judge whether the answer is consistent with that stated case (as MedTutor judges against a text case report). Do not require Zoom screenshots.
+(The slide topic is written into the question. Score the answer against that wording—not against screenshots.)

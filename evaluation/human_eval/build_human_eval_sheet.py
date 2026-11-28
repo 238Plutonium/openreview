@@ -140,16 +140,25 @@ def classify_type(q: str, reply_type: str) -> str:
     return rt or "other"
 
 
+TYPE_LABEL = {
+    "literature": "Literature",
+    "slide": "Slide topic",
+    "summary": "Meeting summary",
+    "prior_session": "Prior session",
+    "other": "General",
+}
+
+
 def setting_for(qtype: str, topical: bool) -> str:
     base = {
-        "literature": "Literature / education ask (MedTutor-style: judge against case text + cited abstracts).",
-        "slide": "Slide-topic ask stated in the question text. Grade consistency with that stated case; no screenshot panel.",
-        "summary": "In-meeting summary ask. Use session text excerpt when present.",
-        "prior_session": "Prior-session recall. Grade claimed prior-session content against available session text.",
-        "other": "General MOUD/ECHO educational ask.",
-    }.get(qtype, "ECHO educational ask.")
+        "literature": "This is a literature / education question. Judge the answer using the question and any PubMed abstracts below.",
+        "slide": "The question names a slide topic. Judge whether the answer fits that topic and any meeting notes below (no screenshots).",
+        "summary": "Someone asked for a meeting summary. Use the meeting notes below when available.",
+        "prior_session": "Someone asked about a previous session. Check the answer against any meeting notes below.",
+        "other": "A general MOUD / ECHO education question.",
+    }.get(qtype, "An ECHO education question.")
     if not topical and qtype in {"slide", "summary"}:
-        base += " Topical MOUD keywords in the question may be weak; rely on case + session text."
+        base += " The question is a bit open-ended—lean on the notes when you have them."
     return base
 
 
@@ -256,30 +265,37 @@ def meeting_excerpt(sid: str, max_chars: int = 1200) -> str:
     return ""
 
 
+def human_availability(session_text: str, n_abstracts: int) -> str:
+    bits = ["question text"]
+    if session_text:
+        bits.append("meeting notes")
+    if n_abstracts:
+        bits.append(f"{n_abstracts} PubMed abstract{'s' if n_abstracts != 1 else ''}")
+    if len(bits) == 1:
+        return "You have the question text for this item."
+    return "Available context: " + ", ".join(bits) + "."
+
+
 def build_text_context(qa_id: str, sid: str, qtype: str, question: str, answer: str, abstracts: dict[str, str]) -> dict:
     dest = CTX / f"qa_{qa_id}"
     dest.mkdir(parents=True, exist_ok=True)
 
     case_lines = [
-        "CASE PACK (MedTutor-style text context for the grader)",
-        f"Question type: {qtype}",
-        f"Session id: {sid}",
+        f"Type: {TYPE_LABEL.get(qtype, qtype)}",
         "",
-        "Case / self-contained question:",
         question.strip(),
     ]
     if qtype == "slide":
         case_lines += [
             "",
-            "Note: This is a slide-topic item. The slide topic is named in the question text above. "
-            "Judge whether the answer is consistent with that stated case (as MedTutor judges against a text case report). "
-            "Do not require Zoom screenshots.",
+            "(The slide topic is written into the question. Score the answer against that wording—not against screenshots.)",
         ]
     case_text = "\n".join(case_lines)
     (dest / "case_pack.txt").write_text(case_text + "\n")
 
     session_text = meeting_excerpt(sid)
     if session_text:
+        # strip technical filename prefix for the UI; keep file with label for audit
         (dest / "session_excerpt.txt").write_text(session_text + "\n")
 
     pmids = extract_pmids(answer)
@@ -289,18 +305,12 @@ def build_text_context(qa_id: str, sid: str, qtype: str, question: str, answer: 
         if body:
             evidence_blocks.append(f"PMID {p}\n{body[:900]}{'…' if len(body) > 900 else ''}")
         else:
-            evidence_blocks.append(f"PMID {p}\n[abstract not retrieved]")
+            evidence_blocks.append(f"PMID {p}\n(Abstract not available.)")
     evidence_text = "\n\n".join(evidence_blocks)
     if evidence_text:
         (dest / "retrieved_evidence.txt").write_text(evidence_text + "\n")
 
-    parts = []
-    if session_text:
-        parts.append("session text excerpt")
-    if evidence_blocks:
-        parts.append(f"{len(evidence_blocks)} PubMed abstract(s)")
-    parts.append("case pack (question text)")
-    availability = "; ".join(parts)
+    availability = human_availability(session_text, len(evidence_blocks))
 
     return {
         "case_text": case_text,
@@ -308,7 +318,7 @@ def build_text_context(qa_id: str, sid: str, qtype: str, question: str, answer: 
         "evidence_text": evidence_text,
         "pmids": pmids,
         "availability": availability,
-        "images": [],  # MedTutor-style: no screenshot panel
+        "images": [],
         "note": session_text,
     }
 
@@ -324,7 +334,10 @@ def load_packet_items(abstracts: dict[str, str]) -> list[dict]:
         sid = (h.get("session_id") or "unknown").strip()
         ctx = build_text_context(key, sid, p["question_type"], p["standalone_question"], p["answer"], abstracts)
         setting = (p.get("setting_for_grader") or "").strip()
-        setting = f"{setting} Text context: {ctx['availability']}."
+        if setting:
+            setting = f"{setting} {ctx['availability']}"
+        else:
+            setting = ctx["availability"]
         items.append(
             {
                 "qa_id": key,
@@ -431,7 +444,7 @@ def fill_to_target(packet_items: list[dict], abstracts: dict[str, str], target: 
         next_id += 1
         standalone = clean_question(c["question"])
         ctx = build_text_context(qid, c["session_id"], qtype, standalone, c["answer"], abstracts)
-        setting = setting_for(qtype, c["topical"]) + f" Text context: {ctx['availability']}."
+        setting = f"{setting_for(qtype, c['topical'])} {ctx['availability']}"
         item = {
             "qa_id": qid,
             "source": "rtms",
@@ -457,8 +470,18 @@ def fill_to_target(packet_items: list[dict], abstracts: dict[str, str], target: 
     return items
 
 
+def assign_item_numbers(items: list[dict]) -> list[dict]:
+    out = []
+    for i, it in enumerate(items, 1):
+        row = dict(it)
+        row["item_num"] = i
+        out.append(row)
+    return out
+
+
 def write_csv(items: list[dict], path: Path) -> None:
     fields = [
+        "item_num",
         "qa_id",
         "source",
         "question_type",
@@ -490,109 +513,119 @@ def write_csv(items: list[dict], path: Path) -> None:
 
 
 def write_ratings_template(items: list[dict], path: Path) -> None:
-    fields = ["qa_id", "rater_id", "rater_role", "factual", "grounding", "evidence", "safety", "usability", "error_tags", "notes"]
+    fields = ["item_num", "qa_id", "rater_id", "rater_role", "factual", "grounding", "evidence", "safety", "usability", "error_tags", "notes"]
     with path.open("w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=fields)
         w.writeheader()
         for it in items:
-            w.writerow({"qa_id": it["qa_id"], "rater_id": "", "rater_role": "facilitator", "factual": "", "grounding": "", "evidence": "", "safety": "", "usability": "", "error_tags": "", "notes": ""})
+            w.writerow(
+                {
+                    "item_num": it["item_num"],
+                    "qa_id": it["qa_id"],
+                    "rater_id": "",
+                    "rater_role": "facilitator",
+                    "factual": "",
+                    "grounding": "",
+                    "evidence": "",
+                    "safety": "",
+                    "usability": "",
+                    "error_tags": "",
+                    "notes": "",
+                }
+            )
 
 
 def write_id_list(items: list[dict], path: Path) -> None:
+    fields = ["item_num", "qa_id", "source", "question_type", "session_id", "quality_score", "context_availability", "pmids"]
     with path.open("w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=["qa_id", "source", "question_type", "session_id", "quality_score", "context_availability", "pmids"])
+        w = csv.DictWriter(f, fieldnames=fields)
         w.writeheader()
         for it in items:
-            w.writerow({k: it.get(k, "") for k in ["qa_id", "source", "question_type", "session_id", "quality_score", "context_availability", "pmids"]})
+            w.writerow({k: it.get(k, "") for k in fields})
 
 
 def examples_html() -> str:
     return """
 <section class="card examples" id="examples">
-  <h2>Annotation examples (MedTutor-style)</h2>
-  <p>Score each axis <b>1–5</b>. Optional tags: <code>ok</code>, <code>unsupported_claim</code>, <code>irrelevant_pmid</code>, <code>overconfident</code>, <code>weak_case_grounding</code>, <code>hallucinated_session</code>.</p>
-  <h3>Example A — literature + abstracts</h3>
-  <p>Case asks for MOUD/pain/SUD education. Answer hedges; cited abstracts support claims → factual/evidence/safety/usability <b>4–5</b>; tags <code>ok</code>.</p>
-  <h3>Example B — slide-topic stated in the case text</h3>
-  <p>Question names the slide topic (e.g. DSM / stigma). Answer matches that stated topic and session excerpt → high grounding. Invents unrelated slide content → grounding <b>1–2</b>, tag <code>weak_case_grounding</code>.</p>
-  <h3>Example C — summary / prior session</h3>
-  <p>Use the session text excerpt when present. If the bot invents specific meeting details absent from the excerpt → tag <code>hallucinated_session</code> and keep grounding low. Honest abstention is not punished.</p>
+  <h2>How to score (quick examples)</h2>
+  <p>Give each dimension a score from <b>1</b> (poor) to <b>5</b> (strong). Optional short tags: <code>ok</code>, <code>unsupported claim</code>, <code>wrong citation</code>, <code>overconfident</code>, <code>made-up meeting detail</code>.</p>
+  <h3>Example A — good literature answer</h3>
+  <p>The question asks for MOUD / pain / SUD education. The answer is careful, and the PubMed abstracts actually support what it says → mostly <b>4–5</b>; tag <code>ok</code>.</p>
+  <h3>Example B — slide topic in the question</h3>
+  <p>The question names the slide (for example DSM or stigma). If the answer sticks to that topic and the meeting notes → high grounding. If it invents unrelated slide content → grounding <b>1–2</b>.</p>
+  <h3>Example C — meeting summary</h3>
+  <p>Use the meeting notes when they are there. If the bot invents specific details that are not in the notes → keep grounding low and note <code>made-up meeting detail</code>. Saying “I don’t have enough context” is fine.</p>
   <h3>Example D — citation dump</h3>
-  <p>PMIDs whose abstracts do not support the claims → evidence <b>1–2</b>, tag <code>irrelevant_pmid</code>.</p>
+  <p>A long PMID list that does not support the claims → evidence <b>1–2</b>; tag <code>wrong citation</code>.</p>
 </section>
 """
 
 
+def _session_display(sess: str) -> str:
+    # Drop [summary.md] / [transcript.txt] file tags for raters.
+    return re.sub(r"^\[(summary\.md|transcript\.txt)\]\s*", "", sess or "", flags=re.I).strip()
+
+
 def card_html(it: dict) -> str:
-    qid = it["qa_id"]
-    case = it.get("context_case") or ""
-    sess = it.get("context_note") or ""
+    num = it["item_num"]
+    qtype = TYPE_LABEL.get(it["question_type"], it["question_type"])
+    sess = _session_display(it.get("context_note") or "")
     evid = it.get("context_evidence") or ""
 
-    case_block = f"<pre class='note'>{esc(case)}</pre>" if case else "<p class='warn'>No case pack.</p>"
-    sess_block = (
-        f"<details open><summary>Session text excerpt (like MedTutor case-adjacent notes)</summary><pre class='note'>{esc(sess)}</pre></details>"
-        if sess
-        else "<p class='meta'>No meeting summary/transcript excerpt for this session id.</p>"
-    )
-    evid_block = (
-        f"<details open><summary>Retrieved evidence — PubMed title/abstract</summary><pre class='note'>{esc(evid)}</pre></details>"
-        if evid
-        else "<p class='meta'>No PMIDs / abstracts attached (non-literature or uncited answer).</p>"
-    )
+    if sess:
+        sess_block = f"<details open><summary>Meeting notes</summary><pre class='note'>{esc(sess)}</pre></details>"
+    else:
+        sess_block = "<p class='meta'>No meeting notes for this item.</p>"
+
+    if evid:
+        evid_block = f"<details open><summary>PubMed abstracts cited in the answer</summary><pre class='note'>{esc(evid)}</pre></details>"
+    else:
+        evid_block = "<p class='meta'>No PubMed abstracts attached for this item.</p>"
 
     return f"""
-<section class="card" id="q{qid}">
-  <h2>Question {qid} <span class="tag">{esc(it['question_type'])}</span> <span class="tag src">{esc(it.get('source') or '')}</span></h2>
-  <h3>1. Case pack</h3>
+<section class="card" id="q{num}">
+  <h2>Question {num} <span class="tag">{esc(qtype)}</span></h2>
+  <h3>Question</h3>
   <p class="q">{esc(it['standalone_question'])}</p>
-  <p class="setting"><b>Setting:</b> {esc(it['setting_for_grader'])}</p>
-  <p class="orig"><b>Original chat:</b> <em>{esc(it['original_chat_question'])}</em></p>
-  <p class="meta">session_id=<code>{esc(it['session_id'])}</code> · quality={esc(str(it.get('quality_score','')))} · {esc(it['context_availability'])}</p>
-  {case_block}
-  <h3>2. Session / case-adjacent text</h3>
+  <p class="setting"><b>What to keep in mind:</b> {esc(it['setting_for_grader'])}</p>
+  <p class="orig"><b>What was typed in chat:</b> <em>{esc(it['original_chat_question'])}</em></p>
+  <h3>Meeting notes</h3>
   {sess_block}
-  <h3>3. Retrieved evidence (abstracts)</h3>
+  <h3>Supporting literature</h3>
   {evid_block}
-  <h3>4. System output to grade</h3>
+  <h3>Bot answer</h3>
   <div class="a">{esc(it['answer'])}</div>
   <h3>Your scores (1–5)</h3>
   <table class="score">
-    <tr><th>factual</th><th>grounding</th><th>evidence</th><th>safety</th><th>usability</th></tr>
+    <tr><th>Factual</th><th>Grounding</th><th>Evidence</th><th>Safety</th><th>Usability</th></tr>
     <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
   </table>
-  <p><b>error_tags</b>: <span contenteditable="true" class="tags"></span></p>
-  <p><b>notes</b>: <span contenteditable="true" class="notes"></span></p>
+  <p><b>Optional tags:</b> <span contenteditable="true" class="tags"></span></p>
+  <p><b>Notes:</b> <span contenteditable="true" class="notes"></span></p>
 </section>
 """
 
 
 def write_html(items: list[dict], path: Path) -> None:
     n = len(items)
-    n_packet = sum(1 for it in items if it.get("source") == "packet")
-    n_rtms = n - n_packet
-    types = Counter(it["question_type"] for it in items)
-    type_str = ", ".join(f"{k}={v}" for k, v in sorted(types.items()))
-    nav = "".join(f'<a href="#q{it["qa_id"]}">{it["qa_id"]}</a>' for it in items)
+    nav = "".join(f'<a href="#q{it["item_num"]}">{it["item_num"]}</a>' for it in items)
     cards = "".join(card_html(it) for it in items)
     doc = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ECHO-AI Human Evaluation — MedTutor-style M={n}</title>
+<title>ECHO-AI human evaluation ({n} questions)</title>
 <style>
   body {{ font-family: Georgia, "Times New Roman", serif; max-width: 920px; margin: 24px auto; padding: 0 16px; line-height: 1.45; color: #111; }}
   h1 {{ font-size: 1.55rem; }}
   .card {{ border: 1px solid #ccc; border-radius: 8px; padding: 16px 18px; margin: 18px 0; background: #fafafa; }}
   .examples {{ background: #fff8e7; border-color: #e6d59a; }}
   .tag {{ font-size: 0.75rem; background: #e8eef8; padding: 2px 8px; border-radius: 999px; }}
-  .tag.src {{ background: #eee; }}
   .q {{ font-weight: 600; font-size: 1.05rem; }}
   .setting {{ background: #eef6ff; border: 1px solid #c5daf5; padding: 8px 10px; border-radius: 6px; font-size: 0.92rem; }}
   .orig, .meta {{ color: #444; font-size: 0.9rem; }}
   .a {{ background: #fff; border: 1px solid #ddd; padding: 10px 12px; border-radius: 6px; font-size: 0.95rem; }}
-  .warn {{ background: #ffe8e8; border: 1px solid #e2a0a0; padding: 8px 10px; border-radius: 6px; }}
   pre.note {{ white-space: pre-wrap; background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 6px; font-size: 0.85rem; }}
   table.score {{ border-collapse: collapse; width: 100%; margin-top: 8px; }}
   table.score th, table.score td {{ border: 1px solid #bbb; padding: 8px; text-align: center; background: #fff; min-width: 70px; }}
@@ -603,15 +636,20 @@ def write_html(items: list[dict], path: Path) -> None:
 </style>
 </head>
 <body>
-<h1>ECHO-AI human evaluation — MedTutor-style text context (M={n})</h1>
+<h1>ECHO-AI answer review ({n} questions)</h1>
 <div class="howto">
-  <p><b>Design:</b> Follows MedTutor (Jang et al., 2025): clinicians grade against a <b>text case pack</b> + <b>retrieved evidence abstracts</b> (+ optional session text). <b>No Zoom slide screenshots</b> in this UI.</p>
-  <p><b>Scope:</b> n={n} ({n_packet} curated packet + {n_rtms} quality RTMS extras). Types: {esc(type_str)}.</p>
-  <p><b>Task:</b> Score factual · grounding · evidence · safety · usability (1–5). Grounding = consistency with the case pack / session excerpt, not pixel matching.</p>
-  <p>Public link: <a href="https://238plutonium.github.io/openreview/human-eval/">https://238plutonium.github.io/openreview/human-eval/</a></p>
+  <p>Please read each question, the meeting notes and any PubMed abstracts, then the bot’s answer. Score five things from 1 to 5:</p>
+  <ul>
+    <li><b>Factual</b> — is the educational content basically right?</li>
+    <li><b>Grounding</b> — does it stick to the question and notes (not invent meeting/slide detail)?</li>
+    <li><b>Evidence</b> — do the citations actually support the claims?</li>
+    <li><b>Safety</b> — appropriate hedges; not unsafe as education?</li>
+    <li><b>Usability</b> — would this help in an ECHO session?</li>
+  </ul>
+  <p>There are no screenshots here on purpose: score from the text, the same way MedTutor raters used written case material.</p>
 </div>
 {examples_html()}
-<nav><b>Jump:</b> {nav}</nav>
+<nav><b>Jump to question:</b> {nav}</nav>
 {cards}
 </body>
 </html>
@@ -660,11 +698,19 @@ def main() -> None:
         it["context_evidence"] = ctx["evidence_text"]
         it["context_availability"] = ctx["availability"]
         it["pmids"] = ",".join(ctx["pmids"])
-        # refresh setting suffix
-        base_setting = re.sub(r"\s*Text context:.*$", "", it["setting_for_grader"]).strip()
-        it["setting_for_grader"] = f"{base_setting} Text context: {ctx['availability']}."
+        # Keep human setting text; append availability if not already present.
+        base = (it.get("setting_for_grader") or "").strip()
+        avail = ctx["availability"]
+        if avail and avail not in base:
+            # strip older availability suffixes if regenerating
+            base = re.sub(
+                r"\s*(Available context:.*|You have the question text for this item\.)$",
+                "",
+                base,
+            ).strip()
+            it["setting_for_grader"] = f"{base} {avail}".strip()
         rebuilt.append(it)
-    items = rebuilt
+    items = assign_item_numbers(rebuilt)
 
     write_csv(items, OUT / "human_eval_sheet.csv")
     write_ratings_template(items, OUT / "ratings_template.csv")
@@ -673,7 +719,7 @@ def main() -> None:
     with_abs = sum(1 for it in items if it.get("context_evidence"))
     with_sess = sum(1 for it in items if it.get("context_note"))
     print(
-        f"wrote {len(items)} MedTutor-style items; {with_abs} with abstracts; "
+        f"wrote {len(items)} items (Q1–Q{len(items)}); {with_abs} with abstracts; "
         f"{with_sess} with session text; types={dict(Counter(i['question_type'] for i in items))} → {OUT}"
     )
     if len(items) < TARGET_N:

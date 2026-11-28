@@ -1,6 +1,3 @@
-CASE PACK (MedTutor-style text context for the grader)
-Question type: prior_session
-Session id: b28ee899
+Type: Prior session
 
-Case / self-contained question:
 I missed the previous meeting — briefly summarize the prior MOUD ECHO session on acute and chronic pain in patients with opioid use disorder (OUD).
