@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>ECHO-AI Human Evaluation — M=13 MOUD packet</title>
+<style>
+  body { font-family: Georgia, "Times New Roman", serif; max-width: 920px; margin: 24px auto; padding: 0 16px; line-height: 1.45; color: #111; }
+  h1 { font-size: 1.55rem; }
+  .card { border: 1px solid #ccc; border-radius: 8px; padding: 16px 18px; margin: 18px 0; background: #fafafa; }
+  .examples { background: #fff8e7; border-color: #e6d59a; }
+  .tag { font-size: 0.75rem; background: #e8eef8; padding: 2px 8px; border-radius: 999px; }
+  .q { font-weight: 600; font-size: 1.05rem; }
+  .setting { background: #eef6ff; border: 1px solid #c5daf5; padding: 8px 10px; border-radius: 6px; font-size: 0.92rem; }
+  .orig, .meta { color: #444; font-size: 0.9rem; }
+  .a { background: #fff; border: 1px solid #ddd; padding: 10px 12px; border-radius: 6px; font-size: 0.95rem; }
+  .warn { background: #ffe8e8; border: 1px solid #e2a0a0; padding: 8px 10px; border-radius: 6px; }
+  .ctx-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  @media (min-width: 720px) { .ctx-grid { grid-template-columns: 1fr 1fr; } }
+  figure.ctx { margin: 0; background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 6px; }
+  figure.ctx img { width: 100%; height: auto; display: block; border-radius: 4px; }
+  figure.ctx figcaption { font-size: 0.75rem; color: #555; margin-top: 4px; }
+  pre.note { white-space: pre-wrap; background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 6px; font-size: 0.85rem; }
+  table.score { border-collapse: collapse; width: 100%; margin-top: 8px; }
+  table.score th, table.score td { border: 1px solid #bbb; padding: 8px; text-align: center; background: #fff; min-width: 70px; }
+  [contenteditable="true"] { outline: 2px dashed #8ab; min-height: 1.2em; }
+  .howto { background: #f3faf3; border: 1px solid #b7d7b7; padding: 12px 14px; border-radius: 8px; }
+  nav a { margin-right: 8px; font-size: 0.9rem; }
+  code { font-size: 0.9em; }
+</style>
+</head>
+<body>
+<h1>ECHO-AI human evaluation — M=13 MOUD / ECHO packet</h1>
+<div class="howto">
+  <p><b>Scope:</b> Only ECHO/MOUD-related items from the paper packet (n=13). Off-domain probes (diabetes, leukemia, demo CS slides, …) are excluded.</p>
+  <p><b>Task:</b> Score the archived ECHO answer on factual · grounding · evidence · safety · usability (1–5). Use <b>N/A</b> for grounding when required context is missing.</p>
+  <p><b>Context:</b> Where available, session frames and short notes are attached below each question (see also <code>PROTOCOL.md</code>).</p>
+  <p>Save a copy of this HTML after editing, or copy scores into <code>ratings_template.csv</code>.</p>
+</div>
+
+<section class="card examples" id="examples">
+  <h2>Annotation examples (read before scoring)</h2>
+  <p>Score each axis <b>1–5</b>, or type <b>N/A</b> for grounding when required context is missing/unusable. Error tags (optional): <code>ok</code>, <code>wrong_slide</code>, <code>no_frame_hallucination</code>, <code>irrelevant_pmid</code>, <code>unsupported_claim</code>, <code>overconfident</code>, <code>frame_refuse</code>, <code>asr_cascade</code>.</p>
+  <h3>Example A — literature with supportive citations</h3>
+  <p>MOUD/pain/SUD educational answer, appropriate hedges, citations actually support claims → typically factual/evidence/safety/usability <b>4–5</b>; tags <code>ok</code>.</p>
+  <h3>Example B — slide question with frames attached</h3>
+  <p>Compare the answer to the images in the Context panel. Matches visible text → high grounding. Invents bullets not on the frames → grounding <b>1–2</b>, tag <code>wrong_slide</code>.</p>
+  <h3>Example C — needs slide/meeting but context weak or absent</h3>
+  <p>Mark grounding <b>N/A</b> if you cannot verify. If the bot invents detailed slide/meeting content anyway → tag <code>no_frame_hallucination</code> and keep factual/grounding low. If it honestly refuses → grounding N/A is fine; do not punish abstention.</p>
+  <h3>Example D — citation dump</h3>
+  <p>PMID list that does not support the claims → evidence <b>1–2</b>, tag <code>irrelevant_pmid</code>.</p>
+</section>
+
+<nav><b>Jump:</b> <a href="#q3">3</a><a href="#q4">4</a><a href="#q12">12</a><a href="#q13">13</a><a href="#q15">15</a><a href="#q16">16</a><a href="#q17">17</a><a href="#q18">18</a><a href="#q30">30</a><a href="#q33">33</a><a href="#q34">34</a><a href="#q35">35</a><a href="#q36">36</a></nav>
+
+<section class="card" id="q3">
+  <h2>Question 3 <span class="tag">literature</span></h2>
+  <h3>Question (self-contained)</h3>
+  <p class="q">How do we treat HIV patients?</p>
+  <p class="setting"><b>Setting for grader:</b> Standalone literature ask; answer may mix HIV care with OUD/pain ECHO material. Context availability: 2 session frame(s) attached.</p>
+  <p class="orig"><b>Original chat text:</b> <em>how do we treat HIV patients</em></p>
+  <p class="meta">session_id=<code>ecfcba4c</code> · log n_frames=1 · 2 session frame(s) attached</p>
+  <h3>Context for grader</h3>
+  <div class='ctx-grid'><figure class="ctx"><img src="context/qa_3/frame_1.jpg" alt="session frame for qa 3" loading="lazy"/><figcaption>frame_1.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_3/frame_2.jpg" alt="session frame for qa 3" loading="lazy"/><figcaption>frame_2.jpg</figcaption></figure></div>
+  
+  <h3>Bot answer (ECHO archived)</h3>
+  <div class="a">For HIV patients with chronic pain not linked to worse medication-assisted treatment (MAT) outcomes, consider non-opioid interventions such as physical therapy, cognitive-behavioral therapy, and psychological support. Opioid use should be approached cautiously and closely monitored due to risks of addiction and side effects. Evidence suggests these non-opioid strategies are effective and safe in this population [1], [2], [3]. However, long-term outcomes and optimal dosing remain uncertain, and individual patient factors should guide treatment decisions. [4], [5], [6], [7], [8]<br><br>[1]: MOUD Cohort 8 | Session 8_Recording_OUD and HIV Prevention_4.24.24 | 0:03-2:12<br>[2]: MOUD Cohort 8 | Session 8_Recording_OUD and HIV Prevention_4.24.24 | 37:51-56:24<br>[3]: MOUD Cohort 10 | Session 4_Recording_3.19.25 | 42:11-1:01:24<br>[4]: PMID 38383266 | Epidemiology, treatment and prognosis of HIV infection in 2024: A practical review. | 2024-Jun-14 | Journal Article<br>[5]: PMID 35967854 | The reservoir of latent HIV. | 2022 | Journal Article<br>[6]: PMID 23698562 | The natural history of HIV infection. | 2013-Jul | Journal Article<br>[7]: PMID 39381005 | Editorial: Immunological non-responders in HIV infection. | 2024 | Editorial<br>[8]: PMID 28832366 | HIV and myocarditis. | 2017-Nov | Journal Article<br><br>Educational summary for ECHO discussion; not clinical advice or a medical record.</div>
+  <h3>Your scores (1–5; use N/A if not judgeable)</h3>
+  <table class="score">
+    <tr><th>factual</th><th>grounding</th><th>evidence</th><th>safety</th><th>usability</th></tr>
+    <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+  </table>
+  <p><b>error_tags</b> (optional): <span contenteditable="true" class="tags"></span></p>
+  <p><b>notes</b>: <span contenteditable="true" class="notes"></span></p>
+</section>
+
+<section class="card" id="q4">
+  <h2>Question 4 <span class="tag">literature</span></h2>
+  <h3>Question (self-contained)</h3>
+  <p class="q">Can you give guidance on treatment for pain in patients with substance use disorders (SUD)?</p>
+  <p class="setting"><b>Setting for grader:</b> Original chat said “this topic” while the live discussion/slide was pain management in SUD. Grade as if that topic was explicit. Context availability: 2 session frame(s) attached.</p>
+  <p class="orig"><b>Original chat text:</b> <em>Can you give us some guidance on treatment on this topic?</em></p>
+  <p class="meta">session_id=<code>b28ee899</code> · log n_frames=1 · 2 session frame(s) attached</p>
+  <h3>Context for grader</h3>
+  <div class='ctx-grid'><figure class="ctx"><img src="context/qa_4/frame_1.jpg" alt="session frame for qa 4" loading="lazy"/><figcaption>frame_1.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_4/frame_2.jpg" alt="session frame for qa 4" loading="lazy"/><figcaption>frame_2.jpg</figcaption></figure></div>
+  
+  <h3>Bot answer (ECHO archived)</h3>
+  <div class="a">For managing pain in patients with substance use disorders (SUD), it&#x27;s essential to address both the physical and psychological components, as pain can worsen emotional distress and contribute to a cycle of worsening pain, reduced mobility, functional decline, and social isolation. Evidence suggests that non-opioid pharmacologic options—such as NSAIDs, anticonvulsants (e.g., gabapentin), antidepressants (e.g., SNRIs), and topical agents—are effective and safer alternatives to opioids [1]. Non-pharmacologic approaches like exercise, manual therapy, acupuncture, orthotics, and TENS are also supported [2]. For refractory cases, interventions such as nerve blocks, steroid injections, trigger point injections, or stimulators may be considered, though their long-term benefits and risks remain uncertain [3]. A comprehensive plan should include pain self-monitoring, cognitive strategies (e.g., distraction, imagery), and engagement with family or support systems to enhance recovery and adherence. However, the optimal combination and duration of these interventions are not fully established, and individual patient factors should guide decisions. [4], [5], [6], [7]<br><br>[1]: MOUD Cohort 10 | Session 4_Recording_3.19.25 | 40:33-41:48<br>[2]: MOUD Cohort 9 | Session_1_Recording_Intro to MOUD_7.24.24 | 3:53-10:14<br>[3]: PMID 32115044 | Pain: Pathways and Physiology. | 2020-Apr | Journal Article<br>[4]: PMID 34791564 | Treating Chronic Pain with Buprenorphine-The Practical Guide. | 2021-Nov-18 | Journal Article<br>[5]: PMID 41136120 | Overview of Pain Physiology. | 2025-Dec | Journal Article<br>[6]: PMID 38340973 | Buprenorphine for Pain: A Narrative Review and Practical Applications. | 2024-May | Journal Article<br>[7]: PMID 27974843 | Structural plasticity and reorganisation in chronic pain. | 2016-Dec-15 | Journal Article<br><br>Educational summary for ECHO discussion; not clinical advice or a medical record.</div>
+  <h3>Your scores (1–5; use N/A if not judgeable)</h3>
+  <table class="score">
+    <tr><th>factual</th><th>grounding</th><th>evidence</th><th>safety</th><th>usability</th></tr>
+    <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+  </table>
+  <p><b>error_tags</b> (optional): <span contenteditable="true" class="tags"></span></p>
+  <p><b>notes</b>: <span contenteditable="true" class="notes"></span></p>
+</section>
+
+<section class="card" id="q12">
+  <h2>Question 12 <span class="tag">literature</span></h2>
+  <h3>Question (self-contained)</h3>
+  <p class="q">Can you explain ketamine (“K”) treatment in patients with substance use disorders (SUD)?</p>
+  <p class="setting"><b>Setting for grader:</b> Original chat said “K treatment”; interpret as ketamine in an SUD/pain ECHO setting unless the answer clearly means something else. Context availability: 2 session frame(s) attached.</p>
+  <p class="orig"><b>Original chat text:</b> <em>Can you explain We are also doing K treatment in patients with SUD</em></p>
+  <p class="meta">session_id=<code>6d0ff5cf</code> · log n_frames=1 · 2 session frame(s) attached</p>
+  <h3>Context for grader</h3>
+  <div class='ctx-grid'><figure class="ctx"><img src="context/qa_12/frame_1.jpg" alt="session frame for qa 12" loading="lazy"/><figcaption>frame_1.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_12/frame_2.jpg" alt="session frame for qa 12" loading="lazy"/><figcaption>frame_2.jpg</figcaption></figure></div>
+  
+  <h3>Bot answer (ECHO archived)</h3>
+  <div class="a">Yes, we are also providing K treatment in patients with substance use disorder (SUD). Evidence suggests that pain management in this population involves addressing both physical and psychological aspects, including explaining the potential for relapse, co-developing a personalized treatment plan with the patient, encouraging engagement with family or support systems, scheduling frequent follow-ups, and utilizing a multidisciplinary approach. [1]<br>[2]<br>[3]<br><br>However, the specific role of K treatment in SUD remains under-investigated, and more research is needed to clarify its efficacy and safety. [4]<br>[5]<br>[6]<br>[7]<br>[8]<br><br>What is certain is that a comprehensive, patient-centered approach that includes pain management, mental health support, and social resources is associated with better outcomes. Still, the optimal integration of K treatment within SUD care is not fully established.<br><br>[1]: MOUD Cohort 6 | MOUD Session 4_3.1.23 | 44:11-57:55<br><br>[2]: MOUD Cohort 6 | MOUD Session 4_3.1.23 | 43:43-57:04<br><br>[3]: MOUD Cohort 6 | MOUD Session 4_3.1.23 | 14:56-17:23<br><br>[4]: PMID 38493248 | Sensing of mitochondrial DNA by ZBP1 promotes RIPK3-mediated necroptosis and ferroptosis in response to diquat poisoning. | 2024-May | Journal Article<br><br>[5]: PMID 3907856 | Identification of a specific telomere terminal transferase activity in Tetrahymena extracts. | 1985-Dec | Journal Article<br><br>[6]: PMID 33871429 | Vitamin K and vascular calcification. | 2021-Jul-1 | Journal Article<br><br>[7]: PMID 32605143 | Vitamin K Nutrition and Bone Health. | 2020-Jun-27 | Journal Article<br><br>[8]: PMID 40676813 | Factors Influencing Ortho-K Treatment in Low Myopia and Management Approaches. | 2025-Jul-18 | Journal Article<br><br>Educational summary for ECHO discussion; not clinical advice or a medical record.</div>
+  <h3>Your scores (1–5; use N/A if not judgeable)</h3>
+  <table class="score">
+    <tr><th>factual</th><th>grounding</th><th>evidence</th><th>safety</th><th>usability</th></tr>
+    <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+  </table>
+  <p><b>error_tags</b> (optional): <span contenteditable="true" class="tags"></span></p>
+  <p><b>notes</b>: <span contenteditable="true" class="notes"></span></p>
+</section>
+
+<section class="card" id="q13">
+  <h2>Question 13 <span class="tag">other</span></h2>
+  <h3>Question (self-contained)</h3>
+  <p class="q">What are opioids?</p>
+  <p class="setting"><b>Setting for grader:</b> Basic definition ask during an MOUD-related session. Context availability: 4 session frame(s) attached; short meeting note/transcript excerpt attached.</p>
+  <p class="orig"><b>Original chat text:</b> <em>What is Opioids?</em></p>
+  <p class="meta">session_id=<code>43091a33</code> · log n_frames=3 · 4 session frame(s) attached; short meeting note/transcript excerpt attached</p>
+  <h3>Context for grader</h3>
+  <div class='ctx-grid'><figure class="ctx"><img src="context/qa_13/frame_1.jpg" alt="session frame for qa 13" loading="lazy"/><figcaption>frame_1.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_13/frame_2.jpg" alt="session frame for qa 13" loading="lazy"/><figcaption>frame_2.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_13/frame_3.jpg" alt="session frame for qa 13" loading="lazy"/><figcaption>frame_3.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_13/frame_4.jpg" alt="session frame for qa 13" loading="lazy"/><figcaption>frame_4.jpg</figcaption></figure></div>
+  <details open><summary>Meeting note / transcript excerpt</summary><pre class='note'>[summary.md]<br># Meeting Minutes<br><br>- Stream ID: 43091a331a414a2d9fd10f2f569a395f<br>- Meeting UUID: dU583dt8SmaPkKHfF+JR3w==<br>- Generated at: 2026-07-09T04:40:44.046Z<br>- Meeting started: 2026-07-09T04:22:07.001Z<br>- Meeting ended: 2026-07-09T04:27:44.578Z<br>- Transcript segments: 54<br>- Slides copied: 15<br><br>## Summary<br><br># Meeting Minutes: Opioid Use Disorder (OUD) Presentation – July 9, 2026<br><br>---<br><br>## **Overview**<br>The meeting began with Binglin Zhou introducing the topic of medical management for Opioid Use Disorder (OUD), specifically focusing on evidence-based care, diagnostic criteria, and the role of primary care teams. The session included discussion on opioid definitions, DSM-5 criteria for OUD, the distinction between physical dependence and OUD, and the importance of non-stigmatizing language in clinical practice. The presentation also touched on data collection practices related to Project Echo AI.<br><br>---<br><br>## *…</pre></details>
+  <h3>Bot answer (ECHO archived)</h3>
+  <div class="a">Opioids are drugs derived from the opium poppy (like morphine and codeine) or created in a lab (like fentanyl and oxycodone). They relieve pain, suppress coughs, and can cause sedation and respiratory suppression, but also carry a high risk of addiction and overdose.</div>
+  <h3>Your scores (1–5; use N/A if not judgeable)</h3>
+  <table class="score">
+    <tr><th>factual</th><th>grounding</th><th>evidence</th><th>safety</th><th>usability</th></tr>
+    <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+  </table>
+  <p><b>error_tags</b> (optional): <span contenteditable="true" class="tags"></span></p>
+  <p><b>notes</b>: <span contenteditable="true" class="notes"></span></p>
+</section>
+
+<section class="card" id="q15">
+  <h2>Question 15 <span class="tag">other</span></h2>
+  <h3>Question (self-contained)</h3>
+  <p class="q">What has been discussed in the disclosures section of this presentation?</p>
+  <p class="setting"><b>Setting for grader:</b> Ask about speaker conflict-of-interest / disclosures content from the current session materials. Context availability: 4 session frame(s) attached.</p>
+  <p class="orig"><b>Original chat text:</b> <em>Thanks! What’s been discussed in disclosures?</em></p>
+  <p class="meta">session_id=<code>88934984</code> · log n_frames=0 · 4 session frame(s) attached</p>
+  <h3>Context for grader</h3>
+  <div class='ctx-grid'><figure class="ctx"><img src="context/qa_15/frame_1.jpg" alt="session frame for qa 15" loading="lazy"/><figcaption>frame_1.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_15/frame_2.jpg" alt="session frame for qa 15" loading="lazy"/><figcaption>frame_2.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_15/frame_3.jpg" alt="session frame for qa 15" loading="lazy"/><figcaption>frame_3.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_15/frame_4.jpg" alt="session frame for qa 15" loading="lazy"/><figcaption>frame_4.jpg</figcaption></figure></div>
+  
+  <h3>Bot answer (ECHO archived)</h3>
+  <div class="a">DeepinWatt has no financial conflicts of interest to disclose. Kevin has the following disclosures.</div>
+  <h3>Your scores (1–5; use N/A if not judgeable)</h3>
+  <table class="score">
+    <tr><th>factual</th><th>grounding</th><th>evidence</th><th>safety</th><th>usability</th></tr>
+    <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+  </table>
+  <p><b>error_tags</b> (optional): <span contenteditable="true" class="tags"></span></p>
+  <p><b>notes</b>: <span contenteditable="true" class="notes"></span></p>
+</section>
+
+<section class="card" id="q16">
+  <h2>Question 16 <span class="tag">prior_session</span></h2>
+  <h3>Question (self-contained)</h3>
+  <p class="q">I missed the previous meeting — briefly summarize the prior MOUD ECHO session on acute and chronic pain in patients with opioid use disorder (OUD).</p>
+  <p class="setting"><b>Setting for grader:</b> Prior-session ask. Original chat did not name the meeting; grade using the bot’s claimed prior-session summary (no full prior transcript is attached). Context availability: 4 session frame(s) attached; no meeting transcript excerpt available for this session id.</p>
+  <p class="orig"><b>Original chat text:</b> <em>I missed the previous meeting content, can you brief summarize them to me?</em></p>
+  <p class="meta">session_id=<code>b28ee899</code> · log n_frames=1 · 4 session frame(s) attached; no meeting transcript excerpt available for this session id</p>
+  <h3>Context for grader</h3>
+  <div class='ctx-grid'><figure class="ctx"><img src="context/qa_16/frame_1.jpg" alt="session frame for qa 16" loading="lazy"/><figcaption>frame_1.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_16/frame_2.jpg" alt="session frame for qa 16" loading="lazy"/><figcaption>frame_2.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_16/frame_3.jpg" alt="session frame for qa 16" loading="lazy"/><figcaption>frame_3.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_16/frame_4.jpg" alt="session frame for qa 16" loading="lazy"/><figcaption>frame_4.jpg</figcaption></figure></div>
+  
+  <h3>Bot answer (ECHO archived)</h3>
+  <div class="a">The previous meeting focused on managing acute and chronic pain in patients with opioid use disorder (OUD). It emphasized understanding the unique pain experiences in opioid-dependent individuals and the importance of building trust and rapport with patients. Key principles include adopting a non-judgmental, patient-centered approach, developing comfort in caring for SUD patients, and using skills like reflective listening and motivational interviewing to support patient engagement. [1], [2], [3]<br><br>[1]: MOUD Cohort 4 | zoom_0 | 1:05:47-1:06:36<br>[2]: MOUD Cohort 9 | Session_1_Recording_Intro to MOUD_7.24.24 | 2:57-9:55<br>[3]: MOUD Cohort 9 | Session_1_Recording_Intro to MOUD_7.24.24 | 3:53-10:14<br><br>Educational summary for ECHO discussion; not clinical advice or a medical record.</div>
+  <h3>Your scores (1–5; use N/A if not judgeable)</h3>
+  <table class="score">
+    <tr><th>factual</th><th>grounding</th><th>evidence</th><th>safety</th><th>usability</th></tr>
+    <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+  </table>
+  <p><b>error_tags</b> (optional): <span contenteditable="true" class="tags"></span></p>
+  <p><b>notes</b>: <span contenteditable="true" class="notes"></span></p>
+</section>
+
+<section class="card" id="q17">
+  <h2>Question 17 <span class="tag">slide</span></h2>
+  <h3>Question (self-contained)</h3>
+  <p class="q">We are on the DSM criteria slide for opioid use disorder. From prior ECHO videos/records: for a patient NOT prescribed buprenorphine who is using diverted/illicit Suboxone, can that use support an OUD diagnosis? Which DSM criteria did prior case discussion mention? Distinguish from tolerance/withdrawal during prescribed use.</p>
+  <p class="setting"><b>Setting for grader:</b> Already mostly self-contained; slide title stated in the question. Source frames/transcripts are not attached. Context availability: 4 session frame(s) attached; short meeting note/transcript excerpt attached.</p>
+  <p class="orig"><b>Original chat text:</b> <em>We are currently on the DSM criteria slide for opioid use disorder. From previous videos/records, for a patient who is NOT prescribed buprenorphine but is using diverted or illicit Suboxone, can that use support an OUD diagnosis? Which DSM criteria did the prior case discussion mention? Please distinguish this from tolerance or withdrawal during prescribed use.</em></p>
+  <p class="meta">session_id=<code>43091a33</code> · log n_frames=3 · 4 session frame(s) attached; short meeting note/transcript excerpt attached</p>
+  <h3>Context for grader</h3>
+  <div class='ctx-grid'><figure class="ctx"><img src="context/qa_17/frame_1.jpg" alt="session frame for qa 17" loading="lazy"/><figcaption>frame_1.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_17/frame_2.jpg" alt="session frame for qa 17" loading="lazy"/><figcaption>frame_2.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_17/frame_3.jpg" alt="session frame for qa 17" loading="lazy"/><figcaption>frame_3.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_17/frame_4.jpg" alt="session frame for qa 17" loading="lazy"/><figcaption>frame_4.jpg</figcaption></figure></div>
+  <details open><summary>Meeting note / transcript excerpt</summary><pre class='note'>[summary.md]<br># Meeting Minutes<br><br>- Stream ID: 43091a331a414a2d9fd10f2f569a395f<br>- Meeting UUID: dU583dt8SmaPkKHfF+JR3w==<br>- Generated at: 2026-07-09T04:40:44.046Z<br>- Meeting started: 2026-07-09T04:22:07.001Z<br>- Meeting ended: 2026-07-09T04:27:44.578Z<br>- Transcript segments: 54<br>- Slides copied: 15<br><br>## Summary<br><br># Meeting Minutes: Opioid Use Disorder (OUD) Presentation – July 9, 2026<br><br>---<br><br>## **Overview**<br>The meeting began with Binglin Zhou introducing the topic of medical management for Opioid Use Disorder (OUD), specifically focusing on evidence-based care, diagnostic criteria, and the role of primary care teams. The session included discussion on opioid definitions, DSM-5 criteria for OUD, the distinction between physical dependence and OUD, and the importance of non-stigmatizing language in clinical practice. The presentation also touched on data collection practices related to Project Echo AI.<br><br>---<br><br>## *…</pre></details>
+  <h3>Bot answer (ECHO archived)</h3>
+  <div class="a">Yes, using diverted or illicit Suboxone can support an OUD diagnosis, as it involves compulsive use and loss of control, meeting DSM-5 criteria such as persistent desire to cut down, unsuccessful efforts to control use, tolerance, craving, and interference with daily activities [1], [2], [3]. This differs from tolerance or withdrawal during prescribed use, which are physiological responses and do not alone meet OUD criteria without evidence of behavioral impairment or loss of control [4], [5], [6].<br><br>Source:<br>[1]: MOUD Cohort 10 | Session 10_Recording_Perioperative Management of Patients on MOUD_6.11.25 | 11:44-12:50<br>[2]: MOUD Cohort 10 | Session 10_Recording_Perioperative Management of Patients on MOUD_6.11.25 | 11:16-12:36<br>[3]: MOUD Cohort 10 | Session 7_Recording_OUD in the ED_4.30.25 | 28:15-31:37<br>[4]: MOUD Cohort 10 | Session 10_Recording_Perioperative Management of Patients on MOUD_6.11.25 | 31:43-33:59<br>[5]: MOUD Cohort 11 | Session 1_Recording_Introduction to MOUD_7.30.25 | 51:27-53:16<br>[6]: MOUD Cohort 11 | Session 1_Recording_Introduction to MOUD_7.30.25 | 52:47-54:57</div>
+  <h3>Your scores (1–5; use N/A if not judgeable)</h3>
+  <table class="score">
+    <tr><th>factual</th><th>grounding</th><th>evidence</th><th>safety</th><th>usability</th></tr>
+    <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+  </table>
+  <p><b>error_tags</b> (optional): <span contenteditable="true" class="tags"></span></p>
+  <p><b>notes</b>: <span contenteditable="true" class="notes"></span></p>
+</section>
+
+<section class="card" id="q18">
+  <h2>Question 18 <span class="tag">slide</span></h2>
+  <h3>Question (self-contained)</h3>
+  <p class="q">We are on the stigma slide. From prior ECHO videos/records, what non-stigmatizing language or clinical framing did presenters recommend when discussing OUD, relapse, or MOUD?</p>
+  <p class="setting"><b>Setting for grader:</b> Already mostly self-contained; slide title stated in the question. Source frames/transcripts are not attached. Context availability: 4 session frame(s) attached; short meeting note/transcript excerpt attached.</p>
+  <p class="orig"><b>Original chat text:</b> <em>We are currently on the stigma slide. From previous videos/records, what non-stigmatizing language or clinical framing did presenters recommend when discussing OUD, relapse, or MOUD with patients?</em></p>
+  <p class="meta">session_id=<code>43091a33</code> · log n_frames=3 · 4 session frame(s) attached; short meeting note/transcript excerpt attached</p>
+  <h3>Context for grader</h3>
+  <div class='ctx-grid'><figure class="ctx"><img src="context/qa_18/frame_1.jpg" alt="session frame for qa 18" loading="lazy"/><figcaption>frame_1.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_18/frame_2.jpg" alt="session frame for qa 18" loading="lazy"/><figcaption>frame_2.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_18/frame_3.jpg" alt="session frame for qa 18" loading="lazy"/><figcaption>frame_3.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_18/frame_4.jpg" alt="session frame for qa 18" loading="lazy"/><figcaption>frame_4.jpg</figcaption></figure></div>
+  <details open><summary>Meeting note / transcript excerpt</summary><pre class='note'>[summary.md]<br># Meeting Minutes<br><br>- Stream ID: 43091a331a414a2d9fd10f2f569a395f<br>- Meeting UUID: dU583dt8SmaPkKHfF+JR3w==<br>- Generated at: 2026-07-09T04:40:44.046Z<br>- Meeting started: 2026-07-09T04:22:07.001Z<br>- Meeting ended: 2026-07-09T04:27:44.578Z<br>- Transcript segments: 54<br>- Slides copied: 15<br><br>## Summary<br><br># Meeting Minutes: Opioid Use Disorder (OUD) Presentation – July 9, 2026<br><br>---<br><br>## **Overview**<br>The meeting began with Binglin Zhou introducing the topic of medical management for Opioid Use Disorder (OUD), specifically focusing on evidence-based care, diagnostic criteria, and the role of primary care teams. The session included discussion on opioid definitions, DSM-5 criteria for OUD, the distinction between physical dependence and OUD, and the importance of non-stigmatizing language in clinical practice. The presentation also touched on data collection practices related to Project Echo AI.<br><br>---<br><br>## *…</pre></details>
+  <h3>Bot answer (ECHO archived)</h3>
+  <div class="a">Presenters recommended using &quot;substance use disorder&quot; or &quot;opioid use disorder&quot; instead of &quot;addiction,&quot; referring to individuals as &quot;people who have&quot; a disorder rather than &quot;addicts,&quot; and framing urine drug screens as &quot;simple monitoring&quot; rather than &quot;clean&quot; or &quot;dirty.&quot; Relapse should be described as a &quot;return to use&quot; rather than a failure of willpower, and the condition should be framed as a brain disease requiring treatment, not a character flaw. [1], [2], [3], [4], [5], [6]<br><br>Source:<br>[1]: MOUD Cohort 7 | C7_Recording_Intro_to_OUD_7.12.23 | 52:12-54:44<br>[2]: MOUD Cohort 10 | Session 1_Recording_Intro to MOUD_2.5.25 | 33:49-35:09<br>[3]: MOUD Cohort 6 | MOUD Session 1_01.18.23 | 28:16-33:07<br>[4]: MOUD Cohort 6 | MOUD Session 1_01.18.23 | 28:25-33:08<br>[5]: MOUD Cohort 10 | Session 3_Recording_Risk Reduction and Safe Use of Opioids_3.5.25 | 38:37-41:09<br>[6]: MOUD Cohort 9 | Session 4_Recording_Co-occurring MH_9.4.24 | 53:04-55:16</div>
+  <h3>Your scores (1–5; use N/A if not judgeable)</h3>
+  <table class="score">
+    <tr><th>factual</th><th>grounding</th><th>evidence</th><th>safety</th><th>usability</th></tr>
+    <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+  </table>
+  <p><b>error_tags</b> (optional): <span contenteditable="true" class="tags"></span></p>
+  <p><b>notes</b>: <span contenteditable="true" class="notes"></span></p>
+</section>
+
+<section class="card" id="q30">
+  <h2>Question 30 <span class="tag">slide</span></h2>
+  <h3>Question (self-contained)</h3>
+  <p class="q">What is on my slide about pain treatment in patients with SUD?</p>
+  <p class="setting"><b>Setting for grader:</b> Slide ask during MOUD content. Bot claimed section “Pain Treatment in Patients with SUD” with counseling/follow-up bullets. No source frame attached. Context availability: 4 session frame(s) attached; no meeting transcript excerpt available for this session id.</p>
+  <p class="orig"><b>Original chat text:</b> <em>What&#x27;s on my slide And what&#x27;s on my slide</em></p>
+  <p class="meta">session_id=<code>6d0ff5cf</code> · log n_frames=3 · 4 session frame(s) attached; no meeting transcript excerpt available for this session id</p>
+  <h3>Context for grader</h3>
+  <div class='ctx-grid'><figure class="ctx"><img src="context/qa_30/frame_1.jpg" alt="session frame for qa 30" loading="lazy"/><figcaption>frame_1.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_30/frame_2.jpg" alt="session frame for qa 30" loading="lazy"/><figcaption>frame_2.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_30/frame_3.jpg" alt="session frame for qa 30" loading="lazy"/><figcaption>frame_3.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_30/frame_4.jpg" alt="session frame for qa 30" loading="lazy"/><figcaption>frame_4.jpg</figcaption></figure></div>
+  
+  <h3>Bot answer (ECHO archived)</h3>
+  <div class="a">On your slide, the section &quot;Pain Treatment in Patients with SUD&quot; covers: explain potential for relapse, explain the rationale for medication management to the patient, establish a treatment plan with the patient, encourage family和支持 system involvement, frequent follow-ups, and consultations with a multidisciplinary approach.</div>
+  <h3>Your scores (1–5; use N/A if not judgeable)</h3>
+  <table class="score">
+    <tr><th>factual</th><th>grounding</th><th>evidence</th><th>safety</th><th>usability</th></tr>
+    <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+  </table>
+  <p><b>error_tags</b> (optional): <span contenteditable="true" class="tags"></span></p>
+  <p><b>notes</b>: <span contenteditable="true" class="notes"></span></p>
+</section>
+
+<section class="card" id="q33">
+  <h2>Question 33 <span class="tag">summary</span></h2>
+  <h3>Question (self-contained)</h3>
+  <p class="q">Summarize this meeting (MOUD ECHO discussion touching uncontrolled pain / the “vicious cycle of uncontrolled pain”).</p>
+  <p class="setting"><b>Setting for grader:</b> In-meeting summary. No full transcript attached; grade coherence and whether the summary invents unsupported specifics. Context availability: 4 session frame(s) attached; no meeting transcript excerpt available for this session id.</p>
+  <p class="orig"><b>Original chat text:</b> <em>Summary of this meeting.</em></p>
+  <p class="meta">session_id=<code>fe3fe521</code> · log n_frames=1 · 4 session frame(s) attached; no meeting transcript excerpt available for this session id</p>
+  <h3>Context for grader</h3>
+  <div class='ctx-grid'><figure class="ctx"><img src="context/qa_33/frame_1.jpg" alt="session frame for qa 33" loading="lazy"/><figcaption>frame_1.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_33/frame_2.jpg" alt="session frame for qa 33" loading="lazy"/><figcaption>frame_2.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_33/frame_3.jpg" alt="session frame for qa 33" loading="lazy"/><figcaption>frame_3.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_33/frame_4.jpg" alt="session frame for qa 33" loading="lazy"/><figcaption>frame_4.jpg</figcaption></figure></div>
+  
+  <h3>Bot answer (ECHO archived)</h3>
+  <div class="a">The Vicious Cycle of Uncontrolled Pain includes avoidance behaviors, decreased mobility, social limitations, diminished self-efficacy, and altered functional status.</div>
+  <h3>Your scores (1–5; use N/A if not judgeable)</h3>
+  <table class="score">
+    <tr><th>factual</th><th>grounding</th><th>evidence</th><th>safety</th><th>usability</th></tr>
+    <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+  </table>
+  <p><b>error_tags</b> (optional): <span contenteditable="true" class="tags"></span></p>
+  <p><b>notes</b>: <span contenteditable="true" class="notes"></span></p>
+</section>
+
+<section class="card" id="q34">
+  <h2>Question 34 <span class="tag">summary</span></h2>
+  <h3>Question (self-contained)</h3>
+  <p class="q">Summarize this whole meeting on managing pain in patients with substance use disorders.</p>
+  <p class="setting"><b>Setting for grader:</b> In-meeting summary. Topic made explicit for graders; no full transcript attached. Context availability: 4 session frame(s) attached; no meeting transcript excerpt available for this session id.</p>
+  <p class="orig"><b>Original chat text:</b> <em>Summary of this whole meeting.</em></p>
+  <p class="meta">session_id=<code>fe3fe521</code> · log n_frames=1 · 4 session frame(s) attached; no meeting transcript excerpt available for this session id</p>
+  <h3>Context for grader</h3>
+  <div class='ctx-grid'><figure class="ctx"><img src="context/qa_34/frame_1.jpg" alt="session frame for qa 34" loading="lazy"/><figcaption>frame_1.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_34/frame_2.jpg" alt="session frame for qa 34" loading="lazy"/><figcaption>frame_2.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_34/frame_3.jpg" alt="session frame for qa 34" loading="lazy"/><figcaption>frame_3.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_34/frame_4.jpg" alt="session frame for qa 34" loading="lazy"/><figcaption>frame_4.jpg</figcaption></figure></div>
+  
+  <h3>Bot answer (ECHO archived)</h3>
+  <div class="a">Summary of this whole meeting: The discussion focuses on managing pain in patients with substance use disorders, addressing drug-seeking behavior, lack of sympathy and fear from patients, and reduced pain tolerance in opioid-dependent individuals. Key strategies include using motivational interviewing, building rapport, and prioritizing non-opioid pain management. Risk factors like emotional trauma, dysfunctional families, and poor coping skills are highlighted, with the goal of improving care comfort and effective pain management.</div>
+  <h3>Your scores (1–5; use N/A if not judgeable)</h3>
+  <table class="score">
+    <tr><th>factual</th><th>grounding</th><th>evidence</th><th>safety</th><th>usability</th></tr>
+    <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+  </table>
+  <p><b>error_tags</b> (optional): <span contenteditable="true" class="tags"></span></p>
+  <p><b>notes</b>: <span contenteditable="true" class="notes"></span></p>
+</section>
+
+<section class="card" id="q35">
+  <h2>Question 35 <span class="tag">summary</span></h2>
+  <h3>Question (self-contained)</h3>
+  <p class="q">I am late — summarize what has been presented so far on treating SUD with non-judgmental, patient-centered care and pain management.</p>
+  <p class="setting"><b>Setting for grader:</b> Late-join summary. Topic made explicit from the bot’s claimed agenda; no full transcript attached. Context availability: 4 session frame(s) attached; no meeting transcript excerpt available for this session id.</p>
+  <p class="orig"><b>Original chat text:</b> <em>I am late. can you summarize what’s been presented so far?</em></p>
+  <p class="meta">session_id=<code>b28ee899</code> · log n_frames=1 · 4 session frame(s) attached; no meeting transcript excerpt available for this session id</p>
+  <h3>Context for grader</h3>
+  <div class='ctx-grid'><figure class="ctx"><img src="context/qa_35/frame_1.jpg" alt="session frame for qa 35" loading="lazy"/><figcaption>frame_1.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_35/frame_2.jpg" alt="session frame for qa 35" loading="lazy"/><figcaption>frame_2.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_35/frame_3.jpg" alt="session frame for qa 35" loading="lazy"/><figcaption>frame_3.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_35/frame_4.jpg" alt="session frame for qa 35" loading="lazy"/><figcaption>frame_4.jpg</figcaption></figure></div>
+  
+  <h3>Bot answer (ECHO archived)</h3>
+  <div class="a">The approach focuses on building comfort in treating substance use disorder with non-judgmental, patient-centered care, reflecting the patient’s perspective to build rapport, using motivational interviewing, and understanding both SUD and pain management.</div>
+  <h3>Your scores (1–5; use N/A if not judgeable)</h3>
+  <table class="score">
+    <tr><th>factual</th><th>grounding</th><th>evidence</th><th>safety</th><th>usability</th></tr>
+    <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+  </table>
+  <p><b>error_tags</b> (optional): <span contenteditable="true" class="tags"></span></p>
+  <p><b>notes</b>: <span contenteditable="true" class="notes"></span></p>
+</section>
+
+<section class="card" id="q36">
+  <h2>Question 36 <span class="tag">summary</span></h2>
+  <h3>Question (self-contained)</h3>
+  <p class="q">Give a summary of the current meeting.</p>
+  <p class="setting"><b>Setting for grader:</b> In-meeting summary. No full transcript attached; use the answer’s claimed topics to judge usefulness vs hallucination. Context availability: 4 session frame(s) attached; no meeting transcript excerpt available for this session id.</p>
+  <p class="orig"><b>Original chat text:</b> <em>can you give a summary of the meeting</em></p>
+  <p class="meta">session_id=<code>b28ee899</code> · log n_frames=1 · 4 session frame(s) attached; no meeting transcript excerpt available for this session id</p>
+  <h3>Context for grader</h3>
+  <div class='ctx-grid'><figure class="ctx"><img src="context/qa_36/frame_1.jpg" alt="session frame for qa 36" loading="lazy"/><figcaption>frame_1.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_36/frame_2.jpg" alt="session frame for qa 36" loading="lazy"/><figcaption>frame_2.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_36/frame_3.jpg" alt="session frame for qa 36" loading="lazy"/><figcaption>frame_3.jpg</figcaption></figure><figure class="ctx"><img src="context/qa_36/frame_4.jpg" alt="session frame for qa 36" loading="lazy"/><figcaption>frame_4.jpg</figcaption></figure></div>
+  
+  <h3>Bot answer (ECHO archived)</h3>
+  <div class="a">Opioid Use Disorder complicates acute and chronic pain management. It&#x27;s best to continue agonist or antagonist OUD medication while treating pain. A multi-disciplinary approach is strongly recommended for these complex cases.</div>
+  <h3>Your scores (1–5; use N/A if not judgeable)</h3>
+  <table class="score">
+    <tr><th>factual</th><th>grounding</th><th>evidence</th><th>safety</th><th>usability</th></tr>
+    <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+  </table>
+  <p><b>error_tags</b> (optional): <span contenteditable="true" class="tags"></span></p>
+  <p><b>notes</b>: <span contenteditable="true" class="notes"></span></p>
+</section>
+
+</body>
+</html>
