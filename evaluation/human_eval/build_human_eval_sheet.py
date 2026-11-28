@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Build MedTutor-style ECHO human-eval sheet (text case context; M≤25 quality-first).
+"""Build ECHO human-eval sheet (text context; M≤25 quality-first).
 
 Graders see:
-  1) case pack = self-contained question + setting
+  1) self-contained question + setting
   2) retrieved evidence = PubMed title/abstract for cited PMIDs (when present)
   3) optional session text excerpt (meeting summary/transcript)
 
-No Zoom slide screenshots in the grading UI (MedTutor uses text case reports, not live slides).
+No Zoom slide screenshots in the grading UI — this is a text-only ECHO survey.
 """
 from __future__ import annotations
 
@@ -642,11 +642,11 @@ def write_id_list(items: list[dict], path: Path) -> None:
 
 
 def rubric_html() -> str:
-    """MedTutor-style Likert rubric (1=Poor … 5=Excellent) embedded for raters."""
+    """Likert rubric (1=Poor … 5=Excellent) embedded for raters."""
     return """
 <section class="card rubric" id="rubric">
   <h2>Scoring rubric (read first)</h2>
-  <p>Same idea as MedTutor: rate each dimension on a <b>1–5</b> scale (<b>1 = Poor</b>, <b>5 = Excellent</b>). Use <b>N/A</b> only when you truly cannot judge that dimension from the text. If torn between two scores, pick the lower one.</p>
+  <p>Rate each dimension on a <b>1–5</b> scale (<b>1 = Poor</b>, <b>5 = Excellent</b>). Use <b>N/A</b> only when you truly cannot judge that dimension from the text. If torn between two scores, pick the lower one.</p>
   <table class="rubric-table">
     <tr><th>Dimension</th><th>1–2 Poor / weak</th><th>3 Acceptable</th><th>4–5 Good / excellent</th></tr>
     <tr>
@@ -817,8 +817,8 @@ def write_html(items: list[dict], path: Path) -> None:
 <body>
 <h1>ECHO-AI answer review ({n} questions)</h1>
 <div class="howto">
-  <p>Read the <a href="#rubric">rubric</a>, then for each question read the notes/abstracts and the bot answer. Click <b>1–5</b> (or <b>N/A</b>) on each row, type tags/notes, and download your CSV when done.</p>
-  <p><b>1 = Poor … 5 = Excellent</b> (MedTutor-style Likert). Score from the text only—there are no screenshots on purpose.</p>
+  <p>This is an independent ECHO answer-quality survey. Read the <a href="#rubric">rubric</a>, then for each question read the notes/abstracts and the bot answer. Click <b>1–5</b> (or <b>N/A</b>) on each row, type tags/notes, and download your CSV when done.</p>
+  <p><b>1 = Poor … 5 = Excellent</b>. Score from the text only—there are no screenshots in this survey.</p>
 </div>
 {rubric_html()}
 {examples_html()}

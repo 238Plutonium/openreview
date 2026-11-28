@@ -1,15 +1,14 @@
-# Human evaluation protocol — ECHO-AI (MedTutor-style text context, M≤25)
+# Human evaluation protocol — ECHO-AI (text context, M≤25)
 
-Clinician grading of **archived ECHO-AI answers**, aligned with MedTutor (Jang et al., 2025):
+Independent clinician review of **archived ECHO-AI answers** from MOUD Project ECHO sessions.
 
-- Raters see a **text case pack** + **retrieved evidence (PubMed title/abstract)** + optional **session text excerpt**
-- Raters score Likert dimensions in an annotation UI
-- **No Zoom slide screenshots** in the grading UI (MedTutor uses text case reports, not live slides)
+- Raters see the **question**, optional **meeting notes**, and **PubMed abstracts** when citations appear
+- Raters score Likert dimensions in the annotation page
+- **No Zoom slide screenshots** in the grading UI — score from the written materials only
 
-## Why not slides-as-images?
+## Why text-only context?
 
-MedTutor’s radiologists graded against **clinical case report text** and retrieved textbook/literature snippets—not live screenshare pixels.  
-ECHO slide/screen questions are handled the same way: the **slide topic is written into the self-contained question** (the “case”), and grounding is judged against that case text (+ session excerpt when available).
+Slide/screen questions name the topic in the question itself. Raters judge whether the answer fits that wording and any meeting notes provided. Screenshots are not part of this survey.
 
 ## Packet
 
@@ -19,40 +18,38 @@ ECHO slide/screen questions are handled the same way: the **slide topic is writt
 | `human_eval_sheet.csv` | Spreadsheet twin |
 | `ratings_template.csv` | Independent rater scores |
 | `item_ids.csv` | Id / type / context index |
-| `context/qa_*/case_pack.txt` | Text case pack |
+| `RUBRIC.md` | Full scoring rubric |
+| `context/qa_*/case_pack.txt` | Question text pack |
 | `context/qa_*/session_excerpt.txt` | Meeting summary/transcript excerpt (when available) |
 | `context/qa_*/retrieved_evidence.txt` | Cited PMID abstracts (when available) |
-| `../RUBRIC.md` | Dimension definitions |
 
-**Composition (ceiling M=25, 宁缺毋滥):** curated packet (n=13) + quality RTMS extras. Off-domain / vague items excluded.
+**Composition (ceiling M=25):** curated ECHO packet + additional slide / session items. Off-domain or vague probes are excluded.
 
 ## What raters see (per item)
 
-1. **Case pack** — self-contained question + setting (MedTutor “case report” analog)  
-2. **Session text excerpt** — short meeting summary/transcript when available  
-3. **Retrieved evidence** — PubMed title/abstract for cited PMIDs  
-4. **System output** — archived ECHO answer  
-5. Scores: factual · grounding · evidence · safety · usability (1–5)  
-6. Optional error tags + notes
+1. **Question** — self-contained prompt + short guidance  
+2. **Meeting notes** — when available  
+3. **Supporting literature** — PubMed title/abstract for cited PMIDs  
+4. **Bot answer** — archived ECHO output  
+5. Scores: Factual · Grounding · Evidence · Safety · Usability (1–5 or N/A)  
+6. Optional tags + notes  
 
-## Rubric (MedTutor-style)
+Questions are labeled **Question 1 … N** in order.
 
-Full text: [`RUBRIC.md`](RUBRIC.md) (also embedded at the top of the HTML sheet).
+## Rubric
+
+Full text: [`RUBRIC.md`](RUBRIC.md) (also at the top of the HTML sheet).
 
 - Scale: **1 = Poor … 5 = Excellent** (plus **N/A**)
 - Dimensions: Factual · Grounding · Evidence · Safety · Usability  
-- Anchors for 1–2 / 3 / 4–5 are in the rubric table  
-- Grounding = consistency with question + notes (not screenshots)  
+- Grounding = consistency with the question and notes (not screenshots)  
 - Independent raters; author scores do not count toward K
 
-## Worked examples
-
-See the HTML “Quick examples” panel.
 ## Target raters / reporting
 
 - **K ≥ 3** independent clinicians/facilitators familiar with MOUD ECHO  
 - Report mean/SD per dimension; IAA (e.g. Krippendorff’s α); error-tag rates  
-- Optional stratify by `source` / `question_type`
+- Optional stratify by `question_type`
 
 ## Public link
 

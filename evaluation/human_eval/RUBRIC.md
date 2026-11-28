@@ -1,9 +1,10 @@
 # ECHO-AI human evaluation rubric
 
-Style aligned with MedTutor (Jang et al., 2025, Appendix F): experts score on a **1–5 Likert** scale with short, written criteria.  
-Here the “case” is the **question text** (+ meeting notes / PubMed abstracts when shown)—not Zoom screenshots.
+Independent expert review of archived ECHO-AI answers from MOUD Project ECHO sessions.  
+Score each dimension on a **1–5 Likert** scale using the anchors below.  
+The “case” is the **question text** (+ meeting notes / PubMed abstracts when shown)—not Zoom screenshots.
 
-## Scale (same as MedTutor)
+## Scale
 
 | Score | Meaning |
 |---|---|
@@ -22,7 +23,7 @@ Score each dimension **independently**. When unsure between two scores, pick the
 
 For each item you see:
 
-1. **Question** (the case)  
+1. **Question**  
 2. **Meeting notes** (when available)  
 3. **PubMed abstracts** for citations in the answer (when available)  
 4. **Bot answer** (archived ECHO-AI output)
@@ -45,7 +46,7 @@ Judge the bot answer **only** against that text.
 
 | 1–2 | 3 | 4–5 |
 |---|---|---|
-| Invents slide/meeting specifics not in the case/notes | Partly on-topic; some unsupported detail | Stays consistent with the question and notes; honest about missing context |
+| Invents slide/meeting specifics not in the question/notes | Partly on-topic; some unsupported detail | Stays consistent with the question and notes; honest about missing context |
 
 Use **N/A** only if the item truly has nothing to ground against *and* the bot does not invent detail.
 
